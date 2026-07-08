@@ -1,8 +1,8 @@
 {
-  "name": "agent-workflows",
+  "name": "autopraxis",
   "version": "0.1.0",
   "private": true,
-  "description": "Workflow skills for AI agents: dev, ML experiments, PR review, debugging, ideation, roadmapping, and backprop optimization.",
+  "description": "Self-improving workflow skills for AI agents: dev, ML experiments, PR review, debugging, ideation, roadmapping, and backprop optimization.",
   "type": "module",
   "scripts": {
     "test": "node tests/validate-skills.mjs"

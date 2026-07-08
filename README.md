@@ -1,31 +1,10 @@
-# Agent Workflows
+# Autopraxis
 
-Reusable workflow skills for AI coding agents. Each skill is a portable `SKILL.md` with YAML frontmatter, explicit input/output contracts, bounded loops, and telemetry hooks.
+Self-improving workflow skills for AI agents.
 
-## Name ideas
+Autopraxis turns messy goals into grounded briefs, reviewed plans, shipped work, and measured learning loops. Built for chaotic quests where planning, review, and adaptation matter as much as raw execution.
 
-Strong/default:
-
-- `agent-workflows`
-- `workflow-fleet`
-- `agent-playbooks`
-- `workflow-kernel`
-- `agent-protocols`
-
-More branded:
-
-- `backprop-labs`
-- `gradient-workflows`
-- `agent-operating-system`
-- `workflow-os`
-- `cognitive-ci`
-- `runbook-fleet`
-- `agent-foundry`
-- `loopwright`
-- `plan-ship-learn`
-- `workflow-descent`
-
-Current repo uses neutral default: `agent-workflows`.
+Each skill is a portable `SKILL.md` with YAML frontmatter, explicit input/output contracts, bounded loops, and telemetry hooks.
 
 ## Skills
 

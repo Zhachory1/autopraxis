@@ -38,7 +38,7 @@ Default path:
 Fallback path when no repo is available:
 
 ```text
-~/.agent-workflows/runs/<run-id>/telemetry.jsonl
+~/.autopraxis/runs/<run-id>/telemetry.jsonl
 ```
 
 Use existing run dirs when the workflow provides them. Do not write sensitive content to long-term memory unless explicitly approved.
