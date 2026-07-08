@@ -84,7 +84,6 @@ for (const token of ['references/standards.md', 'prd-template.md', 'design-doc-t
 
 const docReferenceFiles = [
   'references/standards.md',
-  'references/source-notes.md',
   'references/templates/prd-template.md',
   'references/templates/design-doc-template.md',
   'references/templates/technical-plan-template.md',
