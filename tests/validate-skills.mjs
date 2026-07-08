@@ -1,5 +1,8 @@
-import { readdir, readFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { mkdtemp, readdir, readFile, rm, stat } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import { join, dirname, normalize } from 'node:path';
+import { tmpdir } from 'node:os';
+import { spawnSync } from 'node:child_process';
 
 const root = new URL('..', import.meta.url).pathname;
 const skillsDir = join(root, 'skills');
@@ -23,8 +26,30 @@ const sharedSkillNames = [
   'human-approval-gate',
   'run-telemetry',
 ];
+const requiredDocReferenceFiles = [
+  'references/standards.md',
+  'references/templates/prd-template.md',
+  'references/templates/design-doc-template.md',
+  'references/templates/technical-plan-template.md',
+  'references/templates/adr-template.md',
+  'references/templates/roadmap-template.md',
+  'references/templates/rca-template.md',
+];
 
 const failures = [];
+
+async function listFiles(dir, prefix = '') {
+  const entries = await readdir(dir, { withFileTypes: true });
+  const files = [];
+  for (const entry of entries) {
+    const relativePath = prefix ? `${prefix}/${entry.name}` : entry.name;
+    const absolutePath = join(dir, entry.name);
+    if (entry.isDirectory()) files.push(...await listFiles(absolutePath, relativePath));
+    else files.push(relativePath);
+  }
+  return files;
+}
+
 const dirs = (await readdir(skillsDir, { withFileTypes: true }))
   .filter((entry) => entry.isDirectory())
   .map((entry) => entry.name)
@@ -82,16 +107,7 @@ for (const token of ['references/standards.md', 'prd-template.md', 'design-doc-t
   if (!docSkill.includes(token)) failures.push(`structured-doc-authoring: missing reference to ${token}`);
 }
 
-const docReferenceFiles = [
-  'references/standards.md',
-  'references/templates/prd-template.md',
-  'references/templates/design-doc-template.md',
-  'references/templates/technical-plan-template.md',
-  'references/templates/adr-template.md',
-  'references/templates/roadmap-template.md',
-  'references/templates/rca-template.md',
-];
-for (const relativePath of docReferenceFiles) {
+for (const relativePath of requiredDocReferenceFiles) {
   const text = await readFile(join(skillsDir, 'structured-doc-authoring', relativePath), 'utf8');
   if (text.length < 1000) failures.push(`structured-doc-authoring: ${relativePath} looks too small`);
 }
@@ -101,10 +117,72 @@ for (const token of ['SPADE', 'Evidence Standard', 'Review Gate Standard', 'PRD'
   if (!standards.includes(token)) failures.push(`structured-doc-authoring standards: missing ${token}`);
 }
 
+const manifest = JSON.parse(await readFile(join(root, 'autopraxis.json'), 'utf8'));
+if (manifest.name !== 'autopraxis') failures.push('manifest: name must be autopraxis');
+const manifestSkillNames = manifest.skills.map((skill) => skill.name).sort();
+if (JSON.stringify(manifestSkillNames) !== JSON.stringify(dirs)) {
+  failures.push(`manifest: skill list does not match skills directory (${manifestSkillNames.join(',')} vs ${dirs.join(',')})`);
+}
+for (const skill of manifest.skills) {
+  if (!existsSync(join(root, skill.path, 'SKILL.md'))) failures.push(`manifest: ${skill.name} path missing SKILL.md`);
+  if (!['workflow', 'shared'].includes(skill.kind)) failures.push(`manifest: ${skill.name} has invalid kind ${skill.kind}`);
+}
+for (const target of ['mewrite', 'claude-code', 'generic-markdown', 'cursor-rules', 'windsurf-rules']) {
+  if (!manifest.installTargets[target]) failures.push(`manifest: missing install target ${target}`);
+}
+for (const integration of ['agent-fleet', 'long-term-memory-mcp', 'code-rag', 'run-telemetry']) {
+  if (!manifest.optionalIntegrations.some((item) => item.name === integration)) failures.push(`manifest: missing optional integration ${integration}`);
+}
+for (const exclude of ['.git/**', 'node_modules/**', '.workflow-runs/**', '.env']) {
+  if (!manifest.package.exclude.includes(exclude)) failures.push(`manifest package.exclude missing ${exclude}`);
+}
+
+const packageJson = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));
+if (packageJson.bin?.autopraxis !== 'bin/autopraxis.mjs') failures.push('package.json: missing autopraxis bin');
+for (const file of ['README.md', 'INSTALL.md', 'autopraxis.json', 'bin/', 'examples/', 'skills/']) {
+  if (!packageJson.files.includes(file)) failures.push(`package.json: files missing ${file}`);
+}
+
+const markdownFiles = [
+  'README.md',
+  'INSTALL.md',
+  ...await listFiles(skillsDir, 'skills').then((files) => files.filter((file) => file.endsWith('.md'))),
+  ...await listFiles(join(root, 'examples'), 'examples').then((files) => files.filter((file) => file.endsWith('.md'))),
+];
+for (const relativeFile of markdownFiles) {
+  const text = await readFile(join(root, relativeFile), 'utf8');
+  const linkPattern = /\[[^\]]+\]\((?!https?:|mailto:|#)([^)]+)\)/g;
+  for (const match of text.matchAll(linkPattern)) {
+    const rawTarget = match[1].split('#')[0].trim();
+    if (!rawTarget || rawTarget.startsWith('<') || rawTarget.includes(' ')) continue;
+    const target = normalize(join(root, dirname(relativeFile), rawTarget));
+    if (!target.startsWith(normalize(root))) failures.push(`${relativeFile}: link escapes repo: ${match[1]}`);
+    else if (!existsSync(target)) failures.push(`${relativeFile}: broken relative link ${match[1]}`);
+  }
+}
+
+const packageValidation = spawnSync(process.execPath, ['bin/autopraxis.mjs', 'validate-package'], { cwd: root, encoding: 'utf8' });
+if (packageValidation.status !== 0) failures.push(`validate-package failed: ${packageValidation.stderr || packageValidation.stdout}`);
+
+const tempRoot = await mkdtemp(join(tmpdir(), 'autopraxis-install-'));
+try {
+  const install = spawnSync(process.execPath, ['bin/autopraxis.mjs', 'install', '--target', 'mewrite', '--dest', tempRoot], { cwd: root, encoding: 'utf8' });
+  if (install.status !== 0) failures.push(`install smoke failed: ${install.stderr || install.stdout}`);
+  for (const dir of dirs) {
+    if (!existsSync(join(tempRoot, dir, 'SKILL.md'))) failures.push(`install smoke missing ${dir}/SKILL.md`);
+  }
+  for (const relativePath of requiredDocReferenceFiles) {
+    if (!existsSync(join(tempRoot, 'structured-doc-authoring', relativePath))) failures.push(`install smoke missing structured-doc-authoring/${relativePath}`);
+  }
+  if (!existsSync(join(tempRoot, '_autopraxis-plugin.json'))) failures.push('install smoke missing _autopraxis-plugin.json');
+} finally {
+  await rm(tempRoot, { recursive: true, force: true });
+}
+
 if (failures.length) {
   console.error('Skill validation failed:');
   for (const failure of failures) console.error(`- ${failure}`);
   process.exit(1);
 }
 
-console.log(`Validated ${dirs.length} skills.`);
+console.log(`Validated ${dirs.length} skills and plugin package.`);

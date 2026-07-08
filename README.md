@@ -44,11 +44,21 @@ Agents should prefer available MCP/RAG tools for recall and codebase context, bu
 
 ## Install locally
 
-Copy or symlink skill dirs into the agent runtime skill path, or point runtime config at this repo if supported.
+Autopraxis can be installed as a portable coding-agent plugin bundle.
 
 ```bash
-cp -R skills/* ~/.mewrite/agent/skills/
+node bin/autopraxis.mjs install --target mewrite
 ```
+
+Supported targets:
+
+- `mewrite`
+- `claude-code`
+- `generic-markdown`
+- `cursor-rules`
+- `windsurf-rules`
+
+See `INSTALL.md` for custom destinations, symlink mode, manual fallback, upgrade, uninstall, and package validation.
 
 ## Validate
 
