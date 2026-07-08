@@ -1,5 +1,9 @@
 # Autopraxis
 
+<p align="center">
+  <img src="assets/autopraxis.png" alt="Autopraxis" width="100%">
+</p>
+
 Self-improving workflow skills for AI agents.
 
 Autopraxis turns messy goals into grounded briefs, reviewed plans, shipped work, and measured learning loops. Built for chaotic quests where planning, review, and adaptation matter as much as raw execution.

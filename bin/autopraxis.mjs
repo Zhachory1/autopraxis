@@ -86,7 +86,7 @@ async function copyOrLinkSkill(skill, destination, options) {
 }
 
 function packageRootEntries() {
-  return ['.claude-plugin', '.codex-plugin', '.cave-plugin', 'skills', 'examples', 'README.md', 'INSTALL.md', 'autopraxis.json', 'package.json'];
+  return ['.claude-plugin', '.codex-plugin', '.cave-plugin', 'skills', 'examples', 'assets', 'README.md', 'INSTALL.md', 'autopraxis.json', 'package.json'];
 }
 
 async function copyOrLinkPluginRoot(destination, options) {

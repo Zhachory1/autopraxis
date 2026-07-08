@@ -151,7 +151,7 @@ for (const exclude of ['.git/**', 'node_modules/**', '.workflow-runs/**', '.env'
 
 const packageJson = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));
 if (packageJson.bin?.autopraxis !== 'bin/autopraxis.mjs') failures.push('package.json: missing autopraxis bin');
-for (const file of ['.agents/plugins/marketplace.json', '.cave-plugin/', '.claude-plugin/', '.codex-plugin/', 'README.md', 'INSTALL.md', 'autopraxis.json', 'bin/', 'examples/', 'skills/']) {
+for (const file of ['.agents/plugins/marketplace.json', '.cave-plugin/', '.claude-plugin/', '.codex-plugin/', 'README.md', 'INSTALL.md', 'autopraxis.json', 'assets/', 'bin/', 'examples/', 'skills/']) {
   if (!packageJson.files.includes(file)) failures.push(`package.json: files missing ${file}`);
 }
 
@@ -199,6 +199,7 @@ try {
   const claudeInstall = spawnSync(process.execPath, ['bin/autopraxis.mjs', 'install', '--target', 'claude-plugin', '--dest', claudeDest], { cwd: root, encoding: 'utf8' });
   if (claudeInstall.status !== 0) failures.push(`claude plugin install smoke failed: ${claudeInstall.stderr || claudeInstall.stdout}`);
   if (!existsSync(join(claudeDest, '.claude-plugin/plugin.json'))) failures.push('claude plugin install smoke missing .claude-plugin/plugin.json');
+  if (!existsSync(join(claudeDest, 'assets/autopraxis.png'))) failures.push('claude plugin install smoke missing assets/autopraxis.png');
   if (!existsSync(join(claudeDest, 'skills/dev-workflow/SKILL.md'))) failures.push('claude plugin install smoke missing skills/dev-workflow/SKILL.md');
 
   const codexInstall = spawnSync(process.execPath, ['bin/autopraxis.mjs', 'install', '--target', 'codex-plugin', '--dest', codexDest, '--marketplace-dest', marketplaceDest], { cwd: root, encoding: 'utf8' });

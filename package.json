@@ -15,6 +15,7 @@
     "README.md",
     "INSTALL.md",
     "autopraxis.json",
+    "assets/",
     "bin/",
     "examples/",
     "skills/"
