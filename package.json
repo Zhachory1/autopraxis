@@ -8,6 +8,10 @@
     "autopraxis": "bin/autopraxis.mjs"
   },
   "files": [
+    ".agents/plugins/marketplace.json",
+    ".cave-plugin/",
+    ".claude-plugin/",
+    ".codex-plugin/",
     "README.md",
     "INSTALL.md",
     "autopraxis.json",

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { cp, mkdir, readFile, readdir, rm, symlink, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import os from 'node:os';
 
@@ -19,7 +19,7 @@ function usage(exitCode = 0) {
   console.log(`Autopraxis ${manifest.version}
 
 Usage:
-  autopraxis install --target <target> [--dest <path>] [--link] [--force] [--dry-run]
+  autopraxis install --target <target> [--dest <path>] [--marketplace-dest <path>] [--link] [--force] [--dry-run]
   autopraxis validate-package
   autopraxis list-targets
 
@@ -27,9 +27,10 @@ Targets:
 ${targets}
 
 Examples:
-  autopraxis install --target mewrite
-  autopraxis install --target claude-code --dest ~/.claude/skills
-  autopraxis install --target generic-markdown --dest ./autopraxis-prompts
+  autopraxis install --target claude-plugin
+  autopraxis install --target codex-plugin
+  autopraxis install --target mewrite-plugin
+  autopraxis install --target mewrite-skills --dest ~/.mewrite/agent/skills
 `);
   process.exit(exitCode);
 }
@@ -75,13 +76,34 @@ async function listFiles(dir, prefix = '') {
 async function copyOrLinkSkill(skill, destination, options) {
   const source = join(root, skill.path);
   const target = join(destination, skill.name);
-  if (options.dryRun) return { skill: skill.name, target, action: options.link ? 'link' : 'copy' };
+  if (options.dryRun) return { name: skill.name, target, action: options.link ? 'link' : 'copy' };
   if (options.force) await rm(target, { recursive: true, force: true });
   if (existsSync(target) && !options.force) throw new Error(`${target} already exists; pass --force to replace it`);
   await mkdir(dirname(target), { recursive: true });
   if (options.link) await symlink(source, target, 'dir');
   else await cp(source, target, { recursive: true, errorOnExist: true, force: false });
-  return { skill: skill.name, target, action: options.link ? 'linked' : 'copied' };
+  return { name: skill.name, target, action: options.link ? 'linked' : 'copied' };
+}
+
+function packageRootEntries() {
+  return ['.claude-plugin', '.codex-plugin', '.cave-plugin', 'skills', 'examples', 'README.md', 'INSTALL.md', 'autopraxis.json', 'package.json'];
+}
+
+async function copyOrLinkPluginRoot(destination, options) {
+  if (options.dryRun) return packageRootEntries().map((entry) => ({ name: entry, target: join(destination, entry), action: options.link ? 'link' : 'copy' }));
+  if (options.force) await rm(destination, { recursive: true, force: true });
+  if (existsSync(destination) && !options.force) throw new Error(`${destination} already exists; pass --force to replace it`);
+  await mkdir(destination, { recursive: true });
+  const results = [];
+  for (const entry of packageRootEntries()) {
+    const source = join(root, entry);
+    const target = join(destination, entry);
+    if (!existsSync(source)) continue;
+    if (options.link) await symlink(source, target, 'dir');
+    else await cp(source, target, { recursive: true, force: false, errorOnExist: true });
+    results.push({ name: entry, target, action: options.link ? 'linked' : 'copied' });
+  }
+  return results;
 }
 
 async function writeBundleIndex(destination, targetName, options) {
@@ -113,6 +135,38 @@ async function writeInstallRecord(destination, targetName, options) {
   );
 }
 
+async function updateCodexMarketplace(destination, options, target) {
+  const marketplacePath = resolve(expandHome(options.marketplaceDest ?? target.marketplaceDefault));
+  const entry = {
+    name: 'autopraxis',
+    source: {
+      source: 'local',
+      path: destination,
+    },
+    policy: {
+      installation: 'AVAILABLE',
+      authentication: 'ON_INSTALL',
+    },
+    category: 'Productivity',
+    interface: {
+      displayName: 'Autopraxis',
+    },
+  };
+
+  if (options.dryRun) return marketplacePath;
+  await mkdir(dirname(marketplacePath), { recursive: true });
+  let marketplace = { name: 'autopraxis-local', plugins: [] };
+  if (existsSync(marketplacePath)) {
+    marketplace = JSON.parse(await readFile(marketplacePath, 'utf8'));
+    if (!Array.isArray(marketplace.plugins)) marketplace.plugins = [];
+  }
+  marketplace.name ??= 'autopraxis-local';
+  marketplace.plugins = marketplace.plugins.filter((plugin) => plugin.name !== 'autopraxis');
+  marketplace.plugins.push(entry);
+  await writeFile(marketplacePath, `${JSON.stringify(marketplace, null, 2)}\n`);
+  return marketplacePath;
+}
+
 async function install(values) {
   const options = parseOptions(values);
   if (options.help) usage();
@@ -122,18 +176,30 @@ async function install(values) {
   if (!target) throw new Error(`Unknown target: ${targetName}`);
   const destination = resolve(expandHome(options.dest ?? target.defaultDestination));
 
-  if (!options.dryRun) await mkdir(destination, { recursive: true });
-  const results = [];
-  for (const skill of manifest.skills) results.push(await copyOrLinkSkill(skill, destination, options));
-  await writeInstallRecord(destination, targetName, options);
-  if (target.layout === 'markdown-bundle') await writeBundleIndex(destination, targetName, options);
+  let results = [];
+  if (target.layout === 'plugin-root') {
+    results = await copyOrLinkPluginRoot(destination, options);
+    if (targetName === 'codex-plugin') {
+      const marketplacePath = await updateCodexMarketplace(destination, options, target);
+      if (!options.dryRun) results.push({ name: 'codex-marketplace', target: marketplacePath, action: 'updated' });
+      else results.push({ name: 'codex-marketplace', target: marketplacePath, action: 'would update' });
+    }
+  } else {
+    if (!options.dryRun) await mkdir(destination, { recursive: true });
+    for (const skill of manifest.skills) results.push(await copyOrLinkSkill(skill, destination, options));
+    await writeInstallRecord(destination, targetName, options);
+    if (target.layout === 'markdown-bundle') await writeBundleIndex(destination, targetName, options);
+  }
 
-  console.log(`${options.dryRun ? 'Would install' : 'Installed'} ${results.length} Autopraxis skills to ${destination}`);
-  for (const result of results) console.log(`- ${result.skill}: ${result.action} -> ${result.target}`);
+  console.log(`${options.dryRun ? 'Would install' : 'Installed'} Autopraxis ${target.layout} to ${destination}`);
+  for (const result of results) console.log(`- ${result.name}: ${result.action} -> ${result.target}`);
 }
 
 async function validatePackage() {
   const failures = [];
+  for (const [runtime, manifestFile] of Object.entries(manifest.standardPluginManifests)) {
+    if (!existsSync(join(root, manifestFile))) failures.push(`${runtime}: missing ${manifestFile}`);
+  }
   for (const skill of manifest.skills) {
     const skillDir = join(root, skill.path);
     const skillFile = join(skillDir, 'SKILL.md');
@@ -144,12 +210,16 @@ async function validatePackage() {
   for (const exclude of ['.git/**', 'node_modules/**', '.workflow-runs/**', '.env']) {
     if (!manifest.package.exclude.includes(exclude)) failures.push(`manifest package.exclude missing ${exclude}`);
   }
+  const codexManifest = JSON.parse(await readFile(join(root, '.codex-plugin/plugin.json'), 'utf8'));
+  if (codexManifest.skills !== './skills/') failures.push('codex manifest must point skills to ./skills/');
+  const claudeManifest = JSON.parse(await readFile(join(root, '.claude-plugin/plugin.json'), 'utf8'));
+  if (claudeManifest.name !== 'autopraxis') failures.push('claude manifest name must be autopraxis');
   if (failures.length) {
     console.error('Package validation failed:');
     for (const failure of failures) console.error(`- ${failure}`);
     process.exit(1);
   }
-  console.log(`Package manifest valid: ${manifest.skills.length} skills, ${Object.keys(manifest.installTargets).length} install targets.`);
+  console.log(`Package manifests valid: ${manifest.skills.length} skills, ${Object.keys(manifest.installTargets).length} install targets.`);
 }
 
 if (!command || ['help', '--help', '-h'].includes(command)) usage();

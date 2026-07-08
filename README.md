@@ -44,21 +44,32 @@ Agents should prefer available MCP/RAG tools for recall and codebase context, bu
 
 ## Install locally
 
-Autopraxis can be installed as a portable coding-agent plugin bundle.
+Autopraxis can be installed as a Claude/Codex-style skills plugin bundle.
 
 ```bash
-node bin/autopraxis.mjs install --target mewrite
+node bin/autopraxis.mjs install --target claude-plugin
+node bin/autopraxis.mjs install --target codex-plugin
 ```
+
+Native plugin manifests:
+
+- `.claude-plugin/plugin.json`
+- `.codex-plugin/plugin.json`
+- `.cave-plugin/plugin.json`
 
 Supported targets:
 
-- `mewrite`
-- `claude-code`
+- `claude-plugin`
+- `codex-plugin`
+- `mewrite-plugin`
+- `mewrite-skills`
+- `claude-skills`
+- `codex-skills`
 - `generic-markdown`
 - `cursor-rules`
 - `windsurf-rules`
 
-See `INSTALL.md` for custom destinations, symlink mode, manual fallback, upgrade, uninstall, and package validation.
+See `INSTALL.md` for custom destinations, marketplace wiring, symlink mode, manual fallback, upgrade, uninstall, and package validation.
 
 ## Validate
 

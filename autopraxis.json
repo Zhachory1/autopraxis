@@ -5,6 +5,11 @@
   "description": "Self-improving workflow skills for AI agents.",
   "homepage": "https://github.com/Zhachory1/autopraxis",
   "skillRoot": "skills",
+  "standardPluginManifests": {
+    "claude": ".claude-plugin/plugin.json",
+    "codex": ".codex-plugin/plugin.json",
+    "mewrite": ".cave-plugin/plugin.json"
+  },
   "skills": [
     { "name": "backprop", "path": "skills/backprop", "kind": "workflow" },
     { "name": "council-review", "path": "skills/council-review", "kind": "shared" },
@@ -24,18 +29,42 @@
     { "name": "task-decomposition-planning", "path": "skills/task-decomposition-planning", "kind": "shared" }
   ],
   "installTargets": {
-    "mewrite": {
-      "description": "Me Write Code skill directory",
+    "claude-plugin": {
+      "description": "Claude Code skills plugin directory with .claude-plugin/plugin.json",
+      "defaultDestination": "~/.claude/skills/autopraxis",
+      "layout": "plugin-root",
+      "manifest": ".claude-plugin/plugin.json"
+    },
+    "codex-plugin": {
+      "description": "Codex plugin directory with .codex-plugin/plugin.json",
+      "defaultDestination": "~/.codex/plugins/autopraxis",
+      "layout": "plugin-root",
+      "manifest": ".codex-plugin/plugin.json",
+      "marketplaceDefault": "~/.agents/plugins/marketplace.json"
+    },
+    "mewrite-plugin": {
+      "description": "Me Write Code plugin directory with .cave-plugin/plugin.json",
+      "defaultDestination": "~/.mewrite/plugins/Zhachory1/autopraxis",
+      "layout": "plugin-root",
+      "manifest": ".cave-plugin/plugin.json"
+    },
+    "mewrite-skills": {
+      "description": "Me Write Code legacy skill directory install",
       "defaultDestination": "~/.mewrite/agent/skills",
       "layout": "skill-directories"
     },
-    "claude-code": {
-      "description": "Claude Code-style skill directory",
+    "claude-skills": {
+      "description": "Claude Code standalone skill directories",
       "defaultDestination": "~/.claude/skills",
       "layout": "skill-directories"
     },
+    "codex-skills": {
+      "description": "Codex standalone skill directories",
+      "defaultDestination": "~/.codex/skills",
+      "layout": "skill-directories"
+    },
     "generic-markdown": {
-      "description": "Portable markdown prompt bundle for agents without native skills",
+      "description": "Portable markdown prompt bundle for agents without native skills/plugins",
       "defaultDestination": "~/.autopraxis/prompts",
       "layout": "markdown-bundle"
     },
@@ -74,7 +103,7 @@
     }
   ],
   "package": {
-    "include": ["skills/**", "examples/**", "README.md", "INSTALL.md", "autopraxis.json", "package.json", "bin/**"],
+    "include": [".claude-plugin/**", ".codex-plugin/**", ".cave-plugin/**", ".agents/plugins/marketplace.json", "skills/**", "examples/**", "README.md", "INSTALL.md", "autopraxis.json", "package.json", "bin/**"],
     "exclude": [".git/**", "node_modules/**", ".workflow-runs/**", ".env", "private-docs/**", "*.log"]
   }
 }

@@ -127,9 +127,21 @@ for (const skill of manifest.skills) {
   if (!existsSync(join(root, skill.path, 'SKILL.md'))) failures.push(`manifest: ${skill.name} path missing SKILL.md`);
   if (!['workflow', 'shared'].includes(skill.kind)) failures.push(`manifest: ${skill.name} has invalid kind ${skill.kind}`);
 }
-for (const target of ['mewrite', 'claude-code', 'generic-markdown', 'cursor-rules', 'windsurf-rules']) {
+for (const target of ['claude-plugin', 'codex-plugin', 'mewrite-plugin', 'mewrite-skills', 'claude-skills', 'codex-skills', 'generic-markdown', 'cursor-rules', 'windsurf-rules']) {
   if (!manifest.installTargets[target]) failures.push(`manifest: missing install target ${target}`);
 }
+for (const [runtime, manifestPath] of Object.entries(manifest.standardPluginManifests ?? {})) {
+  if (!existsSync(join(root, manifestPath))) failures.push(`manifest: missing ${runtime} plugin manifest at ${manifestPath}`);
+}
+const claudePlugin = JSON.parse(await readFile(join(root, '.claude-plugin/plugin.json'), 'utf8'));
+if (claudePlugin.name !== 'autopraxis') failures.push('claude plugin manifest: name must be autopraxis');
+const codexPlugin = JSON.parse(await readFile(join(root, '.codex-plugin/plugin.json'), 'utf8'));
+if (codexPlugin.name !== 'autopraxis') failures.push('codex plugin manifest: name must be autopraxis');
+if (codexPlugin.skills !== './skills/') failures.push('codex plugin manifest: skills must be ./skills/');
+const cavePlugin = JSON.parse(await readFile(join(root, '.cave-plugin/plugin.json'), 'utf8'));
+if (cavePlugin.capabilities?.skills !== true) failures.push('cave plugin manifest: capabilities.skills must be true');
+const codexMarketplace = JSON.parse(await readFile(join(root, '.agents/plugins/marketplace.json'), 'utf8'));
+if (!codexMarketplace.plugins?.some((plugin) => plugin.name === 'autopraxis')) failures.push('codex marketplace: missing autopraxis entry');
 for (const integration of ['agent-fleet', 'long-term-memory-mcp', 'code-rag', 'run-telemetry']) {
   if (!manifest.optionalIntegrations.some((item) => item.name === integration)) failures.push(`manifest: missing optional integration ${integration}`);
 }
@@ -139,7 +151,7 @@ for (const exclude of ['.git/**', 'node_modules/**', '.workflow-runs/**', '.env'
 
 const packageJson = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));
 if (packageJson.bin?.autopraxis !== 'bin/autopraxis.mjs') failures.push('package.json: missing autopraxis bin');
-for (const file of ['README.md', 'INSTALL.md', 'autopraxis.json', 'bin/', 'examples/', 'skills/']) {
+for (const file of ['.agents/plugins/marketplace.json', '.cave-plugin/', '.claude-plugin/', '.codex-plugin/', 'README.md', 'INSTALL.md', 'autopraxis.json', 'bin/', 'examples/', 'skills/']) {
   if (!packageJson.files.includes(file)) failures.push(`package.json: files missing ${file}`);
 }
 
@@ -164,19 +176,38 @@ for (const relativeFile of markdownFiles) {
 const packageValidation = spawnSync(process.execPath, ['bin/autopraxis.mjs', 'validate-package'], { cwd: root, encoding: 'utf8' });
 if (packageValidation.status !== 0) failures.push(`validate-package failed: ${packageValidation.stderr || packageValidation.stdout}`);
 
-const tempRoot = await mkdtemp(join(tmpdir(), 'autopraxis-install-'));
+const skillInstallRoot = await mkdtemp(join(tmpdir(), 'autopraxis-skills-install-'));
 try {
-  const install = spawnSync(process.execPath, ['bin/autopraxis.mjs', 'install', '--target', 'mewrite', '--dest', tempRoot], { cwd: root, encoding: 'utf8' });
-  if (install.status !== 0) failures.push(`install smoke failed: ${install.stderr || install.stdout}`);
+  const install = spawnSync(process.execPath, ['bin/autopraxis.mjs', 'install', '--target', 'mewrite-skills', '--dest', skillInstallRoot], { cwd: root, encoding: 'utf8' });
+  if (install.status !== 0) failures.push(`skill install smoke failed: ${install.stderr || install.stdout}`);
   for (const dir of dirs) {
-    if (!existsSync(join(tempRoot, dir, 'SKILL.md'))) failures.push(`install smoke missing ${dir}/SKILL.md`);
+    if (!existsSync(join(skillInstallRoot, dir, 'SKILL.md'))) failures.push(`skill install smoke missing ${dir}/SKILL.md`);
   }
   for (const relativePath of requiredDocReferenceFiles) {
-    if (!existsSync(join(tempRoot, 'structured-doc-authoring', relativePath))) failures.push(`install smoke missing structured-doc-authoring/${relativePath}`);
+    if (!existsSync(join(skillInstallRoot, 'structured-doc-authoring', relativePath))) failures.push(`skill install smoke missing structured-doc-authoring/${relativePath}`);
   }
-  if (!existsSync(join(tempRoot, '_autopraxis-plugin.json'))) failures.push('install smoke missing _autopraxis-plugin.json');
+  if (!existsSync(join(skillInstallRoot, '_autopraxis-plugin.json'))) failures.push('skill install smoke missing _autopraxis-plugin.json');
 } finally {
-  await rm(tempRoot, { recursive: true, force: true });
+  await rm(skillInstallRoot, { recursive: true, force: true });
+}
+
+const pluginInstallRoot = await mkdtemp(join(tmpdir(), 'autopraxis-plugin-install-'));
+try {
+  const claudeDest = join(pluginInstallRoot, 'claude-plugin');
+  const codexDest = join(pluginInstallRoot, 'codex-plugin');
+  const marketplaceDest = join(pluginInstallRoot, 'agents', 'plugins', 'marketplace.json');
+  const claudeInstall = spawnSync(process.execPath, ['bin/autopraxis.mjs', 'install', '--target', 'claude-plugin', '--dest', claudeDest], { cwd: root, encoding: 'utf8' });
+  if (claudeInstall.status !== 0) failures.push(`claude plugin install smoke failed: ${claudeInstall.stderr || claudeInstall.stdout}`);
+  if (!existsSync(join(claudeDest, '.claude-plugin/plugin.json'))) failures.push('claude plugin install smoke missing .claude-plugin/plugin.json');
+  if (!existsSync(join(claudeDest, 'skills/dev-workflow/SKILL.md'))) failures.push('claude plugin install smoke missing skills/dev-workflow/SKILL.md');
+
+  const codexInstall = spawnSync(process.execPath, ['bin/autopraxis.mjs', 'install', '--target', 'codex-plugin', '--dest', codexDest, '--marketplace-dest', marketplaceDest], { cwd: root, encoding: 'utf8' });
+  if (codexInstall.status !== 0) failures.push(`codex plugin install smoke failed: ${codexInstall.stderr || codexInstall.stdout}`);
+  if (!existsSync(join(codexDest, '.codex-plugin/plugin.json'))) failures.push('codex plugin install smoke missing .codex-plugin/plugin.json');
+  if (!existsSync(join(codexDest, 'skills/dev-workflow/SKILL.md'))) failures.push('codex plugin install smoke missing skills/dev-workflow/SKILL.md');
+  if (!existsSync(marketplaceDest)) failures.push('codex plugin install smoke missing marketplace file');
+} finally {
+  await rm(pluginInstallRoot, { recursive: true, force: true });
 }
 
 if (failures.length) {
