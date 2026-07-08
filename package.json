@@ -4,8 +4,24 @@
   "private": true,
   "description": "Self-improving workflow skills for AI agents: dev, ML experiments, PR review, debugging, ideation, roadmapping, and backprop optimization.",
   "type": "module",
+  "bin": {
+    "autopraxis": "bin/autopraxis.mjs"
+  },
+  "files": [
+    ".agents/plugins/marketplace.json",
+    ".cave-plugin/",
+    ".claude-plugin/",
+    ".codex-plugin/",
+    "README.md",
+    "INSTALL.md",
+    "autopraxis.json",
+    "bin/",
+    "examples/",
+    "skills/"
+  ],
   "scripts": {
-    "test": "node tests/validate-skills.mjs"
+    "test": "node tests/validate-skills.mjs",
+    "validate:package": "node bin/autopraxis.mjs validate-package"
   },
   "engines": {
     "node": ">=18"

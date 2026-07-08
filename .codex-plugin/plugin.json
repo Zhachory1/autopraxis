@@ -1,0 +1,36 @@
+{
+  "name": "autopraxis",
+  "version": "0.1.0",
+  "description": "Self-improving workflow skills for AI agents.",
+  "author": {
+    "name": "Zhachory Volker",
+    "url": "https://github.com/Zhachory1"
+  },
+  "homepage": "https://github.com/Zhachory1/autopraxis",
+  "repository": "https://github.com/Zhachory1/autopraxis",
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "workflow",
+    "planning",
+    "review",
+    "backprop"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Autopraxis",
+    "shortDescription": "Self-improving workflow skills for AI agents.",
+    "longDescription": "Autopraxis turns messy goals into grounded briefs, reviewed plans, shipped work, and measured learning loops.",
+    "developerName": "Zhachory Volker",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/Zhachory1/autopraxis",
+    "defaultPrompt": [
+      "Use Autopraxis to turn this goal into a grounded plan and execution workflow.",
+      "Use Autopraxis backprop to review prior workflow runs and suggest improvements."
+    ]
+  }
+}

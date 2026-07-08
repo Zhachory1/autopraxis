@@ -44,11 +44,32 @@ Agents should prefer available MCP/RAG tools for recall and codebase context, bu
 
 ## Install locally
 
-Copy or symlink skill dirs into the agent runtime skill path, or point runtime config at this repo if supported.
+Autopraxis can be installed as a Claude/Codex-style skills plugin bundle.
 
 ```bash
-cp -R skills/* ~/.mewrite/agent/skills/
+node bin/autopraxis.mjs install --target claude-plugin
+node bin/autopraxis.mjs install --target codex-plugin
 ```
+
+Native plugin manifests:
+
+- `.claude-plugin/plugin.json`
+- `.codex-plugin/plugin.json`
+- `.cave-plugin/plugin.json`
+
+Supported targets:
+
+- `claude-plugin`
+- `codex-plugin`
+- `mewrite-plugin`
+- `mewrite-skills`
+- `claude-skills`
+- `codex-skills`
+- `generic-markdown`
+- `cursor-rules`
+- `windsurf-rules`
+
+See `INSTALL.md` for custom destinations, marketplace wiring, symlink mode, manual fallback, upgrade, uninstall, and package validation.
 
 ## Validate
 

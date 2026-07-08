@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "name": "autopraxis",
+  "version": "0.1.0",
+  "description": "Self-improving workflow skills for AI agents.",
+  "homepage": "https://github.com/Zhachory1/autopraxis",
+  "skillRoot": "skills",
+  "standardPluginManifests": {
+    "claude": ".claude-plugin/plugin.json",
+    "codex": ".codex-plugin/plugin.json",
+    "mewrite": ".cave-plugin/plugin.json"
+  },
+  "skills": [
+    { "name": "backprop", "path": "skills/backprop", "kind": "workflow" },
+    { "name": "council-review", "path": "skills/council-review", "kind": "shared" },
+    { "name": "debug-investigation", "path": "skills/debug-investigation", "kind": "workflow" },
+    { "name": "dev-workflow", "path": "skills/dev-workflow", "kind": "workflow" },
+    { "name": "grounding-brief", "path": "skills/grounding-brief", "kind": "shared" },
+    { "name": "handoff-packaging", "path": "skills/handoff-packaging", "kind": "shared" },
+    { "name": "human-approval-gate", "path": "skills/human-approval-gate", "kind": "shared" },
+    { "name": "hypothesis-testing", "path": "skills/hypothesis-testing", "kind": "shared" },
+    { "name": "ml-experiments", "path": "skills/ml-experiments", "kind": "workflow" },
+    { "name": "pr-review", "path": "skills/pr-review", "kind": "workflow" },
+    { "name": "project-ideation", "path": "skills/project-ideation", "kind": "workflow" },
+    { "name": "roadmapping", "path": "skills/roadmapping", "kind": "workflow" },
+    { "name": "run-telemetry", "path": "skills/run-telemetry", "kind": "shared" },
+    { "name": "structured-doc-authoring", "path": "skills/structured-doc-authoring", "kind": "shared" },
+    { "name": "success-criteria-metrics", "path": "skills/success-criteria-metrics", "kind": "shared" },
+    { "name": "task-decomposition-planning", "path": "skills/task-decomposition-planning", "kind": "shared" }
+  ],
+  "installTargets": {
+    "claude-plugin": {
+      "description": "Claude Code skills plugin directory with .claude-plugin/plugin.json",
+      "defaultDestination": "~/.claude/skills/autopraxis",
+      "layout": "plugin-root",
+      "manifest": ".claude-plugin/plugin.json"
+    },
+    "codex-plugin": {
+      "description": "Codex plugin directory with .codex-plugin/plugin.json",
+      "defaultDestination": "~/.codex/plugins/autopraxis",
+      "layout": "plugin-root",
+      "manifest": ".codex-plugin/plugin.json",
+      "marketplaceDefault": "~/.agents/plugins/marketplace.json"
+    },
+    "mewrite-plugin": {
+      "description": "Me Write Code plugin directory with .cave-plugin/plugin.json",
+      "defaultDestination": "~/.mewrite/plugins/Zhachory1/autopraxis",
+      "layout": "plugin-root",
+      "manifest": ".cave-plugin/plugin.json"
+    },
+    "mewrite-skills": {
+      "description": "Me Write Code legacy skill directory install",
+      "defaultDestination": "~/.mewrite/agent/skills",
+      "layout": "skill-directories"
+    },
+    "claude-skills": {
+      "description": "Claude Code standalone skill directories",
+      "defaultDestination": "~/.claude/skills",
+      "layout": "skill-directories"
+    },
+    "codex-skills": {
+      "description": "Codex standalone skill directories",
+      "defaultDestination": "~/.codex/skills",
+      "layout": "skill-directories"
+    },
+    "generic-markdown": {
+      "description": "Portable markdown prompt bundle for agents without native skills/plugins",
+      "defaultDestination": "~/.autopraxis/prompts",
+      "layout": "markdown-bundle"
+    },
+    "cursor-rules": {
+      "description": "Cursor rule bundle fallback",
+      "defaultDestination": ".cursor/rules/autopraxis",
+      "layout": "markdown-bundle"
+    },
+    "windsurf-rules": {
+      "description": "Windsurf rule bundle fallback",
+      "defaultDestination": ".windsurf/rules/autopraxis",
+      "layout": "markdown-bundle"
+    }
+  },
+  "optionalIntegrations": [
+    {
+      "name": "agent-fleet",
+      "env": "AGENT_FLEET_HOME",
+      "defaultHint": "/Users/zhach/code/agent-fleet",
+      "features": ["council", "ship", "personas", "journals", "transcripts"]
+    },
+    {
+      "name": "long-term-memory-mcp",
+      "examples": ["gbrain"],
+      "features": ["prior decisions", "plans", "incidents", "session notes"]
+    },
+    {
+      "name": "code-rag",
+      "examples": ["coderag", "repo-index"],
+      "features": ["semantic code search", "dependency graph", "ownership", "similar changes"]
+    },
+    {
+      "name": "run-telemetry",
+      "defaultPath": ".workflow-runs/<run-id>/telemetry.jsonl",
+      "features": ["latency", "cost", "loop count", "human-edit rate", "validation outcomes"]
+    }
+  ],
+  "package": {
+    "include": [".claude-plugin/**", ".codex-plugin/**", ".cave-plugin/**", ".agents/plugins/marketplace.json", "skills/**", "examples/**", "README.md", "INSTALL.md", "autopraxis.json", "package.json", "bin/**"],
+    "exclude": [".git/**", "node_modules/**", ".workflow-runs/**", ".env", "private-docs/**", "*.log"]
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "autopraxis",
+  "version": "0.1.0",
+  "description": "Self-improving workflow skills for AI agents.",
+  "author": "Zhachory1",
+  "license": "MIT",
+  "homepage": "https://github.com/Zhachory1/autopraxis",
+  "caveVersion": ">=0.65.0",
+  "tags": [
+    "agent-skills",
+    "workflow",
+    "planning",
+    "review",
+    "backprop"
+  ],
+  "capabilities": {
+    "commands": false,
+    "skills": true,
+    "agents": false,
+    "themes": false,
+    "mcp": false,
+    "hooks": []
+  }
+}
