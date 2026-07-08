@@ -31,7 +31,9 @@ Create workflow documents that downstream agents can execute and reviewers can g
 
 ## Execution
 
-**Pick template.** Choose PRD, DD, plan, RCA, ADR, experiment plan, roadmap proposal, or handoff.
+**Load standards.** Read `references/standards.md` before authoring high-stakes PRDs, DDs, plans, ADRs, roadmaps, or RCAs.
+
+**Pick template.** Choose the matching file under `references/templates/`: PRD, design doc, technical plan, ADR, roadmap, or RCA. Use lightweight inline sections only for trivial docs.
 
 **Fill intent first.** Capture problem, why now, user/business outcome, and non-goals before implementation details.
 
@@ -45,57 +47,18 @@ Create workflow documents that downstream agents can execute and reviewers can g
 
 **Emit telemetry.** Record doc type, revision count, open-question count, council-blocker count, and authoring latency via `run-telemetry`.
 
-## Templates
+## Companion Files
 
-**PRD sections**
+Load these references on demand:
 
-- problem.
-- target user/customer.
-- desired outcome and metric.
-- why now.
-- scope and non-goals.
-- user/business requirements.
-- risks and open questions.
-- launch/readiness criteria.
-
-**DD sections**
-
-- context and PRD link.
-- system constraints.
-- proposed architecture.
-- data/control flow.
-- alternatives considered.
-- tradeoffs and risks.
-- test/observability/rollout plan.
-- implementation boundaries.
-
-**Plan sections**
-
-- accepted scope.
-- task graph.
-- dependencies.
-- acceptance criteria.
-- validation.
-- rollout and rollback.
-
-**RCA sections**
-
-- symptom and impact.
-- timeline.
-- confirmed root cause.
-- contributing factors.
-- fix.
-- prevention actions.
-- evidence and ruled-out hypotheses.
-
-**ADR sections**
-
-- status.
-- context.
-- decision.
-- consequences.
-- alternatives.
-- review date.
+- `references/standards.md` — reconciled standards for doc selection, evidence, review gates, SPADE decisions, and anti-patterns.
+- `references/source-notes.md` — source synthesis and attribution notes for the supplied PRD/DD/ADR/roadmap/plan/RCA references.
+- `references/templates/prd-template.md` — product requirements document focused on problem alignment, goals, non-goals, metrics, features, flows, launch, and review.
+- `references/templates/design-doc-template.md` — DD/RFC template focused on context, goals, proposed design, alternatives, tradeoffs, cross-cutting concerns, rollout, and review.
+- `references/templates/technical-plan-template.md` — implementation plan/task-list template with file map, task graph, acceptance criteria, validation, and handoff.
+- `references/templates/adr-template.md` — architecture decision record template with context, decision, alternatives, consequences, guardrails, and supersession.
+- `references/templates/roadmap-template.md` — engineering roadmap template with strategy, themes, scoring, dependencies, capacity, horizons, and approval narrative.
+- `references/templates/rca-template.md` — root cause analysis template with impact, timeline, evidence, confirmed cause, ruled-out hypotheses, prevention, and opportunities.
 
 ## Output Contract
 

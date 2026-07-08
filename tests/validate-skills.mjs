@@ -77,6 +77,30 @@ for (const token of ['AGENT_FLEET_HOME', '/Users/zhach/code/agent-fleet', 'pass-
   if (!council.includes(token)) failures.push(`council-review: missing ${token}`);
 }
 
+const docSkill = await readFile(join(skillsDir, 'structured-doc-authoring', 'SKILL.md'), 'utf8');
+for (const token of ['references/standards.md', 'prd-template.md', 'design-doc-template.md', 'technical-plan-template.md', 'adr-template.md', 'roadmap-template.md', 'rca-template.md']) {
+  if (!docSkill.includes(token)) failures.push(`structured-doc-authoring: missing reference to ${token}`);
+}
+
+const docReferenceFiles = [
+  'references/standards.md',
+  'references/templates/prd-template.md',
+  'references/templates/design-doc-template.md',
+  'references/templates/technical-plan-template.md',
+  'references/templates/adr-template.md',
+  'references/templates/roadmap-template.md',
+  'references/templates/rca-template.md',
+];
+for (const relativePath of docReferenceFiles) {
+  const text = await readFile(join(skillsDir, 'structured-doc-authoring', relativePath), 'utf8');
+  if (text.length < 1000) failures.push(`structured-doc-authoring: ${relativePath} looks too small`);
+}
+
+const standards = await readFile(join(skillsDir, 'structured-doc-authoring', 'references/standards.md'), 'utf8');
+for (const token of ['SPADE', 'Evidence Standard', 'Review Gate Standard', 'PRD', 'Roadmap', 'RCA']) {
+  if (!standards.includes(token)) failures.push(`structured-doc-authoring standards: missing ${token}`);
+}
+
 if (failures.length) {
   console.error('Skill validation failed:');
   for (const failure of failures) console.error(`- ${failure}`);
