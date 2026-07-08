@@ -1,0 +1,13 @@
+{
+  "name": "agent-workflows",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Workflow skills for AI agents: dev, ML experiments, PR review, debugging, ideation, roadmapping, and backprop optimization.",
+  "type": "module",
+  "scripts": {
+    "test": "node tests/validate-skills.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
