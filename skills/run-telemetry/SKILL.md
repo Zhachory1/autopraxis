@@ -5,7 +5,7 @@ description: "Emit structured workflow telemetry for AI agent runs. Use for run 
 
 # Run Telemetry
 
-Emit structured events for every workflow step so `backprop` can measure and improve the workflow library. The `run-telemetry` skill also emits telemetry for its own failures and schema changes. Without telemetry, optimization becomes anecdotes.
+Emit structured events for every workflow step so `backprop` can measure and improve the workflow library. The `run-telemetry` skill also emits telemetry for its own failures and schema changes. Use `autopraxis telemetry emit|validate|summarize` for local JSONL tooling. Without telemetry, optimization becomes anecdotes.
 
 ## Core Principles
 
@@ -27,6 +27,18 @@ Emit structured events for every workflow step so `backprop` can measure and imp
 - latency, cost, tokens, iterations, validation, verdicts, human edits.
 - caller-provided telemetry path or default `.workflow-runs/<run-id>/telemetry.jsonl`.
 
+## CLI Commands
+
+```bash
+autopraxis telemetry emit --workflow <name> --step <name> --event <event> --status <status> [--run-id <id>] [--path <file>]
+autopraxis telemetry validate --path <file>
+autopraxis telemetry summarize --path <file>
+```
+
+Schema reference: `references/telemetry-event-v1.schema.json`.
+
+`emit` appends one JSONL event and creates parent directories. If `--path` is omitted, `--run-id` or a generated run id selects `.workflow-runs/<run-id>/telemetry.jsonl`.
+
 ## Event Store
 
 Default path:
@@ -47,6 +59,7 @@ Use existing run dirs when the workflow provides them. Do not write sensitive co
 
 ```json
 {
+  "schema_version": 1,
   "ts": "2026-07-08T00:00:00.000Z",
   "run_id": "workflow-20260708-abc123",
   "workflow": "dev-workflow",
@@ -55,8 +68,11 @@ Use existing run dirs when the workflow provides them. Do not write sensitive co
   "status": "ok|fail|blocked|skipped|inconclusive",
   "latency_ms": 0,
   "cost_usd": null,
+  "cost_source": null,
   "tokens_in": null,
   "tokens_out": null,
+  "token_source": null,
+  "provider": null,
   "model": null,
   "tools": [],
   "artifact_refs": [],
@@ -73,6 +89,8 @@ Use existing run dirs when the workflow provides them. Do not write sensitive co
 ## Execution
 
 **Create run id.** Use caller id if supplied. Else derive from workflow, timestamp, and short random suffix.
+
+**Use schema v1.** Emit `schema_version: 1`. Validate against `references/telemetry-event-v1.schema.json` and the local CLI validator.
 
 **Emit start.** Record workflow, step, source refs, model/tool availability, and budget cap.
 
@@ -164,7 +182,7 @@ Do not store raw artifacts, logs, secrets, or customer data in council reason fi
 
 **Telemetry skipped because it is annoying.** Fix by emitting minimal fields first and filling optional metrics later.
 
-**Raw data leakage.** Fix by storing pointers and summaries only.
+**Raw data leakage.** Fix by storing pointers and summaries only. `autopraxis telemetry validate` rejects sensitive-looking keys or values.
 
 **Unstable field names.** Fix by preserving schema and adding new data under `metrics`.
 

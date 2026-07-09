@@ -24,7 +24,7 @@
     "skills/"
   ],
   "scripts": {
-    "test": "node tests/validate-skills.mjs",
+    "test": "node tests/validate-skills.mjs && node tests/telemetry-cli.mjs",
     "validate:package": "node bin/autopraxis.mjs validate-package"
   },
   "engines": {
