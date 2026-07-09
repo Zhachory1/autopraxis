@@ -14,10 +14,13 @@
     ".codex-plugin/",
     "README.md",
     "INSTALL.md",
+    "CHANGELOG.md",
+    "RELEASE.md",
     "autopraxis.json",
     "assets/",
     "bin/",
     "examples/",
+    "releases/",
     "skills/"
   ],
   "scripts": {

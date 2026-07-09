@@ -83,6 +83,10 @@ npm test
 
 Validation checks frontmatter, description length, self-improvement sections, no ordered-list skill prose, workflow integration keywords, and key backprop data-source awareness.
 
+## Release cycle
+
+See `RELEASE.md` for release policy and checklist. Release notes live under `releases/`; notable changes live in `CHANGELOG.md`.
+
 ## Run artifacts
 
 Recommended per-run layout:
