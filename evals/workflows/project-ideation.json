@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "id": "okr-ideation",
+  "workflow": "project-ideation",
+  "scenario": "Turn a fuzzy retention OKR into candidate product bets.",
+  "expected_mode": "lite",
+  "expected_council_level": "none",
+  "expected_artifacts": [
+    "goal-deconstruction",
+    "candidate-frame"
+  ],
+  "required_telemetry": [
+    "workflow_mode",
+    "latency_ms",
+    "tokens_in",
+    "tokens_out",
+    "token_source",
+    "cost_usd",
+    "cost_source",
+    "metrics.council_level",
+    "metrics.council_reason"
+  ],
+  "outcome_contract": {
+    "primary": "Human can act on the produced artifact without re-deriving workflow intent.",
+    "guardrails": [
+      "no raw sensitive content stored",
+      "escalation reason recorded when mode or council level increases"
+    ]
+  },
+  "privacy": {
+    "synthetic": true,
+    "source": "invented"
+  },
+  "metric_status": "contract_only"
+}
