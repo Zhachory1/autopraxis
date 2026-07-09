@@ -98,8 +98,25 @@ for (const token of ['long-term memory MCP', 'code RAG', 'agent-fleet', 'A/B', '
 }
 
 const council = await readFile(join(skillsDir, 'council-review', 'SKILL.md'), 'utf8');
-for (const token of ['AGENT_FLEET_HOME', '/Users/zhach/code/agent-fleet', 'pass-with-nits', 'block']) {
+for (const token of ['AGENT_FLEET_HOME', '/Users/zhach/code/agent-fleet', 'pass-with-nits', 'block', 'references/escalation-matrix.md', 'council_level', 'council_reason']) {
   if (!council.includes(token)) failures.push(`council-review: missing ${token}`);
+}
+const councilMatrix = await readFile(join(skillsDir, 'council-review', 'references/escalation-matrix.md'), 'utf8');
+for (const token of ['none', 'single-lens', 'minimal-council', 'full-council', 'Cost Cap', 'High-Risk Triggers', 'metrics.council_level', 'metrics.council_reason', 'agent_fleet_invoked']) {
+  if (!councilMatrix.includes(token)) failures.push(`council-review escalation matrix: missing ${token}`);
+}
+const telemetrySkill = await readFile(join(skillsDir, 'run-telemetry', 'SKILL.md'), 'utf8');
+for (const token of ['council_level', 'council_reason', 'persona_count', 'agent_fleet_invoked']) {
+  if (!telemetrySkill.includes(token)) failures.push(`run-telemetry: missing council metric ${token}`);
+}
+for (const workflowName of workflowSkills) {
+  const text = await readFile(join(skillsDir, workflowName, 'SKILL.md'), 'utf8');
+  if (text.includes('council-review')) {
+    if (!text.includes('## Council Policy')) failures.push(`${workflowName}: missing Council Policy section`);
+    const matrixReference = '../council-review/references/escalation-matrix.md';
+    if (!text.includes(matrixReference)) failures.push(`${workflowName}: missing council escalation matrix reference`);
+    if (!existsSync(join(skillsDir, workflowName, matrixReference))) failures.push(`${workflowName}: council escalation matrix reference does not resolve`);
+  }
 }
 
 const docSkill = await readFile(join(skillsDir, 'structured-doc-authoring', 'SKILL.md'), 'utf8');

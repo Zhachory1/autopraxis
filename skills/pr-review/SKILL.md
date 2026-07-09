@@ -32,6 +32,10 @@ Review a pull request against real intent, not guesswork. Produce prioritized, a
 
 Use `grounding-brief` with code RAG for impacted paths, long-term memory MCP for prior decisions, git/gh for PR metadata and diff, CI status for validation, and agent-fleet council when review stakes are high. Use `council-review` only for conflicting or high-risk calls; do not turn every PR into a council.
 
+## Council Policy
+
+Use `../council-review/references/escalation-matrix.md`. Most PRs should use no council. Use `single-lens` for one domain concern; use minimal/full council only for high-stakes architecture, safety, ML/statistical, security/privacy/reliability, or conflicting reviewer judgments.
+
 ## Execution
 
 **Gather context.** Use `grounding-brief` to understand intent, scope, changed files, related docs, tests, CI, and prior comments.
@@ -58,7 +62,7 @@ Use `grounding-brief` with code RAG for impacted paths, long-term memory MCP for
 
 **Delta-only review.** Do not re-litigate settled files unless new changes touch them.
 
-**Council escalation.** Use `council-review` for high-stakes architecture, safety, ML/statistical, or conflicting reviewer judgments.
+**Council escalation.** Use `../council-review/references/escalation-matrix.md`; record skipped reason for ordinary PRs, one lens for a single domain concern, and minimal/full council only for high-stakes or conflicting judgments.
 
 ## Output Contract
 

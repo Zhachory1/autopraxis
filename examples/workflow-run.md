@@ -14,11 +14,15 @@ Expected skill chain:
 - `structured-doc-authoring` for PRD
 - `success-criteria-metrics`
 - `structured-doc-authoring` for DD
-- `council-review`
+- select `council_level` using `council-review/references/escalation-matrix.md`
+  - low-risk example: record `council_level: none` and continue
+  - high-risk example: invoke `council-review`
 - `task-decomposition-planning`
 - agent-fleet `ship`
 - `pr-review`
-- `council-review`
+- select final `council_level`
+  - ordinary clean review: record `council_level: none`
+  - unresolved blocker/conflict/design mismatch: invoke `council-review`
 - `handoff-packaging`
 - `human-approval-gate`
 - `run-telemetry` throughout

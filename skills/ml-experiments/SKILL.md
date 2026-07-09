@@ -32,11 +32,15 @@ Run ML work as a scientific workflow from problem and metric framing through rep
 
 Use `grounding-brief` with long-term memory MCP for prior experiment decisions and code RAG for model/data pipeline code. Query experiment tracking when available. Use `council-review` with ml-scientist, ab-critic, data-engineer, reliability-sentinel, and product/business lenses. Use `hypothesis-testing`, `success-criteria-metrics`, `handoff-packaging`, and `run-telemetry` throughout.
 
+## Council Policy
+
+Use `../council-review/references/escalation-matrix.md`. ML work often needs at least `single-lens` statistical/ML review, but full council is reserved for production-impacting model changes, metric conflicts, leakage/statistical blockers, expensive compute commitments, or irreversible business decisions.
+
 ## Execution
 
 **Frame problem and metrics.** Use `success-criteria-metrics` to define primary offline metric, online decision metric, guardrails, baseline, segments, and anti-metric-shopping lock.
 
-**Council on docs and plan.** Use `council-review` to confirm framing, metrics, business alignment, statistical validity, and feasibility before data/engineering spend.
+**Council on docs and plan.** Select council level from `../council-review/references/escalation-matrix.md`. Use one ML/statistical lens for simple framing, minimal/full council for business-impacting or statistically risky plans before data/engineering spend.
 
 **Build data pipeline and EDA.** Establish reproducible data path, lineage, schema, label quality, leakage risks, missingness, distributions, temporal splits, segment coverage, and learnability.
 
@@ -44,7 +48,7 @@ Use `grounding-brief` with long-term memory MCP for prior experiment decisions a
 
 **Generate hypotheses.** Use `hypothesis-testing` to state model/feature/loss assumptions, math, expected metric movement, and refutation criteria.
 
-**Council signoff.** Re-run `council-review` on hypotheses and experiment plan before expensive training.
+**Council signoff.** Re-run `council-review` at the cheapest level that covers risk before expensive training; escalate to minimal/full only for costly, production-impacting, or disputed hypotheses.
 
 **Create baseline.** Train or compute the simplest reasonable reference. Validate tracking and evaluation with this baseline.
 
