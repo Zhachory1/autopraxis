@@ -1,0 +1,1 @@
+{"schema_version":1,"ts":"2026-07-09T00:00:00.000Z","run_id":"bad-source","workflow":"dev-workflow","step":"grounding","event":"start","status":"ok","cost_source":"made_up","token_source":"also_bad"}
