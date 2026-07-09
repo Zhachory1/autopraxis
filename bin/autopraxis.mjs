@@ -23,6 +23,8 @@ Usage:
   autopraxis telemetry emit --workflow <name> --step <name> --event <event> --status <status> [--run-id <id>] [--path <file>]
   autopraxis telemetry validate --path <file>
   autopraxis telemetry summarize --path <file>
+  autopraxis eval validate --fixtures <dir> [--baseline <file>]
+  autopraxis eval summarize --fixtures <dir>
   autopraxis validate-package
   autopraxis list-targets
 
@@ -89,7 +91,7 @@ async function copyOrLinkSkill(skill, destination, options) {
 }
 
 function packageRootEntries() {
-  return ['.claude-plugin', '.codex-plugin', '.cave-plugin', 'skills', 'examples', 'assets', 'releases', 'README.md', 'INSTALL.md', 'CHANGELOG.md', 'RELEASE.md', 'autopraxis.json', 'package.json'];
+  return ['.claude-plugin', '.codex-plugin', '.cave-plugin', 'skills', 'evals', 'examples', 'assets', 'releases', 'README.md', 'INSTALL.md', 'CHANGELOG.md', 'RELEASE.md', 'autopraxis.json', 'package.json'];
 }
 
 async function copyOrLinkPluginRoot(destination, options) {
@@ -464,6 +466,176 @@ async function telemetry(values) {
   else throw new Error(`Unknown telemetry subcommand: ${subcommand}`);
 }
 
+const evalModes = new Set(['lite', 'default', 'deep']);
+const evalCouncilLevels = new Set(['none', 'single-lens', 'minimal-council', 'full-council']);
+const evalTelemetryFields = new Set(['provider', 'model', 'tokens_in', 'tokens_out', 'token_source', 'cost_usd', 'cost_source', 'latency_ms', 'workflow_mode', 'loop_iteration', 'loop_cap', 'status', 'verdict']);
+
+async function readEvalFixtures(fixturesPath) {
+  const dir = resolve(expandHome(fixturesPath));
+  const entries = await readdir(dir, { withFileTypes: true });
+  const fixtures = [];
+  for (const entry of entries) {
+    if (!entry.isFile() || !entry.name.endsWith('.json')) continue;
+    const path = join(dir, entry.name);
+    const raw = await readFile(path, 'utf8');
+    let parsed;
+    try {
+      parsed = JSON.parse(raw);
+    } catch (error) {
+      fixtures.push({ path, parse_error: error.message });
+      continue;
+    }
+    if (Array.isArray(parsed)) fixtures.push(...parsed.map((fixture) => ({ ...fixture, path })));
+    else fixtures.push({ ...parsed, path });
+  }
+  return fixtures;
+}
+
+function workflowNamesFromManifest() {
+  return manifest.skills.filter((skill) => skill.kind === 'workflow').map((skill) => skill.name).sort();
+}
+
+function validateEvalFixtures(fixtures) {
+  const failures = [];
+  const workflows = new Set(workflowNamesFromManifest());
+  const seenIds = new Set();
+  const covered = new Set();
+  for (const fixture of fixtures) {
+    const label = fixture.path ?? '<fixture>';
+    if (fixture.parse_error) {
+      failures.push(`${label}: invalid_json: ${fixture.parse_error}`);
+      continue;
+    }
+    for (const field of ['schema_version', 'id', 'workflow', 'scenario', 'expected_mode', 'expected_council_level', 'expected_artifacts', 'required_telemetry', 'outcome_contract', 'privacy', 'metric_status']) {
+      if (fixture[field] === undefined || fixture[field] === null || fixture[field] === '') failures.push(`${label}: missing required field ${field}`);
+    }
+    if (fixture.schema_version !== 1) failures.push(`${label}: schema_version must be 1`);
+    if (typeof fixture.id !== 'string') failures.push(`${label}: id must be a string`);
+    else if (seenIds.has(fixture.id)) failures.push(`${label}: duplicate id ${fixture.id}`);
+    else seenIds.add(fixture.id);
+    if (!workflows.has(fixture.workflow)) failures.push(`${label}: unknown workflow ${fixture.workflow}`);
+    else covered.add(fixture.workflow);
+    if (!evalModes.has(fixture.expected_mode)) failures.push(`${label}: expected_mode must be ${[...evalModes].join('|')}`);
+    if (!evalCouncilLevels.has(fixture.expected_council_level)) failures.push(`${label}: expected_council_level must be ${[...evalCouncilLevels].join('|')}`);
+    if (typeof fixture.scenario !== 'string') failures.push(`${label}: scenario must be a string`);
+    if (!Array.isArray(fixture.expected_artifacts) || fixture.expected_artifacts.some((item) => typeof item !== 'string')) failures.push(`${label}: expected_artifacts must be an array of strings`);
+    if (!Array.isArray(fixture.required_telemetry) || fixture.required_telemetry.some((item) => typeof item !== 'string')) failures.push(`${label}: required_telemetry must be an array of strings`);
+    for (const field of fixture.required_telemetry ?? []) {
+      if (!evalTelemetryFields.has(field) && !field.startsWith('metrics.')) failures.push(`${label}: unknown required_telemetry field ${field}`);
+    }
+    if (!fixture.outcome_contract || typeof fixture.outcome_contract !== 'object' || Array.isArray(fixture.outcome_contract)) failures.push(`${label}: outcome_contract must be an object`);
+    else {
+      if (typeof fixture.outcome_contract.primary !== 'string') failures.push(`${label}: outcome_contract.primary must be a string`);
+      if (!Array.isArray(fixture.outcome_contract.guardrails) || fixture.outcome_contract.guardrails.some((item) => typeof item !== 'string')) failures.push(`${label}: outcome_contract.guardrails must be an array of strings`);
+    }
+    if (!fixture.privacy || fixture.privacy.synthetic !== true) failures.push(`${label}: privacy.synthetic must be true`);
+    if (fixture.privacy && typeof fixture.privacy.source !== 'string') failures.push(`${label}: privacy.source must be a string`);
+    if (fixture.metric_status !== 'contract_only') failures.push(`${label}: metric_status must be contract_only in v1`);
+    for (const failure of inspectSensitive(fixture)) failures.push(`${label}: ${failure}`);
+  }
+  for (const workflow of workflows) {
+    if (!covered.has(workflow)) failures.push(`missing fixture for workflow ${workflow}`);
+  }
+  return failures;
+}
+
+function summarizeEvalFixtures(fixtures) {
+  const workflows = workflowNamesFromManifest();
+  const summary = {
+    schema_version: 1,
+    fixture_count: fixtures.length,
+    workflow_coverage: {
+      expected: workflows.length,
+      covered: 0,
+      missing: [],
+    },
+    by_workflow: {},
+    by_mode: {},
+    by_council_level: {},
+    metric_status: {},
+    required_telemetry_fields: [],
+  };
+  const telemetryFields = new Set();
+  for (const fixture of fixtures) {
+    if (fixture.parse_error) continue;
+    increment(summary.by_workflow, fixture.workflow);
+    increment(summary.by_mode, fixture.expected_mode);
+    increment(summary.by_council_level, fixture.expected_council_level);
+    increment(summary.metric_status, fixture.metric_status);
+    for (const field of fixture.required_telemetry ?? []) telemetryFields.add(field);
+  }
+  for (const mode of evalModes) summary.by_mode[mode] ??= 0;
+  for (const level of evalCouncilLevels) summary.by_council_level[level] ??= 0;
+  summary.metric_status.contract_only ??= 0;
+  const covered = new Set(Object.keys(summary.by_workflow));
+  summary.workflow_coverage.covered = workflows.filter((workflow) => covered.has(workflow)).length;
+  summary.workflow_coverage.missing = workflows.filter((workflow) => !covered.has(workflow));
+  summary.required_telemetry_fields = [...telemetryFields].sort();
+  return summary;
+}
+
+function stableJson(value) {
+  if (Array.isArray(value)) return `[${value.map(stableJson).join(',')}]`;
+  if (value && typeof value === 'object') return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${stableJson(value[key])}`).join(',')}}`;
+  return JSON.stringify(value);
+}
+
+async function evalValidate(values) {
+  const options = parseOptions(values);
+  if (options.help) evalUsage();
+  if (!options.fixtures) throw new Error('eval validate missing --fixtures');
+  const fixtures = await readEvalFixtures(options.fixtures);
+  const failures = validateEvalFixtures(fixtures);
+  if (options.baseline) {
+    const baseline = JSON.parse(await readFile(resolve(expandHome(options.baseline)), 'utf8'));
+    const summary = summarizeEvalFixtures(fixtures);
+    if (baseline.schema_version !== summary.schema_version) failures.push('baseline schema_version differs');
+    if (baseline.fixture_count !== summary.fixture_count) failures.push(`baseline fixture_count ${baseline.fixture_count} != current ${summary.fixture_count}`);
+    if (stableJson(baseline.workflow_coverage) !== stableJson(summary.workflow_coverage)) failures.push('baseline workflow coverage differs');
+    if (stableJson(baseline.by_mode) !== stableJson(summary.by_mode)) failures.push('baseline mode coverage differs');
+    if (stableJson(baseline.by_council_level) !== stableJson(summary.by_council_level)) failures.push('baseline council-level coverage differs');
+    if (stableJson(baseline.metric_status) !== stableJson(summary.metric_status)) failures.push('baseline metric status differs');
+  }
+  if (failures.length) {
+    for (const failure of failures) console.error(failure);
+    process.exit(1);
+  }
+  console.log(JSON.stringify({ valid: true, fixture_count: fixtures.length, workflow_coverage: summarizeEvalFixtures(fixtures).workflow_coverage }));
+}
+
+async function evalSummarize(values) {
+  const options = parseOptions(values);
+  if (options.help) evalUsage();
+  if (!options.fixtures) throw new Error('eval summarize missing --fixtures');
+  const fixtures = await readEvalFixtures(options.fixtures);
+  const failures = validateEvalFixtures(fixtures);
+  if (failures.length) {
+    for (const failure of failures) console.error(failure);
+    process.exit(1);
+  }
+  console.log(JSON.stringify(summarizeEvalFixtures(fixtures), null, 2));
+}
+
+function evalUsage() {
+  console.log(`Autopraxis eval commands
+
+Usage:
+  autopraxis eval validate --fixtures <dir> [--baseline <file>]
+  autopraxis eval summarize --fixtures <dir>
+
+Eval v1 is deterministic: it validates synthetic workflow fixtures and summarizes coverage. It does not call models.
+`);
+  process.exit(0);
+}
+
+async function evalCommand(values) {
+  const [subcommand, ...rest] = values;
+  if (!subcommand || ['help', '--help', '-h'].includes(subcommand)) evalUsage();
+  else if (subcommand === 'validate') await evalValidate(rest);
+  else if (subcommand === 'summarize') await evalSummarize(rest);
+  else throw new Error(`Unknown eval subcommand: ${subcommand}`);
+}
+
 async function validatePackage() {
   const failures = [];
   for (const [runtime, manifestFile] of Object.entries(manifest.standardPluginManifests)) {
@@ -496,6 +668,7 @@ if (!command || ['help', '--help', '-h'].includes(command)) usage();
 try {
   if (command === 'install') await install(args);
   else if (command === 'telemetry') await telemetry(args);
+  else if (command === 'eval') await evalCommand(args);
   else if (command === 'validate-package') await validatePackage();
   else if (command === 'list-targets') {
     for (const [name, target] of Object.entries(manifest.installTargets)) console.log(`${name}\t${target.defaultDestination}\t${target.description}`);

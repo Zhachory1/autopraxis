@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "id": "accepted-small-fix",
+  "workflow": "dev-workflow",
+  "scenario": "Accepted small bug fix in checkout service needs implementation and PR package.",
+  "expected_mode": "default",
+  "expected_council_level": "none",
+  "expected_artifacts": [
+    "scope-lock",
+    "task-plan",
+    "pr-package"
+  ],
+  "required_telemetry": [
+    "workflow_mode",
+    "latency_ms",
+    "tokens_in",
+    "tokens_out",
+    "token_source",
+    "cost_usd",
+    "cost_source",
+    "metrics.council_level",
+    "metrics.council_reason"
+  ],
+  "outcome_contract": {
+    "primary": "Human can act on the produced artifact without re-deriving workflow intent.",
+    "guardrails": [
+      "no raw sensitive content stored",
+      "escalation reason recorded when mode or council level increases"
+    ]
+  },
+  "privacy": {
+    "synthetic": true,
+    "source": "invented"
+  },
+  "metric_status": "contract_only"
+}

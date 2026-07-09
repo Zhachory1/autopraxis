@@ -103,7 +103,7 @@
     }
   ],
   "package": {
-    "include": [".claude-plugin/**", ".codex-plugin/**", ".cave-plugin/**", ".agents/plugins/marketplace.json", "skills/**", "examples/**", "assets/**", "releases/**", "README.md", "INSTALL.md", "CHANGELOG.md", "RELEASE.md", "autopraxis.json", "package.json", "bin/**"],
+    "include": [".claude-plugin/**", ".codex-plugin/**", ".cave-plugin/**", ".agents/plugins/marketplace.json", "skills/**", "evals/**", "examples/**", "assets/**", "releases/**", "README.md", "INSTALL.md", "CHANGELOG.md", "RELEASE.md", "autopraxis.json", "package.json", "bin/**"],
     "exclude": [".git/**", "node_modules/**", ".workflow-runs/**", ".env", "private-docs/**", "*.log"]
   }
 }

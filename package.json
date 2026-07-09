@@ -19,12 +19,13 @@
     "autopraxis.json",
     "assets/",
     "bin/",
+    "evals/",
     "examples/",
     "releases/",
     "skills/"
   ],
   "scripts": {
-    "test": "node tests/validate-skills.mjs && node tests/telemetry-cli.mjs",
+    "test": "node tests/validate-skills.mjs && node tests/telemetry-cli.mjs && node tests/eval-fixtures.mjs",
     "validate:package": "node bin/autopraxis.mjs validate-package"
   },
   "engines": {
