@@ -132,7 +132,14 @@ See `INSTALL.md` for custom destinations, marketplace wiring, symlink mode, manu
 npm test
 ```
 
-Validation checks frontmatter, description length, self-improvement sections, no ordered-list skill prose, workflow integration keywords, and key backprop data-source awareness.
+Validation checks frontmatter, description length, self-improvement sections, no ordered-list skill prose, workflow integration keywords, telemetry CLI behavior, eval fixture coverage, and key backprop data-source awareness.
+
+Eval fixtures are deterministic and model-free:
+
+```bash
+node bin/autopraxis.mjs eval validate --fixtures evals/workflows --baseline evals/baselines/v0.1.0.json
+node bin/autopraxis.mjs eval summarize --fixtures evals/workflows
+```
 
 ## Release cycle
 
