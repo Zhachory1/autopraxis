@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "id": "quarter-roadmap",
+  "workflow": "roadmapping",
+  "scenario": "Sequence five candidate projects into now/next/later with capacity constraints.",
+  "expected_mode": "default",
+  "expected_council_level": "minimal-council",
+  "expected_artifacts": [
+    "candidate-scores",
+    "dependency-map",
+    "approval-brief"
+  ],
+  "required_telemetry": [
+    "workflow_mode",
+    "latency_ms",
+    "tokens_in",
+    "tokens_out",
+    "token_source",
+    "cost_usd",
+    "cost_source",
+    "metrics.council_level",
+    "metrics.council_reason"
+  ],
+  "outcome_contract": {
+    "primary": "Human can act on the produced artifact without re-deriving workflow intent.",
+    "guardrails": [
+      "no raw sensitive content stored",
+      "escalation reason recorded when mode or council level increases"
+    ]
+  },
+  "privacy": {
+    "synthetic": true,
+    "source": "invented"
+  },
+  "metric_status": "contract_only"
+}
