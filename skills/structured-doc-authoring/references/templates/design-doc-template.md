@@ -50,13 +50,24 @@ Describe the high-level implementation strategy and why it satisfies the goals.
 
 ## System Context
 
-Include a diagram when it helps readers orient.
+Include diagrams liberally so humans and agents can see the system. Use Mermaid for flow/sequence/state diagrams and Graphviz/DOT for dense dependency graphs.
 
 ```mermaid
 flowchart LR
   User[User/System] --> Service[Proposed System]
   Service --> Dependency[Dependency]
 ```
+
+```dot
+digraph dependencies {
+  rankdir=LR;
+  caller -> service [label="request"];
+  service -> datastore [label="read/write"];
+  service -> dependency [label="call"];
+}
+```
+
+After each diagram, explain what changed, what boundary matters, and what risk it clarifies.
 
 ## Data Flow Or Control Flow
 

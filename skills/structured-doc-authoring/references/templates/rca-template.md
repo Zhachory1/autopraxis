@@ -45,6 +45,33 @@ Use precise numbers: dates, times, counts, percentages, latency deltas, dollars,
 | <timestamp> | <event> | <log/trace/person> | <owner> |
 ```
 
+## Incident Visuals
+
+Use Mermaid for incident sequence/timeline and Graphviz/DOT for causal chains.
+
+```mermaid
+sequenceDiagram
+  participant User
+  participant Service
+  participant Dependency
+  User->>Service: request
+  Service->>Dependency: call
+  Dependency-->>Service: timeout/error
+  Service-->>User: degraded response
+```
+
+```dot
+digraph root_cause {
+  rankdir=LR;
+  trigger -> latent_condition;
+  latent_condition -> failure_mode;
+  failure_mode -> impact;
+  detection_gap -> prolonged_impact;
+}
+```
+
+Explain trigger, mechanism, contributing factors, blast radius, and detection gap.
+
 ## Expected Vs Actual
 
 ```markdown

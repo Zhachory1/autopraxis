@@ -59,6 +59,31 @@ Explain the roadmap in everyday language. Start with why before listing work.
 - tie-breaker:
 ```
 
+## Visual Roadmap
+
+Use Mermaid for horizons/time and Graphviz/DOT for dependencies across projects, teams, and prerequisites.
+
+```mermaid
+gantt
+  title Roadmap Horizon
+  dateFormat  YYYY-MM-DD
+  section Now
+  Project A :a1, 2026-01-01, 30d
+  section Next
+  Project B :after a1, 45d
+```
+
+```dot
+digraph roadmap_dependencies {
+  rankdir=LR;
+  platform_foundation -> project_a;
+  project_a -> project_b;
+  data_readiness -> project_b;
+}
+```
+
+Explain sequencing tradeoffs, critical path, capacity conflicts, and why work is now/next/later.
+
 ## Sequencing
 
 ```markdown

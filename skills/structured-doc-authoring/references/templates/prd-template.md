@@ -94,7 +94,13 @@ Describe the rough shape of the solution. The reader should be able to squint an
 
 ## Key Flows
 
-Describe end-to-end user experience. Use prose, a flow diagram, wireframes, or screenshots.
+Describe end-to-end user experience. Use prose plus visuals. Include Mermaid for the main user journey and Graphviz/DOT when stakeholder, dependency, or decision relationships are dense.
+
+## Visual Model
+
+- Mermaid flowchart to show current and proposed user journey:
+- Graphviz/DOT graph for dependency, stakeholder, or decision relationships:
+- what the reader should notice:
 
 ## Key Logic
 

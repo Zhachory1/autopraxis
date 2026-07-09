@@ -103,7 +103,7 @@ for (const token of ['AGENT_FLEET_HOME', '/Users/zhach/code/agent-fleet', 'pass-
 }
 
 const docSkill = await readFile(join(skillsDir, 'structured-doc-authoring', 'SKILL.md'), 'utf8');
-for (const token of ['references/standards.md', 'prd-template.md', 'design-doc-template.md', 'technical-plan-template.md', 'adr-template.md', 'roadmap-template.md', 'rca-template.md']) {
+for (const token of ['references/standards.md', 'prd-template.md', 'design-doc-template.md', 'technical-plan-template.md', 'adr-template.md', 'roadmap-template.md', 'rca-template.md', 'Mermaid', 'Graphviz/DOT']) {
   if (!docSkill.includes(token)) failures.push(`structured-doc-authoring: missing reference to ${token}`);
 }
 
@@ -113,8 +113,14 @@ for (const relativePath of requiredDocReferenceFiles) {
 }
 
 const standards = await readFile(join(skillsDir, 'structured-doc-authoring', 'references/standards.md'), 'utf8');
-for (const token of ['SPADE', 'Evidence Standard', 'Review Gate Standard', 'PRD', 'Roadmap', 'RCA']) {
+for (const token of ['SPADE', 'Evidence Standard', 'Review Gate Standard', 'Diagram Standard', 'Mermaid', 'Graphviz/DOT', 'PRD', 'Roadmap', 'RCA']) {
   if (!standards.includes(token)) failures.push(`structured-doc-authoring standards: missing ${token}`);
+}
+
+for (const relativePath of requiredDocReferenceFiles) {
+  const text = await readFile(join(skillsDir, 'structured-doc-authoring', relativePath), 'utf8');
+  if (!text.includes('Mermaid') && !text.includes('mermaid')) failures.push(`structured-doc-authoring: ${relativePath} missing Mermaid guidance`);
+  if (!text.includes('Graphviz') && !text.includes('dot')) failures.push(`structured-doc-authoring: ${relativePath} missing Graphviz/DOT guidance`);
 }
 
 const manifest = JSON.parse(await readFile(join(root, 'autopraxis.json'), 'utf8'));

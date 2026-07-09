@@ -57,6 +57,24 @@ This means:
 | <option> | <pros> | <cons> | <cost/risk> | selected/rejected |
 ```
 
+## Decision Graph
+
+Use Graphviz/DOT to show decision branches, rejected paths, and consequences. Use Mermaid when GitHub-native rendering is more important than graph layout.
+
+```dot
+digraph decision {
+  rankdir=LR;
+  context -> option_a;
+  context -> option_b;
+  option_b -> decision [label="selected"];
+  option_a -> rejected [label="too costly"];
+  decision -> consequence_1;
+  decision -> consequence_2;
+}
+```
+
+Explain why the selected branch wins and which consequences future readers must remember.
+
 ## Consequences
 
 ```markdown

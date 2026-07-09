@@ -53,6 +53,27 @@ Use this template after PRD and DD approval. The plan should let an implementer 
   compatibility notes:
 ```
 
+## Visual Execution Map
+
+Use Mermaid for task ordering and Graphviz/DOT for file/module dependencies.
+
+```mermaid
+flowchart TD
+  T1[Task 1: Foundation] --> T2[Task 2: Integration]
+  T2 --> T3[Task 3: Validation]
+```
+
+```dot
+digraph file_dependencies {
+  rankdir=LR;
+  "api.ts" -> "service.ts";
+  "service.ts" -> "repository.ts";
+  "service.test.ts" -> "service.ts";
+}
+```
+
+Explain which tasks can run in parallel, which are blockers, and which interfaces downstream tasks rely on.
+
 ## Task Graph
 
 ```markdown

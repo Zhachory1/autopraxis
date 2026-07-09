@@ -10,6 +10,7 @@ Use these standards before selecting a template. They reconcile the linked guida
 - PRD templates: align on problem, high-level approach, narrative, goals, non-goals, key features/flows/logic, launch plan, operational checklist, open questions, and reviewer state.
 - ADR guidance: capture significant architecture decisions with context and consequences; maintain decision logs; supersede decisions when needed.
 - Engineering roadmap guidance: start with strategic goal and success definition, prioritize themes/epics, break into horizons/sprints, map teams/dependencies, share visually, stay flexible.
+- Visual communication guidance: pair text with diagrams so humans and agents can quickly understand flows, dependencies, timelines, causal chains, and decision structure.
 - Plan-writing guidance: write for an implementer with little context; map files, right-size tasks, define exact inputs/outputs, acceptance tests, and execution handoff.
 - Narrative guidance: be clear, concise, complete, and convincing. Use simple English, precise numbers, context, accountability, evidence, root cause, consequences, and actions.
 
@@ -46,7 +47,36 @@ Use these standards before selecting a template. They reconcile the linked guida
 
 **Keep docs readable.** Short enough to be read by busy people; split large docs into linked subdocs when scope grows.
 
+**Use diagrams liberally.** Pair prose with Mermaid and Graphviz/DOT diagrams for non-trivial flows, dependencies, timelines, state machines, causal graphs, decision graphs, and ownership maps.
+
+**Explain every visual.** Every diagram needs a short interpretation telling the reader what to notice and why it matters.
+
 **Make the next gate explicit.** End every doc with what happens next: council review, approval, implementation, launch, or monitoring.
+
+## Diagram Standard
+
+Use visuals as first-class documentation, not decoration. Text and diagrams should reinforce each other.
+
+| Need | Prefer | Why |
+|---|---|---|
+| User journey or product flow | Mermaid flowchart | Easy to scan sequence of product/user states |
+| Request/data/control flow | Mermaid sequence diagram or flowchart | Shows call order and system boundaries |
+| Timeline, launch plan, or incident sequence | Mermaid timeline or gantt | Makes ordering, overlap, and delays visible |
+| State transitions | Mermaid state diagram | Shows allowed transitions and edge cases |
+| Dense service/data dependencies | Graphviz/DOT | Handles many nodes and edge labels cleanly |
+| Decision alternatives and consequences | Graphviz/DOT | Shows branches, selected path, and downstream constraints |
+| RCA causal chain | Graphviz/DOT | Separates trigger, condition, mechanism, and impact |
+| Roadmap horizons and dependencies | Mermaid gantt plus Graphviz/DOT dependency graph | Combines time with prerequisite structure |
+
+Diagram rules:
+
+- include at least one diagram for every non-trivial PRD, DD, plan, ADR, roadmap, or RCA.
+- use Mermaid when the output should render cleanly in GitHub-flavored Markdown.
+- use Graphviz/DOT when graph layout matters more than native GitHub rendering.
+- keep diagrams small enough to understand; split large graphs by boundary or phase.
+- label edges with verbs or constraints when the relationship is not obvious.
+- follow each diagram with two to five bullets explaining what changed, what matters, and what risk/decision it clarifies.
+- do not paste a diagram without textual context; visuals assist understanding but do not replace evidence.
 
 ## SPADE Decision Standard
 
@@ -83,6 +113,7 @@ Before a doc advances, check:
 - owner and audience are named.
 - primary success metric or done criteria exists.
 - non-goals and risks are explicit.
+- at least one useful Mermaid or Graphviz/DOT diagram exists for non-trivial docs.
 - alternatives/tradeoffs are included when decision stakes justify them.
 - open questions are owner-assigned.
 - next gate and approval ask are explicit.
@@ -100,6 +131,8 @@ Before a doc advances, check:
 **RCA as blame.** Focus on system conditions, evidence, contributing factors, and prevention actions.
 
 **Plan with placeholders.** Replace “similar to above” and vague tasks with explicit inputs, outputs, files, and tests.
+
+**Wall of text.** Add diagrams for flows, dependencies, decision branches, timelines, or causal chains instead of forcing readers to build the model in their head.
 
 ## File Naming
 
