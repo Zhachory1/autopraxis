@@ -32,6 +32,10 @@ Investigate symptoms with evidence, reproduction, code/data tracing, hypothesis 
 
 Use `grounding-brief` with long-term memory MCP for prior incidents and decisions, code RAG for implicated paths, logs/traces/metrics for evidence, git/CI/deploy history for recent changes, and `hypothesis-testing` for root-cause loop. Use `council-review` for high-risk fixes or ambiguous RCA. Use `run-telemetry` throughout.
 
+## Council Policy
+
+Use `../council-review/references/escalation-matrix.md`. Most investigations use no council until root-cause ambiguity, high-risk fix, ambiguous RCA, production blast radius, security/privacy/reliability concern, or conflicting evidence justifies `single-lens`, minimal, or full council.
+
 ## Execution
 
 **Define symptom.** Capture what/where/when/how often/blast radius, expected-vs-actual, severity, and done criteria via `success-criteria-metrics` when helpful.
@@ -48,7 +52,7 @@ Use `grounding-brief` with long-term memory MCP for prior incidents and decision
 
 **Write RCA.** Use `structured-doc-authoring` and `handoff-packaging` for root cause, contributing factors, fix, prevention, tests, alerts, and open risks.
 
-**Escalate when needed.** Use `human-approval-gate` for evidence exhaustion, high-risk fixes, access gaps, or unresolved production impact.
+**Escalate when needed.** Use `../council-review/references/escalation-matrix.md` for high-risk fixes or ambiguous RCA; use `human-approval-gate` for evidence exhaustion, access gaps, or unresolved production impact.
 
 ## Loop Controls
 

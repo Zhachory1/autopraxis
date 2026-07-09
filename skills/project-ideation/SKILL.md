@@ -31,13 +31,17 @@ Turn high-level goals into framed, evaluable project candidates. Use customer/da
 
 Use `grounding-brief` with long-term memory MCP for past ideas, product decisions, customer notes, and strategy docs. Use code RAG for technical feasibility and existing capabilities. Use `council-review` as cross-function jam with product/eng/design/GTM/data/executive lenses. Use `success-criteria-metrics`, `hypothesis-testing`, `handoff-packaging`, and `run-telemetry`.
 
+## Council Policy
+
+Use `../council-review/references/escalation-matrix.md`. Ordinary ideation can use no council or one product/engineering lens. Use minimal/full council for cross-functional jam, high-opportunity-cost bets, major strategic tradeoffs, or conflicting constraints across product, engineering, GTM, data, and strategy.
+
 ## Execution
 
 **Deconstruct goal.** Break objective into drivers, constraints, target users, measurable sub-outcomes, and non-goals.
 
 **Analyze gaps.** Compare current vs desired state using customer feedback, analytics, support signals, competitive context, and internal constraints.
 
-**Run cross-function jam.** Use `council-review` or fallback multi-persona ideation to generate and pressure-test options across product, engineering, design, GTM, data, and strategy.
+**Run cross-function jam.** Use `../council-review/references/escalation-matrix.md` to decide whether ideation needs no council, one lens, minimal council, or full cross-functional council across product, engineering, design, GTM, data, and strategy.
 
 **Converge candidates.** Cluster ideas by user problem, value lever, feasibility, and strategic fit.
 

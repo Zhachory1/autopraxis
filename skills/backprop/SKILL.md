@@ -43,6 +43,10 @@ Use available sources in this priority order:
 
 Store only summaries and pointers unless operator approves durable capture of sensitive details.
 
+## Council Policy
+
+Use `../council-review/references/escalation-matrix.md`. Small prompt/template changes can use one reviewer lens or no council after eval evidence. Use minimal/full council for workflow contract changes, regression-risk changes, cost/telemetry schema changes, or changes that alter human approval/council behavior.
+
 ## Execution
 
 **Ingest run history.** Use `grounding-brief` to gather telemetry, artifacts, memory, code RAG, agent-fleet, PR/CI, and git sources. Normalize into comparable run records.
@@ -55,7 +59,7 @@ Store only summaries and pointers unless operator approves durable capture of se
 
 **Generate improvement hypotheses.** For each measured problem, propose a minimal skill or workflow change with expected metric movement, regression risk, owner, and validation plan.
 
-**Council review proposed changes.** Use `council-review` with docs-dx, generalist-swe, red-team, cost-finops, and domain lens. Gate against overfitting, prompt bloat, regressions, and cost creep.
+**Council review proposed changes.** Use `../council-review/references/escalation-matrix.md` to pick one lens, minimal council, or full council. Gate against overfitting, prompt bloat, regressions, and cost creep when measured risk justifies council.
 
 **Shadow or A/B rollout.** Run candidate workflow against baseline on comparable tasks. Prefer shadow mode first for high-risk changes; use A/B only when routing and metrics are fair.
 
@@ -65,7 +69,7 @@ Store only summaries and pointers unless operator approves durable capture of se
 
 ## Loop Controls
 
-**Backprop cycle.** Ingest, measure, cluster, attribute, hypothesize, council, shadow/A/B, promote-or-rollback.
+**Backprop cycle.** Ingest, measure, cluster, attribute, hypothesize, select council level, review only when risk justifies it, shadow/A/B, promote-or-rollback.
 
 **Stop on no measured problem.** Do not edit workflows for aesthetics.
 
@@ -136,7 +140,7 @@ Store only summaries and pointers unless operator approves durable capture of se
 - analysis uses actual run data, not anecdote alone.
 - proposed changes tie to measured failure modes.
 - root cause alternatives are considered and ruled out.
-- council reviews regression risk.
+- council level is recorded; minimal/full council reviews regression risk only when escalation matrix triggers it.
 - shadow or A/B result compares candidate to baseline when feasible.
 - promote-or-rollback decision has changelog.
 - `run-telemetry` events emitted for the backprop run itself.
@@ -149,7 +153,7 @@ Store only summaries and pointers unless operator approves durable capture of se
 
 **Telemetry blind spot.** Fix by proposing `run-telemetry` instrumentation before workflow edits.
 
-**Bloat as improvement.** Fix by council with docs-dx, cost-finops, red-team, and occams-style simplicity lens.
+**Bloat as improvement.** Fix by single-lens or council review with docs-dx, cost-finops, red-team, and occams-style simplicity lens when risk justifies it.
 
 **Unfair A/B.** Fix by comparable task assignment and guardrail metrics.
 
