@@ -236,6 +236,11 @@ for (const exclude of ['.git/**', 'node_modules/**', '.workflow-runs/**', '.env'
   if (!manifest.package.exclude.includes(exclude)) failures.push(`manifest package.exclude missing ${exclude}`);
 }
 
+const evaluationFramework = await readFile(join(root, 'docs/reference/evaluation-framework.md'), 'utf8');
+for (const token of ['accepted_success_rate', 'Workflow Evaluation Matrix', 'Eval Report Contract For Backprop', 'Promotion / Rollback Rules', 'Privacy And Retention']) {
+  if (!evaluationFramework.includes(token)) failures.push(`evaluation framework: missing ${token}`);
+}
+
 const packageJson = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));
 if (packageJson.bin?.autopraxis !== 'bin/autopraxis.mjs') failures.push('package.json: missing autopraxis bin');
 for (const file of ['.agents/plugins/marketplace.json', '.cave-plugin/', '.claude-plugin/', '.codex-plugin/', 'README.md', 'INSTALL.md', 'CHANGELOG.md', 'RELEASE.md', 'autopraxis.json', 'assets/', 'bin/', 'evals/', 'examples/', 'releases/', 'skills/']) {
