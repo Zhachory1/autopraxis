@@ -151,6 +151,58 @@ if (!codexMarketplace.plugins?.some((plugin) => plugin.name === 'autopraxis')) f
 for (const integration of ['agent-fleet', 'long-term-memory-mcp', 'code-rag', 'run-telemetry']) {
   if (!manifest.optionalIntegrations.some((item) => item.name === integration)) failures.push(`manifest: missing optional integration ${integration}`);
 }
+
+const readme = await readFile(join(root, 'README.md'), 'utf8');
+const startHereIndex = readme.indexOf('## Start here');
+const skillsIndex = readme.indexOf('## Skills');
+if (startHereIndex === -1) failures.push('README: missing ## Start here');
+if (skillsIndex === -1) failures.push('README: missing ## Skills');
+if (startHereIndex !== -1 && skillsIndex !== -1 && startHereIndex > skillsIndex) failures.push('README: ## Start here must appear before ## Skills');
+const startHere = startHereIndex !== -1 && skillsIndex !== -1 ? readme.slice(startHereIndex, skillsIndex) : '';
+const workflowNames = manifest.skills.filter((skill) => skill.kind === 'workflow').map((skill) => skill.name);
+const sharedNames = manifest.skills.filter((skill) => skill.kind === 'shared').map((skill) => skill.name);
+const routeRows = startHere
+  .split('\n')
+  .filter((line) => line.startsWith('|') && !line.includes('---') && !line.includes('If you have'));
+if (routeRows.length < 10) failures.push(`README: Start here router must have at least 10 route rows, found ${routeRows.length}`);
+const routedWorkflows = new Set();
+const routedRoles = new Set();
+for (const row of routeRows) {
+  const columns = row.split('|').map((column) => column.trim()).filter(Boolean);
+  const role = columns[1] ?? '';
+  const route = columns[2] ?? '';
+  const depth = columns[3] ?? '';
+  const matches = [...route.matchAll(/`([^`]+)`/g)].map((match) => match[1]);
+  if (matches.length !== 1) failures.push(`README: router row must recommend exactly one workflow: ${row}`);
+  else if (!workflowNames.includes(matches[0])) failures.push(`README: router row recommends non-workflow ${matches[0]}: ${row}`);
+  else routedWorkflows.add(matches[0]);
+  for (const sharedName of sharedNames) {
+    if (route.includes(`\`${sharedName}\``)) failures.push(`README: router row must not recommend shared skill ${sharedName}: ${row}`);
+  }
+  if (!['lite', 'default', 'deep'].includes(depth)) failures.push(`README: router row has invalid advisory depth ${depth}: ${row}`);
+  for (const roleName of ['developer', 'PM', 'leadership', 'maintainer']) {
+    if (role.includes(roleName)) routedRoles.add(roleName);
+  }
+}
+for (const workflowName of workflowNames) {
+  if (!routedWorkflows.has(workflowName)) failures.push(`README: Start here router must include workflow ${workflowName}`);
+}
+for (const roleName of ['developer', 'PM', 'leadership', 'maintainer']) {
+  if (!routedRoles.has(roleName)) failures.push(`README: Start here router must include role ${roleName}`);
+}
+if (!/connective primitives/i.test(readme) || !/Do not start here/i.test(readme)) failures.push('README: shared skills must be labeled connective primitives and not default entrypoints');
+const workflowInventory = skillsIndex !== -1 ? readme.slice(skillsIndex) : '';
+for (const workflowName of workflowNames) {
+  const start = workflowInventory.indexOf(`- \`${workflowName}\``);
+  if (start === -1) {
+    failures.push(`README: missing workflow inventory entry ${workflowName}`);
+    continue;
+  }
+  const rest = workflowInventory.slice(start + 1);
+  const next = rest.search(/\n- `[^`]+`/);
+  const block = next === -1 ? rest : rest.slice(0, next);
+  if (!block.includes('- Use when:') || !block.includes('- Do not use when:')) failures.push(`README: ${workflowName} missing Use when / Do not use when guidance`);
+}
 for (const exclude of ['.git/**', 'node_modules/**', '.workflow-runs/**', '.env']) {
   if (!manifest.package.exclude.includes(exclude)) failures.push(`manifest package.exclude missing ${exclude}`);
 }
@@ -169,6 +221,7 @@ const markdownFiles = [
   ...await listFiles(skillsDir, 'skills').then((files) => files.filter((file) => file.endsWith('.md'))),
   ...await listFiles(join(root, 'examples'), 'examples').then((files) => files.filter((file) => file.endsWith('.md'))),
   ...await listFiles(join(root, 'releases'), 'releases').then((files) => files.filter((file) => file.endsWith('.md'))),
+  ...await listFiles(join(root, 'docs'), 'docs').then((files) => files.filter((file) => file.endsWith('.md'))),
 ];
 for (const relativeFile of markdownFiles) {
   const text = await readFile(join(root, relativeFile), 'utf8');
