@@ -31,6 +31,10 @@ Ensure a thought-out plan exists before implementation. Move from product intent
 
 Use `grounding-brief` with long-term memory MCP, code RAG, git, tickets, PRs, and agent-fleet journals. Use `council-review` backed by agent-fleet `/council` when available at `AGENT_FLEET_HOME=/Users/zhach/code/agent-fleet`. Use agent-fleet `/ship` or local `ship` skill for implementation when plan is accepted. Use `run-telemetry` at each gate.
 
+## Council Policy
+
+Use `../council-review/references/escalation-matrix.md`. Low-risk, reversible work may record `council_level: none` or use `single-lens`; docs and final code councils are required only when risk, ambiguity, conflicting review, unresolved blocker, design mismatch, security/privacy/reliability concern, or leadership-visible tradeoff appears.
+
 ## Execution
 
 **Ground context.** Invoke `grounding-brief` over user goal, memory, code RAG, existing docs, related PRs, issues, and prior runs.
@@ -39,7 +43,7 @@ Use `grounding-brief` with long-term memory MCP, code RAG, git, tickets, PRs, an
 
 **Author DD.** Use `structured-doc-authoring` to translate PRD into architecture, boundaries, data/control flow, tradeoffs, tests, observability, rollout, risks, and alternatives.
 
-**Council on docs.** Use `council-review` with product, architecture, reliability, security/adversarial, cost, and execution lenses as relevant. Verdict must pass or pass-with-nits before planning.
+**Council on docs.** Select council level from `../council-review/references/escalation-matrix.md`. Use `none` for low-risk clear docs, `single-lens` for one domain concern, and minimal/full council only for multi-domain or high-risk design decisions. Required council verdict must pass or pass-with-nits before planning only when council level is minimal/full.
 
 **Write plan.** Use `task-decomposition-planning` to create ordered implementation tasks with dependencies, acceptance criteria, validation, rollout, and stop conditions.
 
@@ -47,17 +51,17 @@ Use `grounding-brief` with long-term memory MCP, code RAG, git, tickets, PRs, an
 
 **Run code-reviewer.** Review for correctness, safety, maintainability, security, performance, tests, observability, and fidelity to PRD/DD. Re-review only deltas after fixes.
 
-**Council on review and code.** Use `council-review` to adjudicate review findings, conflicting opinions, blocker resolution, and final merge/no-merge recommendation against original intent.
+**Council on review and code.** Use `council-review` only when review findings conflict, blockers remain unresolved, implementation reveals design mismatch, or risk level justifies a final merge/no-merge council against original intent.
 
 **Launch PR.** Use `handoff-packaging` to create PR package with linked docs, rationale, tests, council verdicts, and known limitations. Use `human-approval-gate` for final signoff.
 
 ## Loop Controls
 
-**Doc loop.** PRD/DD and council iterate until council verdict is pass/pass-with-nits, max doc iterations hit, or human escalates.
+**Doc loop.** PRD/DD and council gate iterate only when council level is minimal/full; otherwise record skipped or single-lens reason and proceed when doc acceptance criteria are met.
 
 **Implementation loop.** `ship` and code-reviewer iterate until review has no blockers, cap hit, or plan mismatch discovered.
 
-**Outer design kickback.** If final council finds design intent wrong, return to DD and preserve implementation learnings as evidence.
+**Outer design kickback.** If final council or review evidence finds design intent wrong, return to DD and preserve implementation learnings as evidence.
 
 **Delta-only rule.** Re-council and re-review focus on required changes, not settled material.
 
@@ -71,11 +75,11 @@ Use `grounding-brief` with long-term memory MCP, code RAG, git, tickets, PRs, an
 ## Artifacts
 - PRD:
 - DD:
-- council docs verdict:
+- council docs level/verdict:
 - implementation plan:
 - shipped tasks:
 - code review:
-- final council verdict:
+- final council level/verdict:
 - PR package:
 
 ## Gate State
@@ -93,11 +97,11 @@ Use `grounding-brief` with long-term memory MCP, code RAG, git, tickets, PRs, an
 ## Success Criteria
 
 - PRD and DD exist before implementation.
-- council docs gate passes or human explicitly overrides.
+- council docs gate either records skipped/one-lens reason or passes when minimal/full council is triggered.
 - task plan has acceptance criteria and dependencies.
 - shipped code maps to planned tasks.
 - code-reviewer blockers resolved or escalated.
-- final council confirms merge/no-merge call.
+- final council confirms merge/no-merge call only when escalation matrix triggers it; otherwise skipped reason is recorded.
 - launch package and human approval ask exist.
 - `run-telemetry` events emitted for all major gates.
 

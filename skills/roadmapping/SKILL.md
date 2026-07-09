@@ -31,6 +31,10 @@ Sequence project candidates into an executable and defensible roadmap. Make trad
 
 Use `grounding-brief` with long-term memory MCP for prior roadmaps, strategy, team constraints, and decisions. Use code RAG for technical dependencies and platform constraints. Use `success-criteria-metrics` for ROI scoring, `task-decomposition-planning` for dependency-aware sequencing, `council-review` for feasibility/alignment stress-test, `handoff-packaging`, `human-approval-gate`, and `run-telemetry`.
 
+## Council Policy
+
+Use `../council-review/references/escalation-matrix.md`. Simple sequencing can use no council or one execution/product lens. Use minimal/full council for leadership commitments, multi-team capacity conflicts, platform bets, high opportunity cost, or unresolved feasibility/risk disputes.
+
 ## Execution
 
 **Evaluate ROI.** Score candidates by user/business value, strategic alignment, confidence, effort, risk, reversibility, time sensitivity, and learning value.
@@ -43,7 +47,7 @@ Use `grounding-brief` with long-term memory MCP for prior roadmaps, strategy, te
 
 **Iterate allocation and dependencies.** Adjust sequence when allocation reveals conflict or dependency mapping reveals hidden blocker.
 
-**Council review.** Use `council-review` with executive, product, engineering, architecture, cost, and risk lenses.
+**Council review.** Select council level from `../council-review/references/escalation-matrix.md`; use executive, product, engineering, architecture, cost, and risk lenses only when roadmap stakes justify minimal/full council.
 
 **Revise and approval.** Apply council deltas, package final roadmap, and route to `human-approval-gate` for leadership commitment.
 
@@ -51,7 +55,7 @@ Use `grounding-brief` with long-term memory MCP for prior roadmaps, strategy, te
 
 **Dependency capacity loop.** Iterate until timeline is executable, cap hit, or blockers require leadership decision.
 
-**Council revise loop.** Council, revise, re-review only raised issues until pass/pass-with-nits or escalation.
+**Council revise loop.** When council level is minimal/full, council, revise, and re-review only raised issues until pass/pass-with-nits or escalation. For none/single-lens, record reason and only re-review if the lens finds a blocker.
 
 **Theme stability check.** Re-group only when scoring or dependencies materially change the story.
 
@@ -93,7 +97,7 @@ Use `grounding-brief` with long-term memory MCP for prior roadmaps, strategy, te
 - later:
 
 ## Council And Approval
-- council verdict:
+- council level/verdict:
 - required changes:
 - leadership ask:
 - telemetry path:
@@ -105,7 +109,7 @@ Use `grounding-brief` with long-term memory MCP for prior roadmaps, strategy, te
 - dependencies and prerequisites are explicit.
 - capacity allocation is realistic.
 - roadmap has now/next/later narrative and themes.
-- council review passes or issues are escalated.
+- council review either records skipped/one-lens reason or passes when minimal/full council is triggered.
 - human approval package exists.
 - `run-telemetry` events emitted.
 

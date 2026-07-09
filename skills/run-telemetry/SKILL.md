@@ -100,6 +100,23 @@ Use existing run dirs when the workflow provides them. Do not write sensitive co
 - notable metrics:
 ```
 
+## Council Metrics
+
+When `council-review` runs or skips a gate, put council fields under `metrics`:
+
+```json
+{
+  "metrics": {
+    "council_level": "none|single-lens|minimal-council|full-council",
+    "council_reason": "short non-sensitive reason",
+    "persona_count": 0,
+    "agent_fleet_invoked": false
+  }
+}
+```
+
+Do not store raw artifacts, logs, secrets, or customer data in council reason fields.
+
 ## Backprop Metrics
 
 `backprop` should compute:
