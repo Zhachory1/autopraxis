@@ -10,19 +10,67 @@ Autopraxis turns messy goals into grounded briefs, reviewed plans, shipped work,
 
 Each skill is a portable `SKILL.md` with YAML frontmatter, explicit input/output contracts, bounded loops, and telemetry hooks.
 
+## Start here
+
+Pick one top-level workflow first. Shared skills are connective primitives; top-level workflows call them when needed.
+
+Advisory depth labels are routing hints, not enforced runtime modes yet. Issue #10 will define real budgets and escalation rules.
+
+- `lite` — shortest useful path; avoid optional councils/templates unless risk appears.
+- `default` — normal workflow gate for planned work.
+- `deep` — high-risk, ambiguous, cross-functional, irreversible, or leadership-visible work.
+
+Role quick paths:
+
+- developer: `dev-workflow`, `pr-review`, or `debug-investigation`.
+- PM/product: `project-ideation` or `roadmapping`.
+- leadership: `roadmapping` for decision briefs and tradeoff packages.
+- maintainer: `backprop` for workflow improvement; `roadmapping` for repo sequencing.
+
+| If you have... | Role | Start with | Depth | Why |
+|---|---|---|---|---|
+| accepted feature/bug spec to implement | developer | `dev-workflow` | default | turns intent into plan, code, review, and PR package |
+| small safe code change with clear acceptance | developer | `dev-workflow` | lite | avoids full ceremony unless scope/risk expands |
+| PR or diff needing review | developer | `pr-review` | lite | reviews intent, architecture, correctness, tests, and feedback |
+| failing test, incident, or unknown bug | developer | `debug-investigation` | default | defines symptom, gathers evidence, traces code, confirms root cause |
+| high-risk architecture or launch change | developer/lead | `dev-workflow` | deep | needs docs, gates, review, and likely council escalation |
+| ML model or experiment idea | ML/product | `ml-experiments` | deep | locks metrics, data, tracking, hypotheses, validation, and handoff |
+| fuzzy OKR or product opportunity | PM/product | `project-ideation` | default | decomposes goals, finds gaps, frames candidate projects |
+| set of candidate projects to sequence | PM/leadership | `roadmapping` | default | scores ROI, maps dependencies/capacity, prepares approval |
+| executive decision brief or roadmap tradeoff | leadership | `roadmapping` | lite | produces concise recommendation and approval ask |
+| recurring workflow failures or run logs | maintainer | `backprop` | default | analyzes telemetry/history and proposes measured improvements |
+| new workflow idea for Autopraxis | maintainer | `roadmapping` | lite | sequences/triages before creating new skill surface |
+| unclear request with no artifact yet | any | `project-ideation` | lite | frames problem before committing to execution |
+
 ## Skills
 
 High-level workflows:
 
 - `dev-workflow` — PRD → DD → council → plan → ship → review → final council → launch PR.
+  - Use when: building or changing software from accepted intent.
+  - Do not use when: you only need to review an existing PR or investigate an unexplained symptom.
 - `ml-experiments` — problem/metric framing → data/EDA → tracking → hypothesis/train/validate loop → handoff.
+  - Use when: model, feature, data, or experiment quality must be judged against locked metrics.
+  - Do not use when: the task is ordinary application code or a product idea without ML/data experimentation.
 - `pr-review` — context → architecture → line-level review → optional local test → feedback → human signoff.
+  - Use when: a PR/diff exists and needs correctness, safety, maintainability, or test review.
+  - Do not use when: no implementation exists yet; use `dev-workflow` or `project-ideation` instead.
 - `debug-investigation` — symptom → evidence → repro → trace → hypothesis loop → RCA/handoff.
+  - Use when: behavior is wrong and root cause is unknown.
+  - Do not use when: the fix is already specified and only implementation remains.
 - `project-ideation` — OKR deconstruction → gap analysis → cross-functional jam → framing → feasibility.
+  - Use when: the opportunity/problem is fuzzy and needs framing before roadmap or build work.
+  - Do not use when: candidates are already framed and need sequencing; use `roadmapping`.
 - `roadmapping` — ROI scoring → dependency/capacity iteration → horizon themes → council → approval.
-- `backprop` — ingest run history/telemetry → diagnose workflow failures → propose improvements → council → shadow/A-B → promote/rollback.
+  - Use when: choosing, sequencing, or packaging project tradeoffs for PM/leadership decisions.
+  - Do not use when: executing one approved project; use `dev-workflow`.
+- `backprop` — ingest run history/telemetry → diagnose workflow failures → propose improvements → council → shadow-A/B → promote/rollback.
+  - Use when: improving Autopraxis or another workflow from prior run evidence.
+  - Do not use when: there is no run history, telemetry, or concrete failure pattern yet.
 
 Reusable connective tissue:
+
+These shared skills are connective primitives. Do not start here unless you explicitly need that artifact; top-level workflows call them as needed.
 
 - `grounding-brief`
 - `council-review`
