@@ -14,11 +14,11 @@ Each skill is a portable `SKILL.md` with YAML frontmatter, explicit input/output
 
 Pick one top-level workflow first. Shared skills are connective primitives; top-level workflows call them when needed.
 
-Advisory depth labels are routing hints, not enforced runtime modes yet. Issue #10 will define real budgets and escalation rules.
+Workflow modes control how much process the agent should load. If the user names a mode, start there. Otherwise use the router depth. If no route fits, start `default`. Escalate `lite → default → deep` only when risk or ambiguity appears, and record why.
 
 - `lite` — shortest useful path; avoid optional councils/templates unless risk appears.
-- `default` — normal workflow gate for planned work.
-- `deep` — high-risk, ambiguous, cross-functional, irreversible, or leadership-visible work.
+- `default` — normal workflow gate for planned work; load only references needed for selected artifacts.
+- `deep` — high-risk, ambiguous, cross-functional, irreversible, or leadership-visible work; full gates allowed with explicit reason.
 
 Role quick paths:
 
@@ -32,10 +32,13 @@ Role quick paths:
 | accepted feature/bug spec to implement | developer | `dev-workflow` | default | turns intent into plan, code, review, and PR package |
 | small safe code change with clear acceptance | developer | `dev-workflow` | lite | avoids full ceremony unless scope/risk expands |
 | PR or diff needing review | developer | `pr-review` | lite | reviews intent, architecture, correctness, tests, and feedback |
-| failing test, incident, or unknown bug | developer | `debug-investigation` | default | defines symptom, gathers evidence, traces code, confirms root cause |
+| failing test, non-prod bug, or unknown narrow symptom | developer | `debug-investigation` | default | defines symptom, gathers evidence, traces code, confirms root cause |
+| production incident or high-risk fix | developer/lead | `debug-investigation` | deep | needs blast-radius evidence, RCA, prevention, and possible escalation |
 | high-risk architecture or launch change | developer/lead | `dev-workflow` | deep | needs docs, gates, review, and likely council escalation |
-| ML model or experiment idea | ML/product | `ml-experiments` | deep | locks metrics, data, tracking, hypotheses, validation, and handoff |
-| fuzzy OKR or product opportunity | PM/product | `project-ideation` | default | decomposes goals, finds gaps, frames candidate projects |
+| ML metric/model framing or experiment idea | ML/product | `ml-experiments` | default | locks metrics, data path, hypotheses, validation, and handoff |
+| production/costly/disputed ML decision | ML/product | `ml-experiments` | deep | needs statistical rigor, guardrails, council escalation, and deploy handoff |
+| fuzzy OKR or early product idea | PM/product | `project-ideation` | lite | frames problem and drivers before heavier discovery |
+| evidence-backed product opportunity | PM/product | `project-ideation` | default | decomposes goals, finds gaps, frames candidate projects |
 | set of candidate projects to sequence | PM/leadership | `roadmapping` | default | scores ROI, maps dependencies/capacity, prepares approval |
 | executive decision brief or roadmap tradeoff | leadership | `roadmapping` | lite | produces concise recommendation and approval ask |
 | recurring workflow failures or run logs | maintainer | `backprop` | default | analyzes telemetry/history and proposes measured improvements |

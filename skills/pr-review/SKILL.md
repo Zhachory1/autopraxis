@@ -36,6 +36,14 @@ Use `grounding-brief` with code RAG for impacted paths, long-term memory MCP for
 
 Use `../council-review/references/escalation-matrix.md`. Most PRs should use no council. Use `single-lens` for one domain concern; use minimal/full council only for high-stakes architecture, safety, ML/statistical, security/privacy/reliability, or conflicting reviewer judgments.
 
+## Workflow Modes
+
+- `lite`: small, clear diff; review changed files, tests, and obvious risk. Budget: no council, no broad repo archaeology, focused validation only.
+- `default`: normal PR; add architecture/context check and optional local tests. Budget: focused refs, `council_level` max `single-lens`, one delta re-review loop.
+- `deep`: high-risk architecture, security/privacy/reliability, ML/statistical, data migration, or conflicting reviewers. Budget: council allowed with reason and broader validation.
+- Escalate: unclear intent, high blast radius, unsafe rollback, failing CI tied to diff, or conflicting review judgments.
+- Load: start from PR/diff/ticket; load design docs, council matrix, or broader code RAG only if the diff risk requires it.
+
 ## Execution
 
 **Gather context.** Use `grounding-brief` to understand intent, scope, changed files, related docs, tests, CI, and prior comments.

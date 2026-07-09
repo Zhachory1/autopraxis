@@ -47,6 +47,14 @@ Store only summaries and pointers unless operator approves durable capture of se
 
 Use `../council-review/references/escalation-matrix.md`. Small prompt/template changes can use one reviewer lens or no council after eval evidence. Use minimal/full council for workflow contract changes, regression-risk changes, cost/telemetry schema changes, or changes that alter human approval/council behavior.
 
+## Workflow Modes
+
+- `lite`: inspect one run or small prompt/template change. Budget: summary/pointers only, no council unless regression risk appears.
+- `default`: analyze multiple runs, cluster failures, propose measured improvements. Budget: focused telemetry, one hypothesis loop, `council_level` max `single-lens` unless risky.
+- `deep`: workflow contract, telemetry schema, human approval, or release-impacting change. Budget: council allowed with reason, shadow/A-B plan, changelog package.
+- Escalate: regression risk, cost/telemetry schema change, human approval behavior change, or conflicting outcome evidence.
+- Load: start with telemetry summaries/pointers; load raw artifacts, council transcripts, or eval reports only when needed and permitted.
+
 ## Execution
 
 **Ingest run history.** Use `grounding-brief` to gather telemetry, artifacts, memory, code RAG, agent-fleet, PR/CI, and git sources. Normalize into comparable run records.

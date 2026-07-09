@@ -100,6 +100,28 @@ Use existing run dirs when the workflow provides them. Do not write sensitive co
 - notable metrics:
 ```
 
+## Mode Metrics
+
+When a workflow chooses or escalates a mode, put mode fields under `metrics`:
+
+```json
+{
+  "metrics": {
+    "workflow_mode": "lite|default|deep",
+    "mode_budget": {
+      "refs": "focused|selected|full",
+      "artifacts": "one|selected|full",
+      "council_level_max": "none|single-lens|minimal-council|full-council",
+      "loop_cap": 1,
+      "validation_scope": "focused|standard|broad"
+    },
+    "mode_escalation_reason": "short non-sensitive reason when mode changes"
+  }
+}
+```
+
+Do not store raw artifacts, logs, secrets, or customer data in mode reason fields.
+
 ## Council Metrics
 
 When `council-review` runs or skips a gate, put council fields under `metrics`:
