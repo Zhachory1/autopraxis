@@ -35,7 +35,17 @@ Use `grounding-brief` with long-term memory MCP, code RAG, git, tickets, PRs, an
 
 Use `../council-review/references/escalation-matrix.md`. Low-risk, reversible work may record `council_level: none` or use `single-lens`; docs and final code councils are required only when risk, ambiguity, conflicting review, unresolved blocker, design mismatch, security/privacy/reliability concern, or leadership-visible tradeoff appears.
 
+## Workflow Modes
+
+- `lite`: accepted small change; produce scope lock, focused plan, patch/review handoff. Budget: focused refs, one artifact, `council_level` max `single-lens`, loop cap 1, focused validation.
+- `default`: normal feature/change; PRD/DD may be lightweight, task plan required, council only if matrix triggers. Budget: selected docs, up to two artifacts, `council_level` max `minimal-council`, loop cap 2.
+- `deep`: high-risk architecture, launch, security/reliability, cross-team, or leadership-visible work. Budget: full docs, required gates, council allowed with reason.
+- Escalate: ambiguity, design mismatch, unresolved blocker, risky rollout, or conflicting review.
+- Load: start with this skill and user artifact; load doc templates, council matrix, handoff, or telemetry references only when that gate will run.
+
 ## Execution
+
+Run only the steps required by selected mode. `lite` may use scope lock instead of formal PRD/DD; `default` may use lightweight PRD/DD; `deep` uses full docs and gates.
 
 **Ground context.** Invoke `grounding-brief` over user goal, memory, code RAG, existing docs, related PRs, issues, and prior runs.
 
@@ -96,9 +106,9 @@ Use `../council-review/references/escalation-matrix.md`. Low-risk, reversible wo
 
 ## Success Criteria
 
-- PRD and DD exist before implementation.
+- PRD/DD or scope lock exists before implementation, according to selected mode.
 - council docs gate either records skipped/one-lens reason or passes when minimal/full council is triggered.
-- task plan has acceptance criteria and dependencies.
+- task plan or lite task list has acceptance criteria and dependencies.
 - shipped code maps to planned tasks.
 - code-reviewer blockers resolved or escalated.
 - final council confirms merge/no-merge call only when escalation matrix triggers it; otherwise skipped reason is recorded.

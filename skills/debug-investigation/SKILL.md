@@ -36,6 +36,14 @@ Use `grounding-brief` with long-term memory MCP for prior incidents and decision
 
 Use `../council-review/references/escalation-matrix.md`. Most investigations use no council until root-cause ambiguity, high-risk fix, ambiguous RCA, production blast radius, security/privacy/reliability concern, or conflicting evidence justifies `single-lens`, minimal, or full council.
 
+## Workflow Modes
+
+- `lite`: known failing test or narrow symptom; define expected/actual, inspect focused path, propose fix or next check. Budget: no council, one hypothesis loop.
+- `default`: unclear bug; gather logs/evidence, repro if feasible, trace code, maintain hypothesis ledger. Budget: focused refs, loop cap from severity, `council_level` max `single-lens`.
+- `deep`: production incident, high-risk fix, ambiguous RCA, security/privacy/reliability impact, or evidence conflict. Budget: full RCA, council allowed with reason, prevention actions.
+- Escalate: production blast radius, evidence exhaustion, risky fix, conflicting hypotheses, or ambiguous RCA.
+- Load: start with symptom/evidence; load council matrix, RCA template, dashboards, or prior incidents only when needed.
+
 ## Execution
 
 **Define symptom.** Capture what/where/when/how often/blast radius, expected-vs-actual, severity, and done criteria via `success-criteria-metrics` when helpful.

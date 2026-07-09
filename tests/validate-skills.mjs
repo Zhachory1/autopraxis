@@ -109,6 +109,9 @@ const telemetrySkill = await readFile(join(skillsDir, 'run-telemetry', 'SKILL.md
 for (const token of ['council_level', 'council_reason', 'persona_count', 'agent_fleet_invoked']) {
   if (!telemetrySkill.includes(token)) failures.push(`run-telemetry: missing council metric ${token}`);
 }
+for (const token of ['workflow_mode', 'mode_budget', 'mode_escalation_reason', 'council_level_max', 'validation_scope']) {
+  if (!telemetrySkill.includes(token)) failures.push(`run-telemetry: missing mode metric ${token}`);
+}
 for (const workflowName of workflowSkills) {
   const text = await readFile(join(skillsDir, workflowName, 'SKILL.md'), 'utf8');
   if (text.includes('council-review')) {
@@ -116,6 +119,14 @@ for (const workflowName of workflowSkills) {
     const matrixReference = '../council-review/references/escalation-matrix.md';
     if (!text.includes(matrixReference)) failures.push(`${workflowName}: missing council escalation matrix reference`);
     if (!existsSync(join(skillsDir, workflowName, matrixReference))) failures.push(`${workflowName}: council escalation matrix reference does not resolve`);
+  }
+  const modeStart = text.indexOf('## Workflow Modes');
+  if (modeStart === -1) failures.push(`${workflowName}: missing Workflow Modes section`);
+  const modeRest = modeStart === -1 ? '' : text.slice(modeStart + 1);
+  const nextHeading = modeRest.search(/\n## /);
+  const modeSection = nextHeading === -1 ? modeRest : modeRest.slice(0, nextHeading);
+  for (const mode of ['`lite`', '`default`', '`deep`', 'Escalate:', 'Load:']) {
+    if (!modeSection.includes(mode)) failures.push(`${workflowName}: missing workflow mode token ${mode}`);
   }
 }
 
@@ -175,6 +186,7 @@ const skillsIndex = readme.indexOf('## Skills');
 if (startHereIndex === -1) failures.push('README: missing ## Start here');
 if (skillsIndex === -1) failures.push('README: missing ## Skills');
 if (startHereIndex !== -1 && skillsIndex !== -1 && startHereIndex > skillsIndex) failures.push('README: ## Start here must appear before ## Skills');
+if (readme.includes('Issue #10 will define')) failures.push('README: mode guidance must not point to future issue #10 as undefined');
 const startHere = startHereIndex !== -1 && skillsIndex !== -1 ? readme.slice(startHereIndex, skillsIndex) : '';
 const workflowNames = manifest.skills.filter((skill) => skill.kind === 'workflow').map((skill) => skill.name);
 const sharedNames = manifest.skills.filter((skill) => skill.kind === 'shared').map((skill) => skill.name);
