@@ -157,15 +157,18 @@ for (const exclude of ['.git/**', 'node_modules/**', '.workflow-runs/**', '.env'
 
 const packageJson = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));
 if (packageJson.bin?.autopraxis !== 'bin/autopraxis.mjs') failures.push('package.json: missing autopraxis bin');
-for (const file of ['.agents/plugins/marketplace.json', '.cave-plugin/', '.claude-plugin/', '.codex-plugin/', 'README.md', 'INSTALL.md', 'autopraxis.json', 'assets/', 'bin/', 'examples/', 'skills/']) {
+for (const file of ['.agents/plugins/marketplace.json', '.cave-plugin/', '.claude-plugin/', '.codex-plugin/', 'README.md', 'INSTALL.md', 'CHANGELOG.md', 'RELEASE.md', 'autopraxis.json', 'assets/', 'bin/', 'examples/', 'releases/', 'skills/']) {
   if (!packageJson.files.includes(file)) failures.push(`package.json: files missing ${file}`);
 }
 
 const markdownFiles = [
   'README.md',
   'INSTALL.md',
+  'CHANGELOG.md',
+  'RELEASE.md',
   ...await listFiles(skillsDir, 'skills').then((files) => files.filter((file) => file.endsWith('.md'))),
   ...await listFiles(join(root, 'examples'), 'examples').then((files) => files.filter((file) => file.endsWith('.md'))),
+  ...await listFiles(join(root, 'releases'), 'releases').then((files) => files.filter((file) => file.endsWith('.md'))),
 ];
 for (const relativeFile of markdownFiles) {
   const text = await readFile(join(root, relativeFile), 'utf8');
