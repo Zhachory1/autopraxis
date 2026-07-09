@@ -141,7 +141,7 @@ node bin/autopraxis.mjs eval validate --fixtures evals/workflows --baseline eval
 node bin/autopraxis.mjs eval summarize --fixtures evals/workflows
 ```
 
-See the [token efficiency note](https://github.com/Zhachory1/autopraxis/blob/main/docs/reference/token-efficiency.md) for token/cost strategy, mode envelopes, and quality guardrails.
+See the [evaluation framework](https://github.com/Zhachory1/autopraxis/blob/main/docs/reference/evaluation-framework.md) and [token efficiency note](https://github.com/Zhachory1/autopraxis/blob/main/docs/reference/token-efficiency.md) for workflow quality, token/cost strategy, and promotion guardrails.
 
 ## Release cycle
 
