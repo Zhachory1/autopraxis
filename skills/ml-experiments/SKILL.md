@@ -36,7 +36,17 @@ Use `grounding-brief` with long-term memory MCP for prior experiment decisions a
 
 Use `../council-review/references/escalation-matrix.md`. ML work often needs at least `single-lens` statistical/ML review, but full council is reserved for production-impacting model changes, metric conflicts, leakage/statistical blockers, expensive compute commitments, or irreversible business decisions.
 
+## Workflow Modes
+
+- `lite`: frame problem, metric, baseline idea, and next experiment question. Budget: no training loop, no optional council, one concise handoff.
+- `default`: reproducible data/EDA/tracking plus planned baseline and hypothesis loop. Budget: focused refs, `council_level` max `minimal-council`, loop cap from experiment budget.
+- `deep`: production-impacting model, expensive compute, metric dispute, leakage/fairness risk, or launch decision. Budget: full validation, council allowed with reason, complete artifact handoff.
+- Escalate: metric conflict, leakage risk, costly training, production impact, fairness/guardrail failure, or disputed readout.
+- Load: start with metric/data context; load experiment tracking, council matrix, validation, and handoff references only when that phase is active.
+
 ## Execution
+
+Run only the phases required by selected mode. `lite` stops after framing, metric lock, baseline idea, and next experiment handoff; `default` runs reproducible pipeline/tracking/baseline/experiment loop; `deep` adds full validation, council escalation, and deployment-ready handoff.
 
 **Frame problem and metrics.** Use `success-criteria-metrics` to define primary offline metric, online decision metric, guardrails, baseline, segments, and anti-metric-shopping lock.
 
@@ -104,12 +114,13 @@ Use `../council-review/references/escalation-matrix.md`. ML work often needs at 
 ## Success Criteria
 
 - metrics locked before results.
-- data pipeline and EDA are reproducible.
-- tracking records params, metrics, artifacts, seeds, code, and data lineage.
+- lite mode locks problem/metric, baseline idea, and next experiment handoff.
+- default/deep mode data pipeline and EDA are reproducible when training runs.
+- default/deep mode tracking records params, metrics, artifacts, seeds, code, and data lineage.
 - hypotheses have confirmation/refutation criteria.
-- baseline exists.
-- best candidate passes validation and guardrails or failure is explained.
-- handoff package is deployment/research-ready.
+- baseline exists when experiment loop runs.
+- best candidate passes validation and guardrails or failure is explained when training runs.
+- handoff package is research-ready or deployment-ready according to selected mode.
 - `run-telemetry` events emitted.
 
 ## Common Failure Modes

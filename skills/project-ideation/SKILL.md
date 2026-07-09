@@ -35,6 +35,14 @@ Use `grounding-brief` with long-term memory MCP for past ideas, product decision
 
 Use `../council-review/references/escalation-matrix.md`. Ordinary ideation can use no council or one product/engineering lens. Use minimal/full council for cross-functional jam, high-opportunity-cost bets, major strategic tradeoffs, or conflicting constraints across product, engineering, GTM, data, and strategy.
 
+## Workflow Modes
+
+- `lite`: fuzzy idea or OKR needs initial framing. Budget: one brief, no council, no full gap analysis unless evidence exists.
+- `default`: product opportunity needs evidence-backed candidates and feasibility. Budget: focused customer/data/context refs, one converge loop, `council_level` max `minimal-council`.
+- `deep`: cross-functional strategy, high opportunity cost, major GTM/design/data constraints, or leadership-visible bet. Budget: full jam/council allowed with reason and roadmap-ready handoff.
+- Escalate: conflicting constraints, high opportunity cost, major feasibility uncertainty, or leadership commitment.
+- Load: start with goal and evidence; load council matrix, metrics, handoff, or code RAG only when that phase is active.
+
 ## Execution
 
 **Deconstruct goal.** Break objective into drivers, constraints, target users, measurable sub-outcomes, and non-goals.

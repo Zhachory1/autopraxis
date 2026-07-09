@@ -35,6 +35,14 @@ Use `grounding-brief` with long-term memory MCP for prior roadmaps, strategy, te
 
 Use `../council-review/references/escalation-matrix.md`. Simple sequencing can use no council or one execution/product lens. Use minimal/full council for leadership commitments, multi-team capacity conflicts, platform bets, high opportunity cost, or unresolved feasibility/risk disputes.
 
+## Workflow Modes
+
+- `lite`: sequence a small set of candidates or prepare a concise decision brief. Budget: one scoring pass, no council, no full capacity model.
+- `default`: roadmap planning with ROI, dependencies, horizons, and capacity. Budget: focused refs, one dependency/capacity loop, `council_level` max `minimal-council`.
+- `deep`: leadership commitment, multi-team capacity conflict, platform bet, high opportunity cost, or disputed feasibility. Budget: full council allowed with reason and approval package.
+- Escalate: resource commitment, conflicting priorities, irreversible sequencing, missed dependency risk, or executive decision.
+- Load: start with candidates and strategy; load council matrix, capacity details, or approval templates only when needed.
+
 ## Execution
 
 **Evaluate ROI.** Score candidates by user/business value, strategic alignment, confidence, effort, risk, reversibility, time sensitivity, and learning value.

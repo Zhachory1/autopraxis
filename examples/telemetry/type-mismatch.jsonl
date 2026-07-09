@@ -1,0 +1,1 @@
+{"schema_version":1,"ts":123,"run_id":"type-bad","workflow":"dev-workflow","step":"grounding","event":"start","status":"ok","tools":"bash","artifact_refs":"README.md","metrics":"not-object"}
