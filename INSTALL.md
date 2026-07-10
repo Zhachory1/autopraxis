@@ -15,23 +15,15 @@ Native manifests shipped in this repo:
 
 ### Current verified install
 
-These commands work from a local checkout. They do not require npm publish or a public marketplace release.
-
-```bash
-git clone https://github.com/Zhachory1/autopraxis.git
-cd autopraxis
-npm test
-```
+Autopraxis is published as `@zhachory1/autopraxis` with CLI binary `autopraxis`.
 
 #### Claude Code
 
-Claude Code has native plugin marketplace/install commands. From the checkout, add the local marketplace, install the plugin, then verify it is enabled:
+Claude Code has native plugin marketplace/install commands. Add the GitHub marketplace, install the plugin, then verify it is enabled:
 
 ```bash
-claude plugin validate .claude-plugin/plugin.json --strict
-claude plugin validate . --strict
-claude plugin marketplace add ./ --scope user
-claude plugin install autopraxis@autopraxis --scope user
+claude plugin marketplace add Zhachory1/autopraxis
+claude plugin install autopraxis@autopraxis
 claude plugin list
 ```
 
@@ -58,13 +50,13 @@ Codex support is fallback-only until a verified first-party non-interactive plug
 Preview first:
 
 ```bash
-npm exec -- autopraxis install --target codex-plugin --dry-run
+npx @zhachory1/autopraxis@latest install --target codex-plugin --dry-run
 ```
 
 Install:
 
 ```bash
-npm exec -- autopraxis install --target codex-plugin
+npx @zhachory1/autopraxis@latest install --target codex-plugin
 # restart Codex, then open:
 codex /plugins
 ```
@@ -78,7 +70,7 @@ What the fallback writes:
 Use temp paths for tests or review:
 
 ```bash
-npm exec -- autopraxis install --target codex-plugin --dest /tmp/autopraxis-codex-plugin --marketplace-dest /tmp/autopraxis-marketplace.json
+npx @zhachory1/autopraxis@latest install --target codex-plugin --dest /tmp/autopraxis-codex-plugin --marketplace-dest /tmp/autopraxis-marketplace.json
 ```
 
 If the destination already exists and you intend to replace it, rerun with `--force`.
@@ -90,13 +82,13 @@ OpenCode discovers `SKILL.md` files from native skill directories and exposes `o
 Preview first:
 
 ```bash
-npm exec -- autopraxis install --target opencode-skills --dry-run
+npx @zhachory1/autopraxis@latest install --target opencode-skills --dry-run
 ```
 
 Install and verify:
 
 ```bash
-npm exec -- autopraxis install --target opencode-skills
+npx @zhachory1/autopraxis@latest install --target opencode-skills
 opencode debug skill
 ```
 
@@ -114,31 +106,17 @@ opencode debug config
 
 #### Me Write Code
 
-Me Write Code uses the native `.cave-plugin/plugin.json` manifest. Until marketplace install is published, use the local package fallback:
+Me Write Code uses the native `.cave-plugin/plugin.json` manifest. Until marketplace install is published, use the package fallback:
 
 ```bash
-npm exec -- autopraxis install --target mewrite-plugin
+npx @zhachory1/autopraxis@latest install --target mewrite-plugin
 ```
 
 Legacy direct skill install:
 
 ```bash
-npm exec -- autopraxis install --target mewrite-skills
+npx @zhachory1/autopraxis@latest install --target mewrite-skills
 ```
-
-## Post-publish install
-
-Do not use these commands until npm/GitHub marketplace release is complete and verified with real runtimes.
-
-```bash
-claude plugin marketplace add Zhachory1/autopraxis
-claude plugin install autopraxis@autopraxis
-npx @zhachory1/autopraxis@latest install --target codex-plugin
-npx @zhachory1/autopraxis@latest install --target opencode-skills
-npx @zhachory1/autopraxis@latest install --target mewrite-plugin
-```
-
-Release checklist owns the verification gate for these commands.
 
 ## Agent Fleet dependency for councils
 
@@ -189,22 +167,16 @@ test -f "$AGENT_FLEET_HOME/lib/journal.sh"
 List targets:
 
 ```bash
-npm exec -- autopraxis list-targets
+npx @zhachory1/autopraxis@latest list-targets
 ```
 
 ## Package-runner fallback options
 
-From a local checkout:
-
-```bash
-npm exec -- autopraxis install --target <target> [--dest <path>] [--marketplace-dest <path>] [--link] [--force] [--dry-run]
-```
-
-After npm publish:
-
 ```bash
 npx @zhachory1/autopraxis@latest install --target <target> [--dest <path>] [--marketplace-dest <path>] [--link] [--force] [--dry-run]
 ```
+
+From a local checkout, replace `npx @zhachory1/autopraxis@latest` with `npm exec -- autopraxis`.
 
 Options:
 
@@ -218,9 +190,9 @@ Options:
 Examples:
 
 ```bash
-npm exec -- autopraxis install --target codex-plugin --marketplace-dest /tmp/marketplace.json
-npm exec -- autopraxis install --target opencode-skills --dest ~/.opencode/skills
-npm exec -- autopraxis install --target generic-markdown --dest ./autopraxis-prompts
+npx @zhachory1/autopraxis@latest install --target codex-plugin --marketplace-dest /tmp/marketplace.json
+npx @zhachory1/autopraxis@latest install --target opencode-skills --dest ~/.opencode/skills
+npx @zhachory1/autopraxis@latest install --target generic-markdown --dest ./autopraxis-prompts
 ```
 
 ## Runtime-native plugin layout
@@ -262,17 +234,13 @@ opencode debug skill
 
 ## Upgrade
 
-Current checkout installs:
+Runtime-native Claude install:
 
 ```bash
-git pull
-npm test
 claude plugin update autopraxis@autopraxis
-npm exec -- autopraxis install --target codex-plugin
-npm exec -- autopraxis install --target opencode-skills
 ```
 
-Post-publish fallback installs:
+Package-runner fallback installs:
 
 ```bash
 npx @zhachory1/autopraxis@latest install --target codex-plugin
@@ -317,7 +285,7 @@ Autopraxis works without these, but skills become stronger when available.
 
 ```bash
 npm test
-npm exec -- autopraxis validate-package
+npx @zhachory1/autopraxis@latest validate-package
 npm pack --dry-run
 ```
 
