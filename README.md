@@ -136,8 +136,8 @@ opencode debug skill
 Post-publish package-runner path, not current install:
 
 ```bash
-npx autopraxis@latest install --target codex-plugin
-npx autopraxis@latest install --target opencode-skills
+npx @zhachory1/autopraxis@latest install --target codex-plugin
+npx @zhachory1/autopraxis@latest install --target opencode-skills
 ```
 
 Native plugin manifests:

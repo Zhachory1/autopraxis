@@ -60,11 +60,11 @@ node bin/autopraxis.mjs install --target mewrite-skills --dest /tmp/autopraxis-s
 rm -rf /tmp/autopraxis-claude-plugin /tmp/autopraxis-codex-plugin /tmp/autopraxis-marketplace.json /tmp/autopraxis-opencode-home /tmp/autopraxis-skills
 ```
 
-For post-publish install docs, record evidence before moving `npx autopraxis@latest` or remote marketplace commands into the current quickstart:
+For post-publish install docs, record evidence before moving `npx @zhachory1/autopraxis@latest` or remote marketplace commands into the current quickstart:
 
 ```bash
 npm view autopraxis version
-npx autopraxis@latest list-targets
+npx @zhachory1/autopraxis@latest list-targets
 claude plugin marketplace add Zhachory1/autopraxis --scope local
 claude plugin list --available --json
 ```
@@ -98,7 +98,11 @@ gh release create vX.Y.Z --repo Zhachory1/autopraxis --title "Autopraxis vX.Y.Z"
 
 ## Current Publishing Policy
 
-Do not publish to npm yet, even though package metadata is publish-ready for `npx autopraxis@latest ...`. Publish only after post-publish install docs are verified with real Claude, Codex, OpenCode, and Me Write runtimes.
+Publish npm releases as the scoped public package `@zhachory1/autopraxis`. Keep the CLI binary name `autopraxis`, so package-runner usage is:
+
+```bash
+npx @zhachory1/autopraxis@latest list-targets
+```
 
 Do not move npm or remote marketplace commands into current quickstarts until verification evidence is recorded in release notes.
 

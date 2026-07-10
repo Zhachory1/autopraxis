@@ -100,7 +100,7 @@ function assertPostPublishOnly(name, text, token) {
 }
 
 for (const [name, text] of [['README.md', readme], ['INSTALL.md', install]]) {
-  assertPostPublishOnly(name, text, 'npx autopraxis@latest');
+  assertPostPublishOnly(name, text, 'npx @zhachory1/autopraxis@latest');
 }
 assertPostPublishOnly('README.md', readme, 'claude plugin marketplace add Zhachory1/autopraxis');
 assertPostPublishOnly('INSTALL.md', install, 'claude plugin marketplace add Zhachory1/autopraxis');

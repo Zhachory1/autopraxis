@@ -133,9 +133,9 @@ Do not use these commands until npm/GitHub marketplace release is complete and v
 ```bash
 claude plugin marketplace add Zhachory1/autopraxis
 claude plugin install autopraxis@autopraxis
-npx autopraxis@latest install --target codex-plugin
-npx autopraxis@latest install --target opencode-skills
-npx autopraxis@latest install --target mewrite-plugin
+npx @zhachory1/autopraxis@latest install --target codex-plugin
+npx @zhachory1/autopraxis@latest install --target opencode-skills
+npx @zhachory1/autopraxis@latest install --target mewrite-plugin
 ```
 
 Release checklist owns the verification gate for these commands.
@@ -203,7 +203,7 @@ npm exec -- autopraxis install --target <target> [--dest <path>] [--marketplace-
 After npm publish:
 
 ```bash
-npx autopraxis@latest install --target <target> [--dest <path>] [--marketplace-dest <path>] [--link] [--force] [--dry-run]
+npx @zhachory1/autopraxis@latest install --target <target> [--dest <path>] [--marketplace-dest <path>] [--link] [--force] [--dry-run]
 ```
 
 Options:
@@ -275,8 +275,8 @@ npm exec -- autopraxis install --target opencode-skills
 Post-publish fallback installs:
 
 ```bash
-npx autopraxis@latest install --target codex-plugin
-npx autopraxis@latest install --target opencode-skills
+npx @zhachory1/autopraxis@latest install --target codex-plugin
+npx @zhachory1/autopraxis@latest install --target opencode-skills
 ```
 
 Symlink development installs follow the working tree automatically after `git pull`.
@@ -344,4 +344,6 @@ Validation checks:
 
 ## Distribution
 
-Do not publish to npm, a Claude marketplace, Codex marketplace, Me Write marketplace, or OpenCode package flow until post-publish install docs are validated with real agent runtimes. Package metadata is publish-ready so the release step can enable `npx autopraxis@latest ...` without changing the install surface.
+Npm distribution uses scoped public package `@zhachory1/autopraxis` with CLI binary `autopraxis`.
+
+Do not publish to a Claude marketplace, Codex marketplace, Me Write marketplace, or OpenCode package flow until post-publish install docs are validated with real agent runtimes.
