@@ -239,6 +239,11 @@ for (const token of ['accepted_success_rate', 'Workflow Evaluation Matrix', 'Eva
   if (!evaluationFramework.includes(token)) failures.push(`evaluation framework: missing ${token}`);
 }
 
+const spawnModelRouting = await readFile(join(root, 'docs/reference/spawn-model-routing.md'), 'utf8');
+for (const token of ['Runtime Control Boundary', 'Spawn Inventory', 'Routing Recommendation', 'Evaluation Plan', 'pricing_version', 'Shadow Rollout', '30% cost reduction', 'missed-blocker rate']) {
+  if (!spawnModelRouting.includes(token)) failures.push(`spawn model routing: missing ${token}`);
+}
+
 const packageJson = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));
 if (packageJson.bin?.autopraxis !== 'bin/autopraxis.mjs') failures.push('package.json: missing autopraxis bin');
 if (packageJson.private !== false) failures.push('package.json: package must be publishable for package-runner install');

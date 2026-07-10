@@ -162,7 +162,7 @@ node bin/autopraxis.mjs eval validate --fixtures evals/workflows --baseline eval
 node bin/autopraxis.mjs eval summarize --fixtures evals/workflows
 ```
 
-See the [evaluation framework](https://github.com/Zhachory1/autopraxis/blob/main/docs/reference/evaluation-framework.md), [token efficiency note](https://github.com/Zhachory1/autopraxis/blob/main/docs/reference/token-efficiency.md), and [workflow expansion research](https://github.com/Zhachory1/autopraxis/blob/main/docs/reference/workflow-expansion.md) for workflow quality, token/cost strategy, and future workflow selection.
+See the [evaluation framework](https://github.com/Zhachory1/autopraxis/blob/main/docs/reference/evaluation-framework.md), [token efficiency note](https://github.com/Zhachory1/autopraxis/blob/main/docs/reference/token-efficiency.md), [spawn model routing research](https://github.com/Zhachory1/autopraxis/blob/main/docs/reference/spawn-model-routing.md), and [workflow expansion research](https://github.com/Zhachory1/autopraxis/blob/main/docs/reference/workflow-expansion.md) for workflow quality, token/cost strategy, and future workflow selection.
 
 ## Release cycle
 

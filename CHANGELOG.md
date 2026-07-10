@@ -10,6 +10,10 @@ Autopraxis uses SemVer-style versions before `1.0.0`:
 
 ## [Unreleased]
 
+### Added
+
+- Spawn model routing research covering cheaper-model tiers, evaluation gates, telemetry, pricing catalog, and shadow rollout controls.
+
 ### Changed
 
 - Removed the in-repo `council-review` skill. Workflows now call agent-fleet `/council` directly for required minimal/full councils.
