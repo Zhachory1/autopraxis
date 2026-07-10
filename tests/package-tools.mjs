@@ -92,18 +92,11 @@ if (install.indexOf('node bin/autopraxis.mjs install') !== -1 && install.indexOf
   failures.push('INSTALL.md: node bin/autopraxis.mjs install must only appear in local development fallback');
 }
 
-function assertPostPublishOnly(name, text, token) {
-  const tokenIndex = text.indexOf(token);
-  if (tokenIndex === -1) return;
-  const postPublishIndex = text.indexOf('Post-publish');
-  if (postPublishIndex === -1 || tokenIndex < postPublishIndex) failures.push(`${name}: ${token} must only appear under post-publish docs`);
-}
-
 for (const [name, text] of [['README.md', readme], ['INSTALL.md', install]]) {
-  assertPostPublishOnly(name, text, 'npx @zhachory1/autopraxis@latest');
+  if (!text.includes('npx @zhachory1/autopraxis@latest')) failures.push(`${name}: missing scoped npx install command`);
 }
-assertPostPublishOnly('README.md', readme, 'claude plugin marketplace add Zhachory1/autopraxis');
-assertPostPublishOnly('INSTALL.md', install, 'claude plugin marketplace add Zhachory1/autopraxis');
+if (!readme.includes('claude plugin marketplace add Zhachory1/autopraxis')) failures.push('README.md: missing Claude GitHub marketplace command');
+if (!install.includes('claude plugin marketplace add Zhachory1/autopraxis')) failures.push('INSTALL.md: missing Claude GitHub marketplace command');
 
 if (failures.length) {
   console.error('Package/tool install validation failed:');

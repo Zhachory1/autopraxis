@@ -60,16 +60,16 @@ node bin/autopraxis.mjs install --target mewrite-skills --dest /tmp/autopraxis-s
 rm -rf /tmp/autopraxis-claude-plugin /tmp/autopraxis-codex-plugin /tmp/autopraxis-marketplace.json /tmp/autopraxis-opencode-home /tmp/autopraxis-skills
 ```
 
-For post-publish install docs, record evidence before moving `npx @zhachory1/autopraxis@latest` or remote marketplace commands into the current quickstart:
+For package install docs, record evidence before release:
 
 ```bash
-npm view autopraxis version
+npm view @zhachory1/autopraxis version
 npx @zhachory1/autopraxis@latest list-targets
 claude plugin marketplace add Zhachory1/autopraxis --scope local
 claude plugin list --available --json
 ```
 
-If npm or remote marketplace verification fails, keep those commands under `Post-publish install` only.
+If npm or remote marketplace verification fails, fix docs before release.
 
 ## Release Steps
 
@@ -104,9 +104,7 @@ Publish npm releases as the scoped public package `@zhachory1/autopraxis`. Keep 
 npx @zhachory1/autopraxis@latest list-targets
 ```
 
-Do not move npm or remote marketplace commands into current quickstarts until verification evidence is recorded in release notes.
-
-Do not publish to Claude, Codex, Me Write, or OpenCode marketplaces yet. Native plugin manifests are included for local/plugin-dir installs and future marketplace work.
+Npm and Claude GitHub marketplace install paths are verified for the current package. Do not publish to separate Claude, Codex, Me Write, or OpenCode marketplaces yet. Native plugin manifests are included for local/plugin-dir installs and future marketplace work.
 
 ## Rollback
 

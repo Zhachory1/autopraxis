@@ -98,29 +98,21 @@ Agents should prefer available MCP/RAG tools for recall and codebase context, bu
 
 ## Install by runtime
 
-Current verified installs use a local checkout until npm/GitHub marketplace release is complete. Use runtime-native tools where available; Codex/OpenCode remain fallback-only because no verified first-party install command exists yet.
+Use runtime-native tools where available. Codex/OpenCode remain fallback-only because no verified first-party install command exists yet; their current path uses the published scoped package runner.
+
+Claude Code:
 
 ```bash
-git clone https://github.com/Zhachory1/autopraxis.git
-cd autopraxis
-npm test
-```
-
-Claude Code current path:
-
-```bash
-claude plugin validate .claude-plugin/plugin.json --strict
-claude plugin validate . --strict
-claude plugin marketplace add ./ --scope user
-claude plugin install autopraxis@autopraxis --scope user
+claude plugin marketplace add Zhachory1/autopraxis
+claude plugin install autopraxis@autopraxis
 claude plugin list
 ```
 
 Codex fallback path:
 
 ```bash
-npm exec -- autopraxis install --target codex-plugin --dry-run
-npm exec -- autopraxis install --target codex-plugin
+npx @zhachory1/autopraxis@latest install --target codex-plugin --dry-run
+npx @zhachory1/autopraxis@latest install --target codex-plugin
 # restart Codex, then open:
 codex /plugins
 ```
@@ -128,16 +120,9 @@ codex /plugins
 OpenCode fallback path:
 
 ```bash
-npm exec -- autopraxis install --target opencode-skills --dry-run
-npm exec -- autopraxis install --target opencode-skills
-opencode debug skill
-```
-
-Post-publish package-runner path, not current install:
-
-```bash
-npx @zhachory1/autopraxis@latest install --target codex-plugin
+npx @zhachory1/autopraxis@latest install --target opencode-skills --dry-run
 npx @zhachory1/autopraxis@latest install --target opencode-skills
+opencode debug skill
 ```
 
 Native plugin manifests:
