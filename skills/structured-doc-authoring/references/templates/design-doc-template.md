@@ -13,7 +13,7 @@ Use this template after PRD/problem alignment when the technical approach needs 
 - PRD/problem link:
 - related ADRs:
 - target implementation window:
-- next gate: council-review | task-decomposition-planning | human-approval-gate
+- next gate: agent-fleet /council | task-decomposition-planning | human-approval-gate
 ```
 
 ## Context And Scope

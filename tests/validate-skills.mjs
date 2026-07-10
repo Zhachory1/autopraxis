@@ -17,7 +17,6 @@ const workflowSkills = new Set([
 ]);
 const sharedSkillNames = [
   'grounding-brief',
-  'council-review',
   'success-criteria-metrics',
   'task-decomposition-planning',
   'hypothesis-testing',
@@ -55,7 +54,7 @@ const dirs = (await readdir(skillsDir, { withFileTypes: true }))
   .map((entry) => entry.name)
   .sort();
 
-if (dirs.length < 16) failures.push(`expected at least 16 skills, found ${dirs.length}`);
+if (dirs.length < 15) failures.push(`expected at least 15 skills, found ${dirs.length}`);
 
 for (const dir of dirs) {
   const file = join(skillsDir, dir, 'SKILL.md');
@@ -88,7 +87,7 @@ for (const dir of workflowSkills) {
 }
 
 const dev = await readFile(join(skillsDir, 'dev-workflow', 'SKILL.md'), 'utf8');
-for (const token of ['council-review', 'ship', 'code-reviewer', 'PRD', 'DD']) {
+for (const token of ['agent-fleet', '/council', 'ship', 'code-reviewer', 'PRD', 'DD']) {
   if (!dev.includes(token)) failures.push(`dev-workflow: missing ${token}`);
 }
 
@@ -97,14 +96,7 @@ for (const token of ['long-term memory MCP', 'code RAG', 'agent-fleet', 'A/B', '
   if (!backprop.includes(token)) failures.push(`backprop: missing ${token}`);
 }
 
-const council = await readFile(join(skillsDir, 'council-review', 'SKILL.md'), 'utf8');
-for (const token of ['AGENT_FLEET_HOME', '/Users/zhach/code/agent-fleet', 'pass-with-nits', 'block', 'references/escalation-matrix.md', 'council_level', 'council_reason']) {
-  if (!council.includes(token)) failures.push(`council-review: missing ${token}`);
-}
-const councilMatrix = await readFile(join(skillsDir, 'council-review', 'references/escalation-matrix.md'), 'utf8');
-for (const token of ['none', 'single-lens', 'minimal-council', 'full-council', 'Cost Cap', 'High-Risk Triggers', 'metrics.council_level', 'metrics.council_reason', 'agent_fleet_invoked']) {
-  if (!councilMatrix.includes(token)) failures.push(`council-review escalation matrix: missing ${token}`);
-}
+if (existsSync(join(skillsDir, 'council-review'))) failures.push('council-review skill must not exist; use agent-fleet /council directly');
 const telemetrySkill = await readFile(join(skillsDir, 'run-telemetry', 'SKILL.md'), 'utf8');
 for (const token of ['council_level', 'council_reason', 'persona_count', 'agent_fleet_invoked']) {
   if (!telemetrySkill.includes(token)) failures.push(`run-telemetry: missing council metric ${token}`);
@@ -114,11 +106,10 @@ for (const token of ['workflow_mode', 'mode_budget', 'mode_escalation_reason', '
 }
 for (const workflowName of workflowSkills) {
   const text = await readFile(join(skillsDir, workflowName, 'SKILL.md'), 'utf8');
-  if (text.includes('council-review')) {
-    if (!text.includes('## Council Policy')) failures.push(`${workflowName}: missing Council Policy section`);
-    const matrixReference = '../council-review/references/escalation-matrix.md';
-    if (!text.includes(matrixReference)) failures.push(`${workflowName}: missing council escalation matrix reference`);
-    if (!existsSync(join(skillsDir, workflowName, matrixReference))) failures.push(`${workflowName}: council escalation matrix reference does not resolve`);
+  if (text.includes('council-review') || text.includes('../council-review')) failures.push(`${workflowName}: stale council-review reference; use agent-fleet /council`);
+  if (!text.includes('## Council Policy')) failures.push(`${workflowName}: missing Council Policy section`);
+  for (const token of ['agent-fleet', 'minimal-council', 'full-council']) {
+    if (!text.includes(token)) failures.push(`${workflowName}: council policy missing ${token}`);
   }
   const modeStart = text.indexOf('## Workflow Modes');
   if (modeStart === -1) failures.push(`${workflowName}: missing Workflow Modes section`);
@@ -153,6 +144,7 @@ for (const relativePath of requiredDocReferenceFiles) {
 
 const manifest = JSON.parse(await readFile(join(root, 'autopraxis.json'), 'utf8'));
 if (manifest.name !== 'autopraxis') failures.push('manifest: name must be autopraxis');
+if (JSON.stringify(manifest).includes('/Users/zhach/code/agent-fleet')) failures.push('manifest: must not hardcode personal agent-fleet path');
 const manifestSkillNames = manifest.skills.map((skill) => skill.name).sort();
 if (JSON.stringify(manifestSkillNames) !== JSON.stringify(dirs)) {
   failures.push(`manifest: skill list does not match skills directory (${manifestSkillNames.join(',')} vs ${dirs.join(',')})`);
@@ -161,7 +153,7 @@ for (const skill of manifest.skills) {
   if (!existsSync(join(root, skill.path, 'SKILL.md'))) failures.push(`manifest: ${skill.name} path missing SKILL.md`);
   if (!['workflow', 'shared'].includes(skill.kind)) failures.push(`manifest: ${skill.name} has invalid kind ${skill.kind}`);
 }
-for (const target of ['claude-plugin', 'codex-plugin', 'mewrite-plugin', 'mewrite-skills', 'claude-skills', 'codex-skills', 'generic-markdown', 'cursor-rules', 'windsurf-rules']) {
+for (const target of ['claude-plugin', 'codex-plugin', 'mewrite-plugin', 'mewrite-skills', 'claude-skills', 'codex-skills', 'opencode-skills', 'generic-markdown', 'cursor-rules', 'windsurf-rules']) {
   if (!manifest.installTargets[target]) failures.push(`manifest: missing install target ${target}`);
 }
 for (const [runtime, manifestPath] of Object.entries(manifest.standardPluginManifests ?? {})) {
@@ -169,6 +161,9 @@ for (const [runtime, manifestPath] of Object.entries(manifest.standardPluginMani
 }
 const claudePlugin = JSON.parse(await readFile(join(root, '.claude-plugin/plugin.json'), 'utf8'));
 if (claudePlugin.name !== 'autopraxis') failures.push('claude plugin manifest: name must be autopraxis');
+if (!claudePlugin.author || typeof claudePlugin.author !== 'object') failures.push('claude plugin manifest: author must be an object');
+const claudeMarketplace = JSON.parse(await readFile(join(root, '.claude-plugin/marketplace.json'), 'utf8'));
+if (!claudeMarketplace.plugins?.some((plugin) => plugin.name === 'autopraxis' && plugin.source === './')) failures.push('claude marketplace: missing local autopraxis entry');
 const codexPlugin = JSON.parse(await readFile(join(root, '.codex-plugin/plugin.json'), 'utf8'));
 if (codexPlugin.name !== 'autopraxis') failures.push('codex plugin manifest: name must be autopraxis');
 if (codexPlugin.skills !== './skills/') failures.push('codex plugin manifest: skills must be ./skills/');
@@ -179,6 +174,9 @@ if (!codexMarketplace.plugins?.some((plugin) => plugin.name === 'autopraxis')) f
 for (const integration of ['agent-fleet', 'long-term-memory-mcp', 'code-rag', 'run-telemetry']) {
   if (!manifest.optionalIntegrations.some((item) => item.name === integration)) failures.push(`manifest: missing optional integration ${integration}`);
 }
+const agentFleetIntegration = manifest.optionalIntegrations.find((item) => item.name === 'agent-fleet');
+if (agentFleetIntegration?.package !== '@zhachory1/agent-fleet') failures.push('manifest: agent-fleet integration must declare @zhachory1/agent-fleet package');
+if (agentFleetIntegration?.minimumVersion !== '0.4.0') failures.push('manifest: agent-fleet integration minimumVersion must be 0.4.0');
 
 const readme = await readFile(join(root, 'README.md'), 'utf8');
 const startHereIndex = readme.indexOf('## Start here');
@@ -243,6 +241,7 @@ for (const token of ['accepted_success_rate', 'Workflow Evaluation Matrix', 'Eva
 
 const packageJson = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));
 if (packageJson.bin?.autopraxis !== 'bin/autopraxis.mjs') failures.push('package.json: missing autopraxis bin');
+if (packageJson.private !== false) failures.push('package.json: package must be publishable for package-runner install');
 for (const file of ['.agents/plugins/marketplace.json', '.cave-plugin/', '.claude-plugin/', '.codex-plugin/', 'README.md', 'INSTALL.md', 'CHANGELOG.md', 'RELEASE.md', 'autopraxis.json', 'assets/', 'bin/', 'evals/', 'examples/', 'releases/', 'skills/']) {
   if (!packageJson.files.includes(file)) failures.push(`package.json: files missing ${file}`);
 }

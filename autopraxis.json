@@ -7,12 +7,12 @@
   "skillRoot": "skills",
   "standardPluginManifests": {
     "claude": ".claude-plugin/plugin.json",
+    "claudeMarketplace": ".claude-plugin/marketplace.json",
     "codex": ".codex-plugin/plugin.json",
     "mewrite": ".cave-plugin/plugin.json"
   },
   "skills": [
     { "name": "backprop", "path": "skills/backprop", "kind": "workflow" },
-    { "name": "council-review", "path": "skills/council-review", "kind": "shared" },
     { "name": "debug-investigation", "path": "skills/debug-investigation", "kind": "workflow" },
     { "name": "dev-workflow", "path": "skills/dev-workflow", "kind": "workflow" },
     { "name": "grounding-brief", "path": "skills/grounding-brief", "kind": "shared" },
@@ -63,6 +63,11 @@
       "defaultDestination": "~/.codex/skills",
       "layout": "skill-directories"
     },
+    "opencode-skills": {
+      "description": "OpenCode native skill directories",
+      "defaultDestination": "~/.opencode/skills",
+      "layout": "skill-directories"
+    },
     "generic-markdown": {
       "description": "Portable markdown prompt bundle for agents without native skills/plugins",
       "defaultDestination": "~/.autopraxis/prompts",
@@ -82,8 +87,11 @@
   "optionalIntegrations": [
     {
       "name": "agent-fleet",
+      "package": "@zhachory1/agent-fleet",
+      "minimumVersion": "0.4.0",
       "env": "AGENT_FLEET_HOME",
-      "defaultHint": "/Users/zhach/code/agent-fleet",
+      "setupHint": "Autopraxis depends on @zhachory1/agent-fleet; use AGENT_FLEET_HOME only as an explicit local-development override.",
+      "requiredFor": ["minimal-council", "full-council"],
       "features": ["council", "ship", "personas", "journals", "transcripts"]
     },
     {

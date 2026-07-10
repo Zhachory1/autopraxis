@@ -15,7 +15,7 @@ Optimize workflow skills by reviewing prior executions, telemetry, human edits, 
 
 **Hypotheses before edits.** Workflow changes are testable hypotheses with expected metric movement and regression risks.
 
-**Regression review before promotion.** Use `council-review` to catch new failure modes introduced by prompt or skill changes.
+**Regression review before promotion.** Use agent-fleet `/council` to catch new failure modes introduced by prompt or skill changes.
 
 **Roll out safely.** Shadow, A/B, promote-or-rollback, and changelog rather than mutating core workflows blindly.
 
@@ -34,7 +34,7 @@ Optimize workflow skills by reviewing prior executions, telemetry, human edits, 
 Use available sources in this priority order:
 
 - `run-telemetry` JSONL from current workflow runs.
-- agent-fleet `agent-fleet` council journal and room transcripts.
+- agent-fleet council journal and room transcripts.
 - long-term memory MCP / `gbrain` for session notes, decisions, incidents, project docs, human feedback, prior retros.
 - code RAG / repo-index / `coderag` for skill definitions, code changes, recurring affected paths, ownership, semantic similarity.
 - git history for workflow skill commits, downstream patch diffs, revert frequency, commit size, review churn.
@@ -45,7 +45,7 @@ Store only summaries and pointers unless operator approves durable capture of se
 
 ## Council Policy
 
-Use `../council-review/references/escalation-matrix.md`. Small prompt/template changes can use one reviewer lens or no council after eval evidence. Use minimal/full council for workflow contract changes, regression-risk changes, cost/telemetry schema changes, or changes that alter human approval/council behavior.
+Use agent-fleet council levels. Small prompt/template changes can use one reviewer lens or no council after eval evidence. Use minimal/full council for workflow contract changes, regression-risk changes, cost/telemetry schema changes, or changes that alter human approval/council behavior. Required `minimal-council`/`full-council` must block if agent-fleet preflight fails.
 
 ## Workflow Modes
 
@@ -67,7 +67,7 @@ Use `../council-review/references/escalation-matrix.md`. Small prompt/template c
 
 **Generate improvement hypotheses.** For each measured problem, propose a minimal skill or workflow change with expected metric movement, regression risk, owner, and validation plan.
 
-**Council review proposed changes.** Use `../council-review/references/escalation-matrix.md` to pick one lens, minimal council, or full council. Gate against overfitting, prompt bloat, regressions, and cost creep when measured risk justifies council.
+**Council review proposed changes.** Use agent-fleet `/council` to pick one lens, minimal council, or full council. Gate against overfitting, prompt bloat, regressions, and cost creep when measured risk justifies council.
 
 **Shadow or A/B rollout.** Run candidate workflow against baseline on comparable tasks. Prefer shadow mode first for high-risk changes; use A/B only when routing and metrics are fair.
 

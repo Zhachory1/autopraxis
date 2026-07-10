@@ -29,11 +29,11 @@ Turn high-level goals into framed, evaluable project candidates. Use customer/da
 
 ## Tool Awareness
 
-Use `grounding-brief` with long-term memory MCP for past ideas, product decisions, customer notes, and strategy docs. Use code RAG for technical feasibility and existing capabilities. Use `council-review` as cross-function jam with product/eng/design/GTM/data/executive lenses. Use `success-criteria-metrics`, `hypothesis-testing`, `handoff-packaging`, and `run-telemetry`.
+Use `grounding-brief` with long-term memory MCP for past ideas, product decisions, customer notes, and strategy docs. Use code RAG for technical feasibility and existing capabilities. Use agent-fleet `/council` as cross-function jam with product/eng/design/GTM/data/executive lenses when council risk triggers. Use `success-criteria-metrics`, `hypothesis-testing`, `handoff-packaging`, and `run-telemetry`.
 
 ## Council Policy
 
-Use `../council-review/references/escalation-matrix.md`. Ordinary ideation can use no council or one product/engineering lens. Use minimal/full council for cross-functional jam, high-opportunity-cost bets, major strategic tradeoffs, or conflicting constraints across product, engineering, GTM, data, and strategy.
+Use agent-fleet council levels. Ordinary ideation can use no council or one product/engineering lens. Use minimal/full council for cross-functional jam, high-opportunity-cost bets, major strategic tradeoffs, or conflicting constraints across product, engineering, GTM, data, and strategy. Required `minimal-council`/`full-council` must block if agent-fleet preflight fails.
 
 ## Workflow Modes
 
@@ -41,7 +41,7 @@ Use `../council-review/references/escalation-matrix.md`. Ordinary ideation can u
 - `default`: product opportunity needs evidence-backed candidates and feasibility. Budget: focused customer/data/context refs, one converge loop, `council_level` max `minimal-council`.
 - `deep`: cross-functional strategy, high opportunity cost, major GTM/design/data constraints, or leadership-visible bet. Budget: full jam/council allowed with reason and roadmap-ready handoff.
 - Escalate: conflicting constraints, high opportunity cost, major feasibility uncertainty, or leadership commitment.
-- Load: start with goal and evidence; load council matrix, metrics, handoff, or code RAG only when that phase is active.
+- Load: start with goal and evidence; load agent-fleet council protocol, metrics, handoff, or code RAG only when that phase is active.
 
 ## Execution
 
@@ -49,7 +49,7 @@ Use `../council-review/references/escalation-matrix.md`. Ordinary ideation can u
 
 **Analyze gaps.** Compare current vs desired state using customer feedback, analytics, support signals, competitive context, and internal constraints.
 
-**Run cross-function jam.** Use `../council-review/references/escalation-matrix.md` to decide whether ideation needs no council, one lens, minimal council, or full cross-functional council across product, engineering, design, GTM, data, and strategy.
+**Run cross-function jam.** Decide whether ideation needs no council, one lens, agent-fleet minimal council, or full cross-functional council across product, engineering, design, GTM, data, and strategy.
 
 **Converge candidates.** Cluster ideas by user problem, value lever, feasibility, and strategic fit.
 

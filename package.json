@@ -1,11 +1,17 @@
 {
   "name": "autopraxis",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Self-improving workflow skills for AI agents: dev, ML experiments, PR review, debugging, ideation, roadmapping, and backprop optimization.",
   "type": "module",
   "bin": {
     "autopraxis": "bin/autopraxis.mjs"
+  },
+  "dependencies": {
+    "@zhachory1/agent-fleet": "^0.4.0"
   },
   "files": [
     ".agents/plugins/marketplace.json",
@@ -25,7 +31,7 @@
     "skills/"
   ],
   "scripts": {
-    "test": "node tests/validate-skills.mjs && node tests/telemetry-cli.mjs && node tests/eval-fixtures.mjs",
+    "test": "node tests/validate-skills.mjs && node tests/telemetry-cli.mjs && node tests/eval-fixtures.mjs && node tests/package-tools.mjs",
     "validate:package": "node bin/autopraxis.mjs validate-package"
   },
   "engines": {

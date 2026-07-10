@@ -142,7 +142,7 @@ Do not store raw artifacts, logs, secrets, or customer data in mode reason field
 
 ## Council Metrics
 
-When `council-review` runs or skips a gate, put council fields under `metrics`:
+When agent-fleet `/council` runs or a council gate is skipped, put council fields under `metrics`:
 
 ```json
 {

@@ -78,7 +78,7 @@ Detailed scores are planning estimates; future eval telemetry should replace the
 
 **Goal:** Identify and mitigate security/privacy risk before release.
 
-**Likely shape:** deep-mode recipe for `dev-workflow` or `pr-review` using `council-review` only on high-risk changes.
+**Likely shape:** deep-mode recipe for `dev-workflow` or `pr-review` using agent-fleet `/council` only on high-risk changes.
 
 **Inputs:** design/diff, data handled, auth boundaries, threat assumptions, rollout plan.
 

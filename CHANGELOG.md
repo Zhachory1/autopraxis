@@ -8,6 +8,12 @@ Autopraxis uses SemVer-style versions before `1.0.0`:
 - minor: new workflows, skills, install targets, or reusable reference packs.
 - major: breaking skill layout, manifest, installer, telemetry, or workflow contract changes.
 
+## [Unreleased]
+
+### Changed
+
+- Removed the in-repo `council-review` skill. Workflows now call agent-fleet `/council` directly for required minimal/full councils.
+
 ## [0.1.0] - 2026-07-08
 
 Initial public release.

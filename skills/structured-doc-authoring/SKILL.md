@@ -105,7 +105,7 @@ Load these references on demand:
   blocks:
 
 ## Next Gate
-- council-review | task-decomposition-planning | ship | human-approval-gate
+- agent-fleet /council | task-decomposition-planning | ship | human-approval-gate
 ```
 
 ## Success Criteria

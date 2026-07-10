@@ -30,11 +30,11 @@ Investigate symptoms with evidence, reproduction, code/data tracing, hypothesis 
 
 ## Tool Awareness
 
-Use `grounding-brief` with long-term memory MCP for prior incidents and decisions, code RAG for implicated paths, logs/traces/metrics for evidence, git/CI/deploy history for recent changes, and `hypothesis-testing` for root-cause loop. Use `council-review` for high-risk fixes or ambiguous RCA. Use `run-telemetry` throughout.
+Use `grounding-brief` with long-term memory MCP for prior incidents and decisions, code RAG for implicated paths, logs/traces/metrics for evidence, git/CI/deploy history for recent changes, and `hypothesis-testing` for root-cause loop. Use agent-fleet `/council` for high-risk fixes or ambiguous RCA. Use `run-telemetry` throughout.
 
 ## Council Policy
 
-Use `../council-review/references/escalation-matrix.md`. Most investigations use no council until root-cause ambiguity, high-risk fix, ambiguous RCA, production blast radius, security/privacy/reliability concern, or conflicting evidence justifies `single-lens`, minimal, or full council.
+Use agent-fleet council levels. Most investigations use no council until root-cause ambiguity, high-risk fix, ambiguous RCA, production blast radius, security/privacy/reliability concern, or conflicting evidence justifies `single-lens`, minimal, or full council. Required `minimal-council`/`full-council` must block if agent-fleet preflight fails.
 
 ## Workflow Modes
 
@@ -42,7 +42,7 @@ Use `../council-review/references/escalation-matrix.md`. Most investigations use
 - `default`: unclear bug; gather logs/evidence, repro if feasible, trace code, maintain hypothesis ledger. Budget: focused refs, loop cap from severity, `council_level` max `single-lens`.
 - `deep`: production incident, high-risk fix, ambiguous RCA, security/privacy/reliability impact, or evidence conflict. Budget: full RCA, council allowed with reason, prevention actions.
 - Escalate: production blast radius, evidence exhaustion, risky fix, conflicting hypotheses, or ambiguous RCA.
-- Load: start with symptom/evidence; load council matrix, RCA template, dashboards, or prior incidents only when needed.
+- Load: start with symptom/evidence; load agent-fleet council protocol, RCA template, dashboards, or prior incidents only when needed.
 
 ## Execution
 
@@ -60,7 +60,7 @@ Use `../council-review/references/escalation-matrix.md`. Most investigations use
 
 **Write RCA.** Use `structured-doc-authoring` and `handoff-packaging` for root cause, contributing factors, fix, prevention, tests, alerts, and open risks.
 
-**Escalate when needed.** Use `../council-review/references/escalation-matrix.md` for high-risk fixes or ambiguous RCA; use `human-approval-gate` for evidence exhaustion, access gaps, or unresolved production impact.
+**Escalate when needed.** Use agent-fleet `/council` for high-risk fixes or ambiguous RCA; use `human-approval-gate` for evidence exhaustion, access gaps, or unresolved production impact.
 
 ## Loop Controls
 

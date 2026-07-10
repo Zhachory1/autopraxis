@@ -1,47 +1,187 @@
 # Install Autopraxis
 
-Autopraxis is a skills plugin bundle. It uses the standard `skills/<name>/SKILL.md` layout and ships native plugin manifests for Claude Code, Codex, and Me Write Code:
+Autopraxis is a portable skills/plugin bundle. Use an agent runtime's own install/discovery tool when it exists. Use Autopraxis' fallback installer only where the runtime has no verified native installer for skill bundles.
+
+Native manifests shipped in this repo:
 
 - `.claude-plugin/plugin.json`
+- `.claude-plugin/marketplace.json`
 - `.codex-plugin/plugin.json`
 - `.cave-plugin/plugin.json`
 
-`autopraxis.json` is an extra cross-runtime manifest for this repo's installer and validation; the runtime-native manifests above are the actual plugin entry points.
+`autopraxis.json` is the cross-runtime manifest used by validation and fallback installs. Runtime-native manifests above are the entry points for agent tools.
 
-## Quick Start
+## Install by runtime
 
-Claude Code plugin install:
+### Current verified install
 
-```bash
-node bin/autopraxis.mjs install --target claude-plugin --force
-# then start Claude with normal plugin discovery, or test with:
-# claude --plugin-dir ~/.claude/skills/autopraxis
-```
-
-Codex plugin install:
+These commands work from a local checkout. They do not require npm publish or a public marketplace release.
 
 ```bash
-node bin/autopraxis.mjs install --target codex-plugin --force
-# writes/updates ~/.agents/plugins/marketplace.json so Codex can discover the plugin
-# then restart Codex and open: codex /plugins
+git clone https://github.com/Zhachory1/autopraxis.git
+cd autopraxis
+npm test
 ```
 
-Me Write Code plugin install:
+#### Claude Code
+
+Claude Code has native plugin marketplace/install commands. From the checkout, add the local marketplace, install the plugin, then verify it is enabled:
 
 ```bash
-node bin/autopraxis.mjs install --target mewrite-plugin --force
+claude plugin validate .claude-plugin/plugin.json --strict
+claude plugin validate . --strict
+claude plugin marketplace add ./ --scope user
+claude plugin install autopraxis@autopraxis --scope user
+claude plugin list
 ```
 
-## Supported Targets
+One-session test without persistent install:
+
+```bash
+claude --plugin-dir /path/to/autopraxis
+```
+
+Useful Claude plugin commands:
+
+```bash
+claude plugin list --available --json
+claude plugin details autopraxis@autopraxis
+claude plugin disable autopraxis@autopraxis
+claude plugin uninstall autopraxis@autopraxis
+claude plugin marketplace remove autopraxis
+```
+
+#### Codex
+
+Codex support is fallback-only until a verified first-party non-interactive plugin install command exists. The fallback command writes a plugin root and Codex marketplace file, then Codex discovers it through `codex /plugins`.
+
+Preview first:
+
+```bash
+npm exec -- autopraxis install --target codex-plugin --dry-run
+```
+
+Install:
+
+```bash
+npm exec -- autopraxis install --target codex-plugin
+# restart Codex, then open:
+codex /plugins
+```
+
+What the fallback writes:
+
+- plugin root: `~/.codex/plugins/autopraxis`
+- marketplace file: `~/.agents/plugins/marketplace.json`
+- plugin manifest: `~/.codex/plugins/autopraxis/.codex-plugin/plugin.json`
+
+Use temp paths for tests or review:
+
+```bash
+npm exec -- autopraxis install --target codex-plugin --dest /tmp/autopraxis-codex-plugin --marketplace-dest /tmp/autopraxis-marketplace.json
+```
+
+If the destination already exists and you intend to replace it, rerun with `--force`.
+
+#### OpenCode
+
+OpenCode discovers `SKILL.md` files from native skill directories and exposes `opencode debug skill` to verify discovery. Autopraxis is a skill bundle, not an OpenCode JavaScript plugin, so this path is fallback-only until a real OpenCode plugin entrypoint exists.
+
+Preview first:
+
+```bash
+npm exec -- autopraxis install --target opencode-skills --dry-run
+```
+
+Install and verify:
+
+```bash
+npm exec -- autopraxis install --target opencode-skills
+opencode debug skill
+```
+
+What the fallback writes:
+
+- skill directories: `~/.opencode/skills/<skill-name>/SKILL.md`
+- install record: `~/.opencode/skills/_autopraxis-plugin.json`
+
+OpenCode's JavaScript plugin tool remains useful for JS plugins, but Autopraxis should not pretend to be one until it ships a real JS plugin entrypoint:
+
+```bash
+opencode plugin <npm-module> --global --force
+opencode debug config
+```
+
+#### Me Write Code
+
+Me Write Code uses the native `.cave-plugin/plugin.json` manifest. Until marketplace install is published, use the local package fallback:
+
+```bash
+npm exec -- autopraxis install --target mewrite-plugin
+```
+
+Legacy direct skill install:
+
+```bash
+npm exec -- autopraxis install --target mewrite-skills
+```
+
+## Post-publish install
+
+Do not use these commands until npm/GitHub marketplace release is complete and verified with real runtimes.
+
+```bash
+claude plugin marketplace add Zhachory1/autopraxis
+claude plugin install autopraxis@autopraxis
+npx autopraxis@latest install --target codex-plugin
+npx autopraxis@latest install --target opencode-skills
+npx autopraxis@latest install --target mewrite-plugin
+```
+
+Release checklist owns the verification gate for these commands.
+
+## Agent Fleet dependency for councils
+
+Full council capability depends on the published `@zhachory1/agent-fleet` package: council protocol, persona prompts, transcript capture, journal capture, and blind-judge helpers. Autopraxis depends on `@zhachory1/agent-fleet@^0.4.0` and must not claim a required `minimal-council` or `full-council` completed unless agent-fleet preflight passes.
+
+Verify package availability from this repo:
+
+```bash
+npm exec -- agent-fleet --version
+npm exec -- agent-fleet home
+```
+
+Sync agent-fleet payloads into a runtime when needed:
+
+```bash
+npm exec -- agent-fleet install --tool claude
+npm exec -- agent-fleet install --tool codex
+npm exec -- agent-fleet install --tool opencode
+npm exec -- agent-fleet install --tool cave --user
+```
+
+Local development override for unreleased agent-fleet changes:
+
+```bash
+export AGENT_FLEET_HOME=<path-to-agent-fleet>
+test -f "$AGENT_FLEET_HOME/skills/council/SKILL.md"
+test -f "$AGENT_FLEET_HOME/lib/transcript.sh"
+test -f "$AGENT_FLEET_HOME/lib/journal.sh"
+```
+
+`AGENT_FLEET_HOME` is an explicit override only, never an implicit default.
+
+## Supported fallback targets
 
 | Target | Default Destination | Layout | Notes |
 |---|---|---|---|
-| `claude-plugin` | `~/.claude/skills/autopraxis` | plugin root | Claude Code skills plugin with `.claude-plugin/plugin.json` |
-| `codex-plugin` | `~/.codex/plugins/autopraxis` | plugin root | Codex plugin with `.codex-plugin/plugin.json`; installer updates marketplace file |
+| `claude-plugin` | `~/.claude/skills/autopraxis` | plugin root | Claude Code plugin root with `.claude-plugin/plugin.json`; prefer `claude plugin ...` commands when possible |
+| `codex-plugin` | `~/.codex/plugins/autopraxis` | plugin root | Codex plugin root with `.codex-plugin/plugin.json`; fallback updates marketplace file |
 | `mewrite-plugin` | `~/.mewrite/plugins/Zhachory1/autopraxis` | plugin root | Me Write Code plugin with `.cave-plugin/plugin.json` |
 | `mewrite-skills` | `~/.mewrite/agent/skills` | skill dirs | Legacy direct skill install |
 | `claude-skills` | `~/.claude/skills` | skill dirs | Standalone Claude skill dirs, not namespaced as plugin |
 | `codex-skills` | `~/.codex/skills` | skill dirs | Standalone Codex skill dirs, not marketplace plugin |
+| `opencode-skills` | `~/.opencode/skills` | skill dirs | OpenCode native skill directories |
 | `generic-markdown` | `~/.autopraxis/prompts` | markdown bundle | Copies skill dirs and writes `AUTOPRAXIS.md` index |
 | `cursor-rules` | `.cursor/rules/autopraxis` | markdown bundle | Project-local rule/prompt fallback |
 | `windsurf-rules` | `.windsurf/rules/autopraxis` | markdown bundle | Project-local rule/prompt fallback |
@@ -49,13 +189,21 @@ node bin/autopraxis.mjs install --target mewrite-plugin --force
 List targets:
 
 ```bash
-node bin/autopraxis.mjs list-targets
+npm exec -- autopraxis list-targets
 ```
 
-## Install Options
+## Package-runner fallback options
+
+From a local checkout:
 
 ```bash
-node bin/autopraxis.mjs install --target <target> [--dest <path>] [--marketplace-dest <path>] [--link] [--force] [--dry-run]
+npm exec -- autopraxis install --target <target> [--dest <path>] [--marketplace-dest <path>] [--link] [--force] [--dry-run]
+```
+
+After npm publish:
+
+```bash
+npx autopraxis@latest install --target <target> [--dest <path>] [--marketplace-dest <path>] [--link] [--force] [--dry-run]
 ```
 
 Options:
@@ -70,19 +218,19 @@ Options:
 Examples:
 
 ```bash
-node bin/autopraxis.mjs install --target claude-plugin --force
-node bin/autopraxis.mjs install --target codex-plugin --marketplace-dest /tmp/marketplace.json --force
-node bin/autopraxis.mjs install --target mewrite-skills --dest ~/.mewrite/agent/skills --force
-node bin/autopraxis.mjs install --target generic-markdown --dest ./autopraxis-prompts
+npm exec -- autopraxis install --target codex-plugin --marketplace-dest /tmp/marketplace.json
+npm exec -- autopraxis install --target opencode-skills --dest ~/.opencode/skills
+npm exec -- autopraxis install --target generic-markdown --dest ./autopraxis-prompts
 ```
 
-## Runtime-Native Plugin Layout
+## Runtime-native plugin layout
 
-Autopraxis is intentionally shaped like a Claude/Codex skills plugin repo:
+Autopraxis is shaped like a skills plugin repo:
 
 ```text
 autopraxis/
   .claude-plugin/plugin.json
+  .claude-plugin/marketplace.json
   .codex-plugin/plugin.json
   .cave-plugin/plugin.json
   .agents/plugins/marketplace.json
@@ -91,52 +239,58 @@ autopraxis/
   skills/<skill-name>/assets/...
 ```
 
-Only manifest files belong under the hidden plugin manifest directories. `skills/`, references, examples, and future hooks/MCP files stay at the plugin root.
+Only manifest files belong under hidden plugin manifest directories. `skills/`, references, examples, and future hooks/MCP files stay at plugin root.
 
-## Manual Install Fallback
+## Local Development Fallback
 
-Direct skill directory install:
+Direct Node commands are for Autopraxis development and fallback install tests only:
 
 ```bash
-mkdir -p ~/.codex/skills
-cp -R skills/* ~/.codex/skills/
+node bin/autopraxis.mjs list-targets
+node bin/autopraxis.mjs install --target claude-plugin --dest /tmp/autopraxis-claude-plugin --force
+node bin/autopraxis.mjs install --target codex-plugin --dest /tmp/autopraxis-codex-plugin --marketplace-dest /tmp/autopraxis-marketplace.json --force
+node bin/autopraxis.mjs install --target opencode-skills --dest /tmp/autopraxis-opencode-skills --force
 ```
 
-Claude plugin dev test from repo checkout:
+Manual direct skill copy, only when package tools are unavailable:
 
 ```bash
-claude --plugin-dir /path/to/autopraxis
-```
-
-Codex repo marketplace from repo checkout:
-
-```bash
-# repo already includes .agents/plugins/marketplace.json pointing at ./
-# restart Codex and open:
-codex /plugins
+mkdir -p ~/.opencode/skills
+cp -R skills/* ~/.opencode/skills/
+opencode debug skill
 ```
 
 ## Upgrade
 
-Copy mode:
-
-```bash
-git pull
-node bin/autopraxis.mjs install --target claude-plugin --force
-```
-
-Symlink mode:
+Current checkout installs:
 
 ```bash
 git pull
 npm test
+claude plugin update autopraxis@autopraxis
+npm exec -- autopraxis install --target codex-plugin
+npm exec -- autopraxis install --target opencode-skills
 ```
 
-Symlink installs follow the working tree automatically.
+Post-publish fallback installs:
+
+```bash
+npx autopraxis@latest install --target codex-plugin
+npx autopraxis@latest install --target opencode-skills
+```
+
+Symlink development installs follow the working tree automatically after `git pull`.
 
 ## Uninstall
 
-Remove plugin install directories:
+Runtime-native Claude uninstall:
+
+```bash
+claude plugin uninstall autopraxis@autopraxis
+claude plugin marketplace remove autopraxis
+```
+
+Fallback install directories:
 
 ```bash
 rm -rf ~/.claude/skills/autopraxis
@@ -144,34 +298,41 @@ rm -rf ~/.codex/plugins/autopraxis
 rm -rf ~/.mewrite/plugins/Zhachory1/autopraxis
 ```
 
-For Codex, also remove the `autopraxis` entry from `~/.agents/plugins/marketplace.json` if the installer added it.
+For OpenCode fallback installs, remove only skill directories listed in `~/.opencode/skills/_autopraxis-plugin.json`; do not blindly delete unrelated skills.
 
-For legacy direct skill installs, remove the installed skill directories from the target skill directory.
+For Codex fallback installs, also remove the `autopraxis` entry from `~/.agents/plugins/marketplace.json` if the fallback installer added it.
 
-## Optional Integrations
+## Optional integrations
 
-Autopraxis works without these, but skills become stronger when they are available.
+Autopraxis works without these, but skills become stronger when available.
 
 | Integration | Purpose | How Skills Use It |
 |---|---|---|
-| `AGENT_FLEET_HOME` | Locate `agent-fleet` | `/council`, `/ship`, personas, journals, transcripts |
+| `agent-fleet` | Required for full council capability | `/council`, `/ship`, personas, journals, transcripts |
 | long-term memory MCP / `gbrain` | Recall prior context | decisions, plans, incidents, session notes, retros |
 | code RAG / repo-index / `coderag` | Understand codebases | semantic code search, dependency graph, ownership, similar changes |
 | `.workflow-runs/<run-id>/telemetry.jsonl` | Backprop data | latency, cost, loops, validation, human edits, outcomes |
-
-Default agent-fleet hint in the manifests is `/Users/zhach/code/agent-fleet`. Treat it as optional local guidance, not a hard dependency.
 
 ## Validation
 
 ```bash
 npm test
-node bin/autopraxis.mjs validate-package
+npm exec -- autopraxis validate-package
 npm pack --dry-run
+```
+
+Local checkout validation:
+
+```bash
+node bin/autopraxis.mjs validate-package
+claude plugin validate .claude-plugin/plugin.json --strict
+claude plugin validate . --strict
 ```
 
 Validation checks:
 
 - native Claude/Codex/Me Write plugin manifests.
+- Claude marketplace manifest.
 - skill frontmatter and required sections.
 - workflow connective-skill references.
 - structured-doc companion templates.
@@ -179,7 +340,8 @@ Validation checks:
 - package excludes for local/private/generated data.
 - markdown relative links.
 - plugin-root and skill-directory smoke installs into temp directories.
+- packed package contains runtime manifests, skills, assets, docs, and CLI.
 
 ## Distribution
 
-Do not publish to npm, a Claude marketplace, Codex marketplace, or Me Write marketplace until plugin format and install flows are validated with real agent runtimes.
+Do not publish to npm, a Claude marketplace, Codex marketplace, Me Write marketplace, or OpenCode package flow until post-publish install docs are validated with real agent runtimes. Package metadata is publish-ready so the release step can enable `npx autopraxis@latest ...` without changing the install surface.

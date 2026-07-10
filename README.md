@@ -76,7 +76,6 @@ Reusable connective tissue:
 These shared skills are connective primitives. Do not start here unless you explicitly need that artifact; top-level workflows call them as needed.
 
 - `grounding-brief`
-- `council-review`
 - `success-criteria-metrics`
 - `task-decomposition-planning`
 - `hypothesis-testing`
@@ -92,27 +91,63 @@ Skills assume agents may have:
 - native coding harness tools: read, bash, edit/write, task/subagent, git, gh.
 - long-term memory MCP: `gbrain` or equivalent memory query/ingest tools over private docs, decisions, incidents, run notes.
 - code RAG MCP: `coderag`, repo-index, semantic code search, dependency graph, or local fallback via repo exploration.
-- `agent-fleet`: `AGENT_FLEET_HOME=/Users/zhach/code/agent-fleet` with `/council`, `/ship`, personas, transcripts, and journal files.
+- `agent-fleet`: package dependency `@zhachory1/agent-fleet@^0.4.0` provides `/council`, `/ship`, personas, transcripts, and journal files. Use `AGENT_FLEET_HOME=<path-to-agent-fleet>` only as an explicit local-development override. Required council gates must not claim completion unless agent-fleet preflight passes.
 - telemetry store: `.workflow-runs/<run-id>/` in target repo or a caller-provided durable run directory.
 
 Agents should prefer available MCP/RAG tools for recall and codebase context, but must fall back to local files, git, logs, and user-provided artifacts when tools are unavailable.
 
-## Install locally
+## Install by runtime
 
-Autopraxis can be installed as a Claude/Codex-style skills plugin bundle.
+Current verified installs use a local checkout until npm/GitHub marketplace release is complete. Use runtime-native tools where available; Codex/OpenCode remain fallback-only because no verified first-party install command exists yet.
 
 ```bash
-node bin/autopraxis.mjs install --target claude-plugin
-node bin/autopraxis.mjs install --target codex-plugin
+git clone https://github.com/Zhachory1/autopraxis.git
+cd autopraxis
+npm test
+```
+
+Claude Code current path:
+
+```bash
+claude plugin validate .claude-plugin/plugin.json --strict
+claude plugin validate . --strict
+claude plugin marketplace add ./ --scope user
+claude plugin install autopraxis@autopraxis --scope user
+claude plugin list
+```
+
+Codex fallback path:
+
+```bash
+npm exec -- autopraxis install --target codex-plugin --dry-run
+npm exec -- autopraxis install --target codex-plugin
+# restart Codex, then open:
+codex /plugins
+```
+
+OpenCode fallback path:
+
+```bash
+npm exec -- autopraxis install --target opencode-skills --dry-run
+npm exec -- autopraxis install --target opencode-skills
+opencode debug skill
+```
+
+Post-publish package-runner path, not current install:
+
+```bash
+npx autopraxis@latest install --target codex-plugin
+npx autopraxis@latest install --target opencode-skills
 ```
 
 Native plugin manifests:
 
 - `.claude-plugin/plugin.json`
+- `.claude-plugin/marketplace.json`
 - `.codex-plugin/plugin.json`
 - `.cave-plugin/plugin.json`
 
-Supported targets:
+Supported fallback targets:
 
 - `claude-plugin`
 - `codex-plugin`
@@ -120,11 +155,12 @@ Supported targets:
 - `mewrite-skills`
 - `claude-skills`
 - `codex-skills`
+- `opencode-skills`
 - `generic-markdown`
 - `cursor-rules`
 - `windsurf-rules`
 
-See `INSTALL.md` for custom destinations, marketplace wiring, symlink mode, manual fallback, upgrade, uninstall, and package validation.
+See `INSTALL.md` for runtime-specific install details, custom destinations, marketplace wiring, symlink mode, manual fallback, upgrade, uninstall, and package validation.
 
 ## Validate
 

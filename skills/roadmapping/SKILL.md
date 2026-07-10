@@ -29,11 +29,11 @@ Sequence project candidates into an executable and defensible roadmap. Make trad
 
 ## Tool Awareness
 
-Use `grounding-brief` with long-term memory MCP for prior roadmaps, strategy, team constraints, and decisions. Use code RAG for technical dependencies and platform constraints. Use `success-criteria-metrics` for ROI scoring, `task-decomposition-planning` for dependency-aware sequencing, `council-review` for feasibility/alignment stress-test, `handoff-packaging`, `human-approval-gate`, and `run-telemetry`.
+Use `grounding-brief` with long-term memory MCP for prior roadmaps, strategy, team constraints, and decisions. Use code RAG for technical dependencies and platform constraints. Use `success-criteria-metrics` for ROI scoring, `task-decomposition-planning` for dependency-aware sequencing, agent-fleet `/council` for feasibility/alignment stress-test when risk triggers, `handoff-packaging`, `human-approval-gate`, and `run-telemetry`.
 
 ## Council Policy
 
-Use `../council-review/references/escalation-matrix.md`. Simple sequencing can use no council or one execution/product lens. Use minimal/full council for leadership commitments, multi-team capacity conflicts, platform bets, high opportunity cost, or unresolved feasibility/risk disputes.
+Use agent-fleet council levels. Simple sequencing can use no council or one execution/product lens. Use minimal/full council for leadership commitments, multi-team capacity conflicts, platform bets, high opportunity cost, or unresolved feasibility/risk disputes. Required `minimal-council`/`full-council` must block if agent-fleet preflight fails.
 
 ## Workflow Modes
 
@@ -41,7 +41,7 @@ Use `../council-review/references/escalation-matrix.md`. Simple sequencing can u
 - `default`: roadmap planning with ROI, dependencies, horizons, and capacity. Budget: focused refs, one dependency/capacity loop, `council_level` max `minimal-council`.
 - `deep`: leadership commitment, multi-team capacity conflict, platform bet, high opportunity cost, or disputed feasibility. Budget: full council allowed with reason and approval package.
 - Escalate: resource commitment, conflicting priorities, irreversible sequencing, missed dependency risk, or executive decision.
-- Load: start with candidates and strategy; load council matrix, capacity details, or approval templates only when needed.
+- Load: start with candidates and strategy; load agent-fleet council protocol, capacity details, or approval templates only when needed.
 
 ## Execution
 
@@ -55,7 +55,7 @@ Use `../council-review/references/escalation-matrix.md`. Simple sequencing can u
 
 **Iterate allocation and dependencies.** Adjust sequence when allocation reveals conflict or dependency mapping reveals hidden blocker.
 
-**Council review.** Select council level from `../council-review/references/escalation-matrix.md`; use executive, product, engineering, architecture, cost, and risk lenses only when roadmap stakes justify minimal/full council.
+**Council review.** Select council level from risk; use executive, product, engineering, architecture, cost, and risk lenses only when roadmap stakes justify agent-fleet minimal/full council.
 
 **Revise and approval.** Apply council deltas, package final roadmap, and route to `human-approval-gate` for leadership commitment.
 

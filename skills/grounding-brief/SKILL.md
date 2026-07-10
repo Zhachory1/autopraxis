@@ -35,7 +35,7 @@ Use available tools in this order when relevant:
 
 - long-term memory MCP / `gbrain` for prior plans, PRDs, DDs, incidents, people/company context, decisions, workflow retros.
 - code RAG / repo-index / `coderag` for semantic code paths, ownership, dependencies, similar changes, historical failures.
-- agent-fleet records: `$AGENT_FLEET_HOME`, `/Users/zhach/code/agent-fleet`, `$AGENT_FLEET_JOURNAL`, `$AGENT_CHAT_ROOT/rooms`.
+- agent-fleet records: `$AGENT_FLEET_HOME`, `$AGENT_FLEET_JOURNAL`, `$AGENT_CHAT_ROOT/rooms`.
 - git and GitHub CLI for branch, diff, commit history, PR comments, review state, CI status.
 - logs, traces, metrics, dashboards, experiment tracking, notebooks, warehouse tables where supplied.
 - local read/search/explore tools when MCP/RAG sources are absent.

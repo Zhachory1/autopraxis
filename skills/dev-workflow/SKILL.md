@@ -29,19 +29,19 @@ Ensure a thought-out plan exists before implementation. Move from product intent
 
 ## Tool Awareness
 
-Use `grounding-brief` with long-term memory MCP, code RAG, git, tickets, PRs, and agent-fleet journals. Use `council-review` backed by agent-fleet `/council` when available at `AGENT_FLEET_HOME=/Users/zhach/code/agent-fleet`. Use agent-fleet `/ship` or local `ship` skill for implementation when plan is accepted. Use `run-telemetry` at each gate.
+Use `grounding-brief` with long-term memory MCP, code RAG, git, tickets, PRs, and agent-fleet journals. Use agent-fleet `/council` for required minimal/full councils after `AGENT_FLEET_HOME` preflight. Use agent-fleet `/ship` or local `ship` skill for implementation when plan is accepted. Use `run-telemetry` at each gate.
 
 ## Council Policy
 
-Use `../council-review/references/escalation-matrix.md`. Low-risk, reversible work may record `council_level: none` or use `single-lens`; docs and final code councils are required only when risk, ambiguity, conflicting review, unresolved blocker, design mismatch, security/privacy/reliability concern, or leadership-visible tradeoff appears.
+Use agent-fleet council levels: `none`, `single-lens`, `minimal-council`, or `full-council`. Low-risk, reversible work may record `council_level: none` or use `single-lens`; docs and final code councils are required only when risk, ambiguity, conflicting review, unresolved blocker, design mismatch, security/privacy/reliability concern, or leadership-visible tradeoff appears. Required `minimal-council`/`full-council` must block if agent-fleet preflight fails.
 
 ## Workflow Modes
 
 - `lite`: accepted small change; produce scope lock, focused plan, patch/review handoff. Budget: focused refs, one artifact, `council_level` max `single-lens`, loop cap 1, focused validation.
-- `default`: normal feature/change; PRD/DD may be lightweight, task plan required, council only if matrix triggers. Budget: selected docs, up to two artifacts, `council_level` max `minimal-council`, loop cap 2.
+- `default`: normal feature/change; PRD/DD may be lightweight, task plan required, council only if risk triggers. Budget: selected docs, up to two artifacts, `council_level` max `minimal-council`, loop cap 2.
 - `deep`: high-risk architecture, launch, security/reliability, cross-team, or leadership-visible work. Budget: full docs, required gates, council allowed with reason.
 - Escalate: ambiguity, design mismatch, unresolved blocker, risky rollout, or conflicting review.
-- Load: start with this skill and user artifact; load doc templates, council matrix, handoff, or telemetry references only when that gate will run.
+- Load: start with this skill and user artifact; load doc templates, agent-fleet council protocol, handoff, or telemetry references only when that gate will run.
 
 ## Execution
 
@@ -53,7 +53,7 @@ Run only the steps required by selected mode. `lite` may use scope lock instead 
 
 **Author DD.** Use `structured-doc-authoring` to translate PRD into architecture, boundaries, data/control flow, tradeoffs, tests, observability, rollout, risks, and alternatives.
 
-**Council on docs.** Select council level from `../council-review/references/escalation-matrix.md`. Use `none` for low-risk clear docs, `single-lens` for one domain concern, and minimal/full council only for multi-domain or high-risk design decisions. Required council verdict must pass or pass-with-nits before planning only when council level is minimal/full.
+**Council on docs.** Select council level from risk: `none` for low-risk clear docs, `single-lens` for one domain concern, and agent-fleet `minimal-council`/`full-council` only for multi-domain or high-risk design decisions. Required council verdict must pass or pass-with-nits before planning only when council level is minimal/full.
 
 **Write plan.** Use `task-decomposition-planning` to create ordered implementation tasks with dependencies, acceptance criteria, validation, rollout, and stop conditions.
 
@@ -61,13 +61,13 @@ Run only the steps required by selected mode. `lite` may use scope lock instead 
 
 **Run code-reviewer.** Review for correctness, safety, maintainability, security, performance, tests, observability, and fidelity to PRD/DD. Re-review only deltas after fixes.
 
-**Council on review and code.** Use `council-review` only when review findings conflict, blockers remain unresolved, implementation reveals design mismatch, or risk level justifies a final merge/no-merge council against original intent.
+**Council on review and code.** Use agent-fleet `/council` only when review findings conflict, blockers remain unresolved, implementation reveals design mismatch, or risk level justifies a final merge/no-merge council against original intent.
 
 **Launch PR.** Use `handoff-packaging` to create PR package with linked docs, rationale, tests, council verdicts, and known limitations. Use `human-approval-gate` for final signoff.
 
 ## Loop Controls
 
-**Doc loop.** PRD/DD and council gate iterate only when council level is minimal/full; otherwise record skipped or single-lens reason and proceed when doc acceptance criteria are met.
+**Doc loop.** PRD/DD and agent-fleet council gate iterate only when council level is minimal/full; otherwise record skipped or single-lens reason and proceed when doc acceptance criteria are met.
 
 **Implementation loop.** `ship` and code-reviewer iterate until review has no blockers, cap hit, or plan mismatch discovered.
 
@@ -119,7 +119,7 @@ Run only the steps required by selected mode. `lite` may use scope lock instead 
 
 **Skipping docs for speed.** Fix by writing lightweight PRD/DD, not by jumping to code.
 
-**Council churn.** Fix by cap, delta-only review, and human escalation.
+**Council churn.** Fix by agent-fleet caps, delta-only review, and human escalation.
 
 **Implementation invents new design.** Fix by DD kickback.
 

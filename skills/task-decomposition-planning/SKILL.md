@@ -9,7 +9,7 @@ Convert an approved goal or design into ordered, verifiable tasks. The output sh
 
 ## Core Principles
 
-**Plan after intent is approved.** Do not decompose unstable goals; send unclear PRD/DD/metrics back to `structured-doc-authoring`, `success-criteria-metrics`, or `council-review`.
+**Plan after intent is approved.** Do not decompose unstable goals; send unclear PRD/DD/metrics back to `structured-doc-authoring`, `success-criteria-metrics`, or agent-fleet `/council` when risk justifies it.
 
 **Make every task testable.** Each task needs acceptance criteria and validation evidence.
 

@@ -1,0 +1,14 @@
+{
+  "name": "autopraxis",
+  "description": "Autopraxis workflow skills for AI agents.",
+  "owner": {
+    "name": "Zhachory Volker",
+    "url": "https://github.com/Zhachory1"
+  },
+  "plugins": [
+    {
+      "name": "autopraxis",
+      "source": "./"
+    }
+  ]
+}
