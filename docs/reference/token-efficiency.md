@@ -61,6 +61,10 @@ Token reduction is only good if these do not regress:
 - escalation correctness.
 - handoff usefulness.
 
+## Spawn Model Routing
+
+Use [spawn model routing](./spawn-model-routing.md) when evaluating whether cheaper spawned-agent models can reduce cost without increasing missed blockers, false blockers, human override, or rework.
+
 ## Low-Risk Follow-Ups
 
 Deferred candidates, not implemented here:
