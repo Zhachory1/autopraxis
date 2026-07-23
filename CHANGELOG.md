@@ -10,6 +10,8 @@ Autopraxis uses SemVer-style versions before `1.0.0`:
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-07-23
+
 ### Added
 
 - Spawn model routing research covering cheaper-model tiers, evaluation gates, telemetry, pricing catalog, and shadow rollout controls.

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "name": "autopraxis",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Self-improving workflow skills for AI agents.",
   "homepage": "https://github.com/Zhachory1/autopraxis",
   "skillRoot": "skills",
