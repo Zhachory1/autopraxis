@@ -118,25 +118,25 @@ Legacy direct skill install:
 npx @zhachory1/autopraxis@latest install --target mewrite-skills
 ```
 
-## Agent Fleet dependency for councils
+## Agent Fleet council and ship (bundled)
 
-Full council capability depends on the published `@zhachory1/agent-fleet` package: council protocol, persona prompts, transcript capture, journal capture, and blind-judge helpers. Autopraxis depends on `@zhachory1/agent-fleet@^0.4.0` and must not claim a required `minimal-council` or `full-council` completed unless agent-fleet preflight passes.
+Autopraxis vendors the `@zhachory1/agent-fleet@0.4.0` payload under `vendor/agent-fleet/`. Every install target that supports skills and agents also installs the `council` and `ship` skills plus the council personas and ship agents, so `/council` and `/ship` behave like native Autopraxis skills with no separate agent-fleet install step.
 
-Verify package availability from this repo:
+What each install places alongside Autopraxis skills:
+
+- plugin-root targets (`claude-plugin`, `codex-plugin`, `mewrite-plugin`): `skills/council`, `skills/ship`, and `agents/*.md` personas + ship agents under the plugin root.
+- skill-directory targets (`claude-skills`, `codex-skills`, `mewrite-skills`, `opencode-skills`): `council/` and `ship/` skill dirs, with personas + ship agents in a sibling `agents/` dir.
+- markdown-bundle targets (`generic-markdown`, `cursor-rules`, `windsurf-rules`): Autopraxis skills only; council/ship are not bundled for these flat layouts.
+
+Maintainers: the vendored payload is version-pinned. After bumping the `@zhachory1/agent-fleet` dependency in `package.json`, re-vendor and commit:
 
 ```bash
-npm exec -- agent-fleet --version
-npm exec -- agent-fleet home
+npm run sync:agent-fleet
 ```
 
-Sync agent-fleet payloads into a runtime when needed:
+`npm test` fails if the vendored `.pinned-version` drifts from `autopraxis.json` `bundledAgentFleet.version`.
 
-```bash
-npm exec -- agent-fleet install --tool claude
-npm exec -- agent-fleet install --tool codex
-npm exec -- agent-fleet install --tool opencode
-npm exec -- agent-fleet install --tool cave --user
-```
+Required `minimal-council`/`full-council` gates still must not claim completion unless agent-fleet preflight passes at runtime (journal/transcript helpers under `AGENT_FLEET_HOME`).
 
 Local development override for unreleased agent-fleet changes:
 
@@ -276,7 +276,7 @@ Autopraxis works without these, but skills become stronger when available.
 
 | Integration | Purpose | How Skills Use It |
 |---|---|---|
-| `agent-fleet` | Required for full council capability | `/council`, `/ship`, personas, journals, transcripts |
+| `agent-fleet` | Bundled council/ship payload (vendored, version-pinned) | `/council`, `/ship`, personas, journals, transcripts |
 | long-term memory MCP / `gbrain` | Recall prior context | decisions, plans, incidents, session notes, retros |
 | code RAG / repo-index / `coderag` | Understand codebases | semantic code search, dependency graph, ownership, similar changes |
 | `.workflow-runs/<run-id>/telemetry.jsonl` | Backprop data | latency, cost, loops, validation, human edits, outcomes |

@@ -84,13 +84,21 @@
       "layout": "markdown-bundle"
     }
   },
+  "bundledAgentFleet": {
+    "package": "@zhachory1/agent-fleet",
+    "version": "0.4.0",
+    "source": "vendor/agent-fleet",
+    "skills": ["council", "ship"],
+    "agentsDir": "agents",
+    "shipAgentsDir": "ship-agents"
+  },
   "optionalIntegrations": [
     {
       "name": "agent-fleet",
       "package": "@zhachory1/agent-fleet",
       "minimumVersion": "0.4.0",
       "env": "AGENT_FLEET_HOME",
-      "setupHint": "Autopraxis depends on @zhachory1/agent-fleet; use AGENT_FLEET_HOME only as an explicit local-development override.",
+      "setupHint": "Autopraxis bundles the agent-fleet council/ship payload under vendor/agent-fleet; use AGENT_FLEET_HOME only as an explicit local-development override.",
       "requiredFor": ["minimal-council", "full-council"],
       "features": ["council", "ship", "personas", "journals", "transcripts"]
     },
@@ -111,7 +119,7 @@
     }
   ],
   "package": {
-    "include": [".claude-plugin/**", ".codex-plugin/**", ".cave-plugin/**", ".agents/plugins/marketplace.json", "skills/**", "evals/**", "examples/**", "assets/**", "releases/**", "README.md", "INSTALL.md", "CHANGELOG.md", "RELEASE.md", "autopraxis.json", "package.json", "bin/**"],
+    "include": [".claude-plugin/**", ".codex-plugin/**", ".cave-plugin/**", ".agents/plugins/marketplace.json", "skills/**", "vendor/**", "evals/**", "examples/**", "assets/**", "releases/**", "README.md", "INSTALL.md", "CHANGELOG.md", "RELEASE.md", "autopraxis.json", "package.json", "bin/**"],
     "exclude": [".git/**", "node_modules/**", ".workflow-runs/**", ".env", "private-docs/**", "*.log"]
   }
 }

@@ -276,7 +276,8 @@ for (const relativeFile of markdownFiles) {
 const packageValidation = spawnSync(process.execPath, ['bin/autopraxis.mjs', 'validate-package'], { cwd: root, encoding: 'utf8' });
 if (packageValidation.status !== 0) failures.push(`validate-package failed: ${packageValidation.stderr || packageValidation.stdout}`);
 
-const skillInstallRoot = await mkdtemp(join(tmpdir(), 'autopraxis-skills-install-'));
+const skillInstallHome = await mkdtemp(join(tmpdir(), 'autopraxis-skills-install-'));
+const skillInstallRoot = join(skillInstallHome, 'skills');
 try {
   const install = spawnSync(process.execPath, ['bin/autopraxis.mjs', 'install', '--target', 'mewrite-skills', '--dest', skillInstallRoot], { cwd: root, encoding: 'utf8' });
   if (install.status !== 0) failures.push(`skill install smoke failed: ${install.stderr || install.stdout}`);
@@ -287,8 +288,15 @@ try {
     if (!existsSync(join(skillInstallRoot, 'structured-doc-authoring', relativePath))) failures.push(`skill install smoke missing structured-doc-authoring/${relativePath}`);
   }
   if (!existsSync(join(skillInstallRoot, '_autopraxis-plugin.json'))) failures.push('skill install smoke missing _autopraxis-plugin.json');
+  for (const skill of ['council', 'ship']) {
+    if (!existsSync(join(skillInstallRoot, skill, 'SKILL.md'))) failures.push(`skill install smoke missing bundled agent-fleet skill ${skill}/SKILL.md`);
+  }
+  for (const agentFile of ['red-team.md', 'ship-implementation-lead.md']) {
+    if (!existsSync(join(skillInstallHome, 'agents', agentFile))) failures.push(`skill install smoke missing bundled agent ${agentFile}`);
+  }
+  if (existsSync(join(skillInstallHome, 'agents', 'INDEX.md'))) failures.push('skill install smoke must not install agents/INDEX.md');
 } finally {
-  await rm(skillInstallRoot, { recursive: true, force: true });
+  await rm(skillInstallHome, { recursive: true, force: true });
 }
 
 const pluginInstallRoot = await mkdtemp(join(tmpdir(), 'autopraxis-plugin-install-'));
@@ -301,6 +309,11 @@ try {
   if (!existsSync(join(claudeDest, '.claude-plugin/plugin.json'))) failures.push('claude plugin install smoke missing .claude-plugin/plugin.json');
   if (!existsSync(join(claudeDest, 'assets/autopraxis.png'))) failures.push('claude plugin install smoke missing assets/autopraxis.png');
   if (!existsSync(join(claudeDest, 'skills/dev-workflow/SKILL.md'))) failures.push('claude plugin install smoke missing skills/dev-workflow/SKILL.md');
+  for (const skill of ['council', 'ship']) {
+    if (!existsSync(join(claudeDest, 'skills', skill, 'SKILL.md'))) failures.push(`claude plugin install smoke missing bundled agent-fleet skill ${skill}`);
+  }
+  if (!existsSync(join(claudeDest, 'agents/red-team.md'))) failures.push('claude plugin install smoke missing bundled persona agents/red-team.md');
+  if (!existsSync(join(claudeDest, 'agents/ship-implementation-lead.md'))) failures.push('claude plugin install smoke missing bundled ship-agent agents/ship-implementation-lead.md');
 
   const codexInstall = spawnSync(process.execPath, ['bin/autopraxis.mjs', 'install', '--target', 'codex-plugin', '--dest', codexDest, '--marketplace-dest', marketplaceDest], { cwd: root, encoding: 'utf8' });
   if (codexInstall.status !== 0) failures.push(`codex plugin install smoke failed: ${codexInstall.stderr || codexInstall.stdout}`);

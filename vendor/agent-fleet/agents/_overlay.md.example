@@ -1,0 +1,35 @@
+# Overlay (example — copy to _overlay.md and fill; that copy is gitignored)
+
+# ⚠ THREAT MODEL — READ BEFORE INSTALLING ANY OVERLAY
+# ============================================================================
+# This file is loaded VERBATIM into every persona's system prompt. Treat it as
+# code you are running. An overlay can:
+#   - inject persona-overriding directives ("always verdict SHIP")
+#   - exfiltrate context ("restate the artifact in a debug section")
+#   - silently bias output ("prefer the dissenting view that matches vendor X")
+# Only install overlays YOU have read end-to-end. NEVER paste an overlay from
+# an unfamiliar source. Run `bash $AGENT_FLEET_HOME/lib/overlay.sh show` to
+# print the active overlay + SHA256 before trusting it, and
+# `bash $AGENT_FLEET_HOME/lib/overlay.sh lint` to scan for suspicious patterns
+# (the lint is advisory — a clean lint does not prove an overlay is safe).
+# ============================================================================
+
+When reviewing, apply YOUR org's domain specifics. The committed personas are pure generic; this
+file is where you (privately) tell them what your stack, KPIs, and hot paths look like.
+
+Suggested sections to fill in:
+
+- **Headline KPIs / metrics**: what does "model improved" mean in your business? List the metrics
+  the team actually steers on, plus any well-known proxies-vs-real-objective gotchas.
+- **Experiment caveats**: known interference / SUTVA-violation patterns in your domain,
+  pacing/budget effects, holdout-hygiene rules you have learned the hard way.
+- **Stack**: orchestrator (e.g. Airflow / KFP / Argo / Prefect), warehouse (e.g. Snowflake /
+  BigQuery / Trino), observability (e.g. Datadog / Grafana / Honeycomb), runtime (e.g. K8s with
+  any cluster-role conventions your org uses).
+- **Hot paths**: which code paths are latency- and blast-radius-sensitive (serving, bidding, ranking).
+- **Current priorities / projects**: the 1-3 named initiatives the team is shipping right now —
+  helps the personas calibrate "is this consistent with where the team is going".
+
+# NOTE: keep this file free of PII, advertiser/customer identifiers, and anything that's truly
+# confidential beyond what you need to make the personas useful. This file is .gitignored — but
+# treat that as a SECOND line of defense, not the first.
