@@ -78,6 +78,49 @@ async function listFiles(dir, prefix = '') {
   return files;
 }
 
+const excludedAgentFiles = new Set(['INDEX.md', '_overlay.md', '_rokt-overlay.md', '_overlay.md.example']);
+
+async function agentFleetPersonaFiles() {
+  const source = join(root, manifest.bundledAgentFleet.source);
+  const files = [];
+  for (const dir of [manifest.bundledAgentFleet.agentsDir, manifest.bundledAgentFleet.shipAgentsDir]) {
+    for (const entry of await readdir(join(source, dir), { withFileTypes: true })) {
+      if (!entry.isFile() || !entry.name.endsWith('.md') || excludedAgentFiles.has(entry.name)) continue;
+      files.push(join(source, dir, entry.name));
+    }
+  }
+  return files;
+}
+
+// Place vendored agent-fleet council/ship skills and personas so council/ship
+// behave like native Autopraxis skills. `skillsDir` is where skill dirs live for
+// the target layout; agents go to a sibling agents/ dir.
+async function copyOrLinkAgentFleet(skillsDir, agentsDir, options) {
+  const source = join(root, manifest.bundledAgentFleet.source);
+  const results = [];
+  for (const skill of manifest.bundledAgentFleet.skills) {
+    const target = join(skillsDir, skill);
+    if (options.dryRun) { results.push({ name: `agent-fleet/${skill}`, target, action: options.link ? 'link' : 'copy' }); continue; }
+    if (options.force) await rm(target, { recursive: true, force: true });
+    if (existsSync(target) && !options.force) throw new Error(`${target} already exists; pass --force to replace it`);
+    await mkdir(dirname(target), { recursive: true });
+    if (options.link) await symlink(join(source, 'skills', skill), target, 'dir');
+    else await cp(join(source, 'skills', skill), target, { recursive: true, force: false, errorOnExist: true });
+    results.push({ name: `agent-fleet/${skill}`, target, action: options.link ? 'linked' : 'copied' });
+  }
+  for (const file of await agentFleetPersonaFiles()) {
+    const target = join(agentsDir, file.split('/').pop());
+    if (options.dryRun) { results.push({ name: `agent-fleet/agents/${target.split('/').pop()}`, target, action: options.link ? 'link' : 'copy' }); continue; }
+    if (options.force) await rm(target, { force: true });
+    if (existsSync(target) && !options.force) throw new Error(`${target} already exists; pass --force to replace it`);
+    await mkdir(dirname(target), { recursive: true });
+    if (options.link) await symlink(file, target);
+    else await cp(file, target, { force: false, errorOnExist: true });
+    results.push({ name: `agent-fleet/agents/${target.split('/').pop()}`, target, action: options.link ? 'linked' : 'copied' });
+  }
+  return results;
+}
+
 async function copyOrLinkSkill(skill, destination, options) {
   const source = join(root, skill.path);
   const target = join(destination, skill.name);
@@ -184,6 +227,7 @@ async function install(values) {
   let results = [];
   if (target.layout === 'plugin-root') {
     results = await copyOrLinkPluginRoot(destination, options);
+    results.push(...await copyOrLinkAgentFleet(join(destination, 'skills'), join(destination, 'agents'), options));
     if (targetName === 'codex-plugin') {
       const marketplacePath = await updateCodexMarketplace(destination, options, target);
       if (!options.dryRun) results.push({ name: 'codex-marketplace', target: marketplacePath, action: 'updated' });
@@ -192,6 +236,7 @@ async function install(values) {
   } else {
     if (!options.dryRun) await mkdir(destination, { recursive: true });
     for (const skill of manifest.skills) results.push(await copyOrLinkSkill(skill, destination, options));
+    if (target.layout === 'skill-directories') results.push(...await copyOrLinkAgentFleet(destination, join(destination, '..', 'agents'), options));
     await writeInstallRecord(destination, targetName, options);
     if (target.layout === 'markdown-bundle') await writeBundleIndex(destination, targetName, options);
   }
@@ -650,6 +695,19 @@ async function validatePackage() {
   }
   for (const exclude of ['.git/**', 'node_modules/**', '.workflow-runs/**', '.env']) {
     if (!manifest.package.exclude.includes(exclude)) failures.push(`manifest package.exclude missing ${exclude}`);
+  }
+  const bundle = manifest.bundledAgentFleet;
+  if (!bundle) failures.push('manifest missing bundledAgentFleet');
+  else {
+    const bundleRoot = join(root, bundle.source);
+    for (const skill of bundle.skills) {
+      if (!existsSync(join(bundleRoot, 'skills', skill, 'SKILL.md'))) failures.push(`bundled agent-fleet skill missing: ${skill}/SKILL.md`);
+    }
+    for (const dir of [bundle.agentsDir, bundle.shipAgentsDir]) {
+      if (!existsSync(join(bundleRoot, dir))) failures.push(`bundled agent-fleet dir missing: ${dir}`);
+    }
+    const pinned = existsSync(join(bundleRoot, '.pinned-version')) ? (await readFile(join(bundleRoot, '.pinned-version'), 'utf8')).trim() : '';
+    if (pinned !== bundle.version) failures.push(`bundled agent-fleet version drift: pinned ${pinned || '<none>'} != manifest ${bundle.version}; run npm run sync:agent-fleet`);
   }
   const codexManifest = JSON.parse(await readFile(join(root, '.codex-plugin/plugin.json'), 'utf8'));
   if (codexManifest.skills !== './skills/') failures.push('codex manifest must point skills to ./skills/');

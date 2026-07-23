@@ -16,7 +16,7 @@
   "capabilities": {
     "commands": false,
     "skills": true,
-    "agents": false,
+    "agents": true,
     "themes": false,
     "mcp": false,
     "hooks": []

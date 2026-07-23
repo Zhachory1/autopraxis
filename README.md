@@ -91,7 +91,7 @@ Skills assume agents may have:
 - native coding harness tools: read, bash, edit/write, task/subagent, git, gh.
 - long-term memory MCP: `gbrain` or equivalent memory query/ingest tools over private docs, decisions, incidents, run notes.
 - code RAG MCP: `coderag`, repo-index, semantic code search, dependency graph, or local fallback via repo exploration.
-- `agent-fleet`: package dependency `@zhachory1/agent-fleet@^0.4.0` provides `/council`, `/ship`, personas, transcripts, and journal files. Use `AGENT_FLEET_HOME=<path-to-agent-fleet>` only as an explicit local-development override. Required council gates must not claim completion unless agent-fleet preflight passes.
+- `agent-fleet`: Autopraxis bundles the `@zhachory1/agent-fleet@0.4.0` payload (vendored under `vendor/agent-fleet/`) and installs `/council`, `/ship`, personas, and ship agents as native skills/agents for supported runtimes. Transcript/journal helpers still resolve at runtime; use `AGENT_FLEET_HOME=<path-to-agent-fleet>` only as an explicit local-development override. Required council gates must not claim completion unless agent-fleet preflight passes.
 - telemetry store: `.workflow-runs/<run-id>/` in target repo or a caller-provided durable run directory.
 
 Agents should prefer available MCP/RAG tools for recall and codebase context, but must fall back to local files, git, logs, and user-provided artifacts when tools are unavailable.

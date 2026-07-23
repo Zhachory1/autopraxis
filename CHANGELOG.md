@@ -13,6 +13,7 @@ Autopraxis uses SemVer-style versions before `1.0.0`:
 ### Added
 
 - Spawn model routing research covering cheaper-model tiers, evaluation gates, telemetry, pricing catalog, and shadow rollout controls.
+- Bundled the agent-fleet council/ship payload under `vendor/agent-fleet/` (version-pinned to `@zhachory1/agent-fleet@0.4.0`). Skill and plugin installs now place `council`/`ship` skills plus council personas and ship agents alongside Autopraxis skills, so `/council` and `/ship` work without a separate agent-fleet install. Added `npm run sync:agent-fleet` to re-vendor and a validation guard against version drift.
 
 ### Changed
 

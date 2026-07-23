@@ -28,11 +28,13 @@
     "evals/",
     "examples/",
     "releases/",
-    "skills/"
+    "skills/",
+    "vendor/"
   ],
   "scripts": {
     "test": "node tests/validate-skills.mjs && node tests/telemetry-cli.mjs && node tests/eval-fixtures.mjs && node tests/package-tools.mjs",
-    "validate:package": "node bin/autopraxis.mjs validate-package"
+    "validate:package": "node bin/autopraxis.mjs validate-package",
+    "sync:agent-fleet": "node bin/sync-agent-fleet.mjs"
   },
   "engines": {
     "node": ">=18"
