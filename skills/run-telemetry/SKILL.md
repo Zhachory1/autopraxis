@@ -62,7 +62,7 @@ Use existing run dirs when the workflow provides them. Do not write sensitive co
   "schema_version": 1,
   "ts": "2026-07-08T00:00:00.000Z",
   "run_id": "workflow-20260708-abc123",
-  "workflow": "dev-workflow",
+  "workflow": "plan-to-launch",
   "step": "council-on-docs",
   "event": "start|end|gate|loop|escalation|validation|human_response",
   "status": "ok|fail|blocked|skipped|inconclusive",

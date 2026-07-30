@@ -14,12 +14,12 @@
   "skills": [
     { "name": "backprop", "path": "skills/backprop", "kind": "workflow" },
     { "name": "debug-investigation", "path": "skills/debug-investigation", "kind": "workflow" },
-    { "name": "dev-workflow", "path": "skills/dev-workflow", "kind": "workflow" },
     { "name": "grounding-brief", "path": "skills/grounding-brief", "kind": "shared" },
     { "name": "handoff-packaging", "path": "skills/handoff-packaging", "kind": "shared" },
     { "name": "human-approval-gate", "path": "skills/human-approval-gate", "kind": "shared" },
     { "name": "hypothesis-testing", "path": "skills/hypothesis-testing", "kind": "shared" },
     { "name": "ml-experiments", "path": "skills/ml-experiments", "kind": "workflow" },
+    { "name": "plan-to-launch", "path": "skills/plan-to-launch", "kind": "workflow" },
     { "name": "pr-review", "path": "skills/pr-review", "kind": "workflow" },
     { "name": "project-ideation", "path": "skills/project-ideation", "kind": "workflow" },
     { "name": "roadmapping", "path": "skills/roadmapping", "kind": "workflow" },

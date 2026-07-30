@@ -34,7 +34,7 @@ Cost/token reports must include `cost_source` and `token_source`. Contract-only 
 
 | Workflow | Eval Method | Input Artifact | Expected Output | Primary Signal | Guardrails |
 |---|---|---|---|---|---|
-| `dev-workflow` | deterministic fixture + PR outcome audit | accepted spec/issue | plan, patch handoff, PR package | PR accepted or merged | validation, review blockers, rework, cost |
+| `plan-to-launch` | deterministic fixture + PR outcome audit | accepted spec/issue | plan, patch handoff, PR package | PR accepted or merged | validation, review blockers, rework, cost |
 | `ml-experiments` | deterministic fixture + experiment handoff audit | ML problem/metric prompt | metric lock, baseline/hypothesis handoff | handoff accepted for run/deploy decision | leakage, metric shopping, cost, reproducibility |
 | `pr-review` | deterministic fixture + human review audit | PR/diff | prioritized findings | reviewer accepts/acts on findings | false blockers, missed defects, token cost |
 | `debug-investigation` | deterministic fixture + RCA audit | symptom/evidence | root-cause ledger and RCA handoff | owner accepts RCA/fix direction | evidence quality, rework, missed cause |

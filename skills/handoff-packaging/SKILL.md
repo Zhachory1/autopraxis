@@ -92,7 +92,7 @@ Create a standard artifact bundle that makes workflow output consumable by the n
 
 ## Workflow Uses
 
-- `dev-workflow`: launch PR package with docs, rationale, tests, council verdicts.
+- `plan-to-launch`: launch PR package with docs, rationale, tests, council verdicts.
 - `ml-experiments`: model/code/data lineage/metrics bundle for deployment or further research.
 - `debug-investigation`: RCA, fix evidence, prevention actions.
 - `project-ideation`: framed candidate for roadmap scoring.

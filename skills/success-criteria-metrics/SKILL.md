@@ -92,7 +92,7 @@ Define what success means before execution begins. Use this wherever a workflow 
 
 ## Workflow Uses
 
-- `dev-workflow`: PRD outcome metrics and launch acceptance.
+- `plan-to-launch`: PRD outcome metrics and launch acceptance.
 - `ml-experiments`: offline/online primary metric, guardrails, no metric shopping.
 - `project-ideation`: project hypothesis and target outcome.
 - `roadmapping`: ROI, confidence, cost, risk, and sequencing score.

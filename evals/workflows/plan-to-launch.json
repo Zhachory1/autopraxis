@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "id": "accepted-small-fix",
-  "workflow": "dev-workflow",
+  "workflow": "plan-to-launch",
   "scenario": "Accepted small bug fix in checkout service needs implementation and PR package.",
   "expected_mode": "default",
   "expected_council_level": "none",

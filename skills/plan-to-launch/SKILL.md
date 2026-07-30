@@ -1,9 +1,9 @@
 ---
-name: dev-workflow
-description: "End-to-end software development workflow for AI agents. Use for dev workflow, PRD, DD, design doc, council on docs, implementation plan, ship, code-reviewer, council on review and code, launch PR, merge readiness. Enforces thought-out plan before implementation, bounded PRD/DD council loop, ship/review loop, design kickback, human approval, agent-fleet awareness, telemetry, long-term memory, and code RAG."
+name: plan-to-launch
+description: "End-to-end software development workflow for AI agents. Use for plan-to-launch, dev workflow, PRD, DD, design doc, council on docs, implementation plan, ship, code-reviewer, council on review and code, launch PR, merge readiness. Enforces thought-out plan before implementation, bounded PRD/DD council loop, ship/review loop, design kickback, human approval, agent-fleet awareness, telemetry, long-term memory, and code RAG."
 ---
 
-# Dev Workflow
+# Plan to Launch
 
 Ensure a thought-out plan exists before implementation. Move from product intent to technical design, council stress-test, executable plan, `ship`, code review, final council, and human launch approval.
 

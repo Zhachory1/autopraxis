@@ -56,7 +56,7 @@ Use agent-fleet council levels. Most investigations use no council until root-ca
 
 **Generate and test hypotheses.** Use `hypothesis-testing` to confirm/refute candidate root causes with evidence and keep tried/rejected ledger.
 
-**Fix or hand off.** If fix is in scope and safe, route to `dev-workflow` or `ship`. If not, package exact handoff.
+**Fix or hand off.** If fix is in scope and safe, route to `plan-to-launch` or `ship`. If not, package exact handoff.
 
 **Write RCA.** Use `structured-doc-authoring` and `handoff-packaging` for root cause, contributing factors, fix, prevention, tests, alerts, and open risks.
 

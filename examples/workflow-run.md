@@ -1,7 +1,7 @@
 # Example Workflow Run
 
 ```text
-Use dev-workflow for issue ISSUE-123 in repo ~/code/app.
+Use plan-to-launch for issue ISSUE-123 in repo ~/code/app.
 Budget: doc loop max 2, implementation loop max 3.
 Set AGENT_FLEET_HOME=<path-to-agent-fleet> before required minimal/full councils.
 Use long-term memory MCP for prior decisions and code RAG for impacted paths.

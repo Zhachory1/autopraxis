@@ -22,19 +22,19 @@ Workflow modes control how much process the agent should load. If the user names
 
 Role quick paths:
 
-- developer: `dev-workflow`, `pr-review`, or `debug-investigation`.
+- developer: `plan-to-launch`, `pr-review`, or `debug-investigation`.
 - PM/product: `project-ideation` or `roadmapping`.
 - leadership: `roadmapping` for decision briefs and tradeoff packages.
 - maintainer: `backprop` for workflow improvement; `roadmapping` for repo sequencing.
 
 | If you have... | Role | Start with | Depth | Why |
 |---|---|---|---|---|
-| accepted feature/bug spec to implement | developer | `dev-workflow` | default | turns intent into plan, code, review, and PR package |
-| small safe code change with clear acceptance | developer | `dev-workflow` | lite | avoids full ceremony unless scope/risk expands |
+| accepted feature/bug spec to implement | developer | `plan-to-launch` | default | turns intent into plan, code, review, and PR package |
+| small safe code change with clear acceptance | developer | `plan-to-launch` | lite | avoids full ceremony unless scope/risk expands |
 | PR or diff needing review | developer | `pr-review` | lite | reviews intent, architecture, correctness, tests, and feedback |
 | failing test, non-prod bug, or unknown narrow symptom | developer | `debug-investigation` | default | defines symptom, gathers evidence, traces code, confirms root cause |
 | production incident or high-risk fix | developer/lead | `debug-investigation` | deep | needs blast-radius evidence, RCA, prevention, and possible escalation |
-| high-risk architecture or launch change | developer/lead | `dev-workflow` | deep | needs docs, gates, review, and likely council escalation |
+| high-risk architecture or launch change | developer/lead | `plan-to-launch` | deep | needs docs, gates, review, and likely council escalation |
 | ML metric/model framing or experiment idea | ML/product | `ml-experiments` | default | locks metrics, data path, hypotheses, validation, and handoff |
 | production/costly/disputed ML decision | ML/product | `ml-experiments` | deep | needs statistical rigor, guardrails, council escalation, and deploy handoff |
 | fuzzy OKR or early product idea | PM/product | `project-ideation` | lite | frames problem and drivers before heavier discovery |
@@ -49,7 +49,7 @@ Role quick paths:
 
 High-level workflows:
 
-- `dev-workflow` — PRD → DD → council → plan → ship → review → final council → launch PR.
+- `plan-to-launch` — PRD → DD → council → plan → ship → review → final council → launch PR.
   - Use when: building or changing software from accepted intent.
   - Do not use when: you only need to review an existing PR or investigate an unexplained symptom.
 - `ml-experiments` — problem/metric framing → data/EDA → tracking → hypothesis/train/validate loop → handoff.
@@ -57,7 +57,7 @@ High-level workflows:
   - Do not use when: the task is ordinary application code or a product idea without ML/data experimentation.
 - `pr-review` — context → architecture → line-level review → optional local test → feedback → human signoff.
   - Use when: a PR/diff exists and needs correctness, safety, maintainability, or test review.
-  - Do not use when: no implementation exists yet; use `dev-workflow` or `project-ideation` instead.
+  - Do not use when: no implementation exists yet; use `plan-to-launch` or `project-ideation` instead.
 - `debug-investigation` — symptom → evidence → repro → trace → hypothesis loop → RCA/handoff.
   - Use when: behavior is wrong and root cause is unknown.
   - Do not use when: the fix is already specified and only implementation remains.
@@ -66,7 +66,7 @@ High-level workflows:
   - Do not use when: candidates are already framed and need sequencing; use `roadmapping`.
 - `roadmapping` — ROI scoring → dependency/capacity iteration → horizon themes → council → approval.
   - Use when: choosing, sequencing, or packaging project tradeoffs for PM/leadership decisions.
-  - Do not use when: executing one approved project; use `dev-workflow`.
+  - Do not use when: executing one approved project; use `plan-to-launch`.
 - `backprop` — ingest run history/telemetry → diagnose workflow failures → propose improvements → council → shadow-A/B → promote/rollback.
   - Use when: improving Autopraxis or another workflow from prior run evidence.
   - Do not use when: there is no run history, telemetry, or concrete failure pattern yet.

@@ -84,7 +84,7 @@ Create a concise decision package for a qualified human. Use when accountability
 
 ## Workflow Uses
 
-- `dev-workflow`: final launch PR and merge readiness.
+- `plan-to-launch`: final launch PR and merge readiness.
 - `pr-review`: human merge accountability.
 - `roadmapping`: leadership commitment.
 - `ml-experiments`: deploy/promote model or extend compute.

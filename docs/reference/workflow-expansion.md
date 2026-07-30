@@ -50,9 +50,9 @@ Detailed scores are planning estimates; future eval telemetry should replace the
 
 **Goal:** Decide whether a change is ready to launch and what to watch after launch.
 
-**Current workaround:** use `dev-workflow` deep, then manually assemble release evidence from PR review, handoff, validation, and human approval. Gap: no single launch readiness packet with monitoring/rollback/post-launch checks.
+**Current workaround:** use `plan-to-launch` deep, then manually assemble release evidence from PR review, handoff, validation, and human approval. Gap: no single launch readiness packet with monitoring/rollback/post-launch checks.
 
-**Likely shape:** thin recipe that composes `dev-workflow`, `pr-review`, `handoff-packaging`, `human-approval-gate`, and `run-telemetry`.
+**Likely shape:** thin recipe that composes `plan-to-launch`, `pr-review`, `handoff-packaging`, `human-approval-gate`, and `run-telemetry`.
 
 **Inputs:** PR/package, release notes, rollout plan, validation, monitoring links, rollback plan.
 
@@ -78,7 +78,7 @@ Detailed scores are planning estimates; future eval telemetry should replace the
 
 **Goal:** Identify and mitigate security/privacy risk before release.
 
-**Likely shape:** deep-mode recipe for `dev-workflow` or `pr-review` using agent-fleet `/council` only on high-risk changes.
+**Likely shape:** deep-mode recipe for `plan-to-launch` or `pr-review` using agent-fleet `/council` only on high-risk changes.
 
 **Inputs:** design/diff, data handled, auth boundaries, threat assumptions, rollout plan.
 
@@ -90,7 +90,7 @@ Detailed scores are planning estimates; future eval telemetry should replace the
 
 **Goal:** Safely change schemas, ETL/ELT, lineage, backfills, and data quality checks.
 
-**Likely shape:** top-level workflow only if repeated data changes need more than `dev-workflow` + data-oriented review.
+**Likely shape:** top-level workflow only if repeated data changes need more than `plan-to-launch` + data-oriented review.
 
 **Inputs:** schema/pipeline change, lineage, backfill plan, idempotency plan, data quality checks.
 
@@ -127,6 +127,6 @@ Reasons:
 - highest frequency across developers, PMs, and leadership.
 - reuses existing skills with low new surface area.
 - measurable via launch checklist completeness, rollback clarity, validation evidence, and post-launch telemetry.
-- naturally follows `dev-workflow` and `pr-review`.
+- naturally follows `plan-to-launch` and `pr-review`.
 
 Next issue should be: “Add release-readiness recipe and eval fixture.”

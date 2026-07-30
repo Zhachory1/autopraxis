@@ -86,7 +86,7 @@ Convert an approved goal or design into ordered, verifiable tasks. The output sh
 
 ## Workflow Uses
 
-- `dev-workflow`: plan writing before `ship`.
+- `plan-to-launch`: plan writing before `ship`.
 - `ml-experiments`: experiment schedule, baselines, training runs, validation checks.
 - `roadmapping`: dependency and capacity-aware sequencing.
 - `debug-investigation`: evidence collection and hypothesis test plan when issue is complex.
