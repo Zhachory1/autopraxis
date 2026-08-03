@@ -47,7 +47,7 @@ if (result.status !== 0) failures.push(`summary failed: ${result.stderr || resul
 else {
   const summary = JSON.parse(result.stdout);
   if (summary.event_count !== 3) failures.push(`summary event_count expected 3, got ${summary.event_count}`);
-  if (summary.by_workflow['dev-workflow'] !== 3) failures.push('summary missing dev-workflow count');
+  if (summary.by_workflow['plan-to-launch'] !== 3) failures.push('summary missing plan-to-launch count');
   if (summary.by_status.ok !== 2) failures.push('summary missing ok status count');
   if (summary.by_status.skipped !== 1) failures.push('summary missing skipped status count');
   if (summary.tokens.in_total !== 100 || summary.tokens.out_total !== 20) failures.push('summary token totals wrong');
@@ -61,7 +61,7 @@ try {
     'telemetry', 'emit',
     '--path', path,
     '--run-id', 'emit-test',
-    '--workflow', 'dev-workflow',
+    '--workflow', 'plan-to-launch',
     '--step', 'test',
     '--event', 'start',
     '--status', 'ok',

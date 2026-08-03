@@ -7,7 +7,7 @@ import { spawnSync } from 'node:child_process';
 const root = new URL('..', import.meta.url).pathname;
 const skillsDir = join(root, 'skills');
 const workflowSkills = new Set([
-  'dev-workflow',
+  'plan-to-launch',
   'ml-experiments',
   'pr-review',
   'debug-investigation',
@@ -86,9 +86,9 @@ for (const dir of workflowSkills) {
   if (!text.includes('Loop Controls')) failures.push(`${dir}: missing Loop Controls section`);
 }
 
-const dev = await readFile(join(skillsDir, 'dev-workflow', 'SKILL.md'), 'utf8');
+const dev = await readFile(join(skillsDir, 'plan-to-launch', 'SKILL.md'), 'utf8');
 for (const token of ['agent-fleet', '/council', 'ship', 'code-reviewer', 'PRD', 'DD']) {
-  if (!dev.includes(token)) failures.push(`dev-workflow: missing ${token}`);
+  if (!dev.includes(token)) failures.push(`plan-to-launch: missing ${token}`);
 }
 
 const backprop = await readFile(join(skillsDir, 'backprop', 'SKILL.md'), 'utf8');
@@ -308,7 +308,7 @@ try {
   if (claudeInstall.status !== 0) failures.push(`claude plugin install smoke failed: ${claudeInstall.stderr || claudeInstall.stdout}`);
   if (!existsSync(join(claudeDest, '.claude-plugin/plugin.json'))) failures.push('claude plugin install smoke missing .claude-plugin/plugin.json');
   if (!existsSync(join(claudeDest, 'assets/autopraxis.png'))) failures.push('claude plugin install smoke missing assets/autopraxis.png');
-  if (!existsSync(join(claudeDest, 'skills/dev-workflow/SKILL.md'))) failures.push('claude plugin install smoke missing skills/dev-workflow/SKILL.md');
+  if (!existsSync(join(claudeDest, 'skills/plan-to-launch/SKILL.md'))) failures.push('claude plugin install smoke missing skills/plan-to-launch/SKILL.md');
   for (const skill of ['council', 'ship']) {
     if (!existsSync(join(claudeDest, 'skills', skill, 'SKILL.md'))) failures.push(`claude plugin install smoke missing bundled agent-fleet skill ${skill}`);
   }
@@ -318,7 +318,7 @@ try {
   const codexInstall = spawnSync(process.execPath, ['bin/autopraxis.mjs', 'install', '--target', 'codex-plugin', '--dest', codexDest, '--marketplace-dest', marketplaceDest], { cwd: root, encoding: 'utf8' });
   if (codexInstall.status !== 0) failures.push(`codex plugin install smoke failed: ${codexInstall.stderr || codexInstall.stdout}`);
   if (!existsSync(join(codexDest, '.codex-plugin/plugin.json'))) failures.push('codex plugin install smoke missing .codex-plugin/plugin.json');
-  if (!existsSync(join(codexDest, 'skills/dev-workflow/SKILL.md'))) failures.push('codex plugin install smoke missing skills/dev-workflow/SKILL.md');
+  if (!existsSync(join(codexDest, 'skills/plan-to-launch/SKILL.md'))) failures.push('codex plugin install smoke missing skills/plan-to-launch/SKILL.md');
   if (!existsSync(marketplaceDest)) failures.push('codex plugin install smoke missing marketplace file');
 } finally {
   await rm(pluginInstallRoot, { recursive: true, force: true });
