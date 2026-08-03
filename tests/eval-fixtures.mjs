@@ -47,7 +47,7 @@ try {
   await writeFile(join(temp, 'fixtures', 'unknown.json'), JSON.stringify({
     schema_version: 1,
     id: 'bad-mode',
-    workflow: 'dev-workflow',
+    workflow: 'plan-to-launch',
     scenario: 'Synthetic invalid mode.',
     expected_mode: 'maximum',
     expected_council_level: 'none',
@@ -64,7 +64,7 @@ try {
   await writeFile(join(temp, 'fixtures', 'unknown.json'), JSON.stringify({
     schema_version: 1,
     id: 'bad-contract',
-    workflow: 'dev-workflow',
+    workflow: 'plan-to-launch',
     scenario: 'Synthetic invalid contract.',
     expected_mode: 'lite',
     expected_council_level: 'none',
@@ -81,7 +81,7 @@ try {
   await writeFile(join(temp, 'fixtures', 'unknown.json'), JSON.stringify({
     schema_version: 1,
     id: 'sensitive-eval',
-    workflow: 'dev-workflow',
+    workflow: 'plan-to-launch',
     scenario: 'Authorization: Bearer x',
     expected_mode: 'lite',
     expected_council_level: 'none',

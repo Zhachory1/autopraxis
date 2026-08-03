@@ -28,7 +28,7 @@ if (pack.status !== 0) {
     '.codex-plugin/plugin.json',
     '.cave-plugin/plugin.json',
     '.agents/plugins/marketplace.json',
-    'skills/dev-workflow/SKILL.md',
+    'skills/plan-to-launch/SKILL.md',
     'skills/run-telemetry/SKILL.md',
     'vendor/agent-fleet/skills/council/SKILL.md',
     'vendor/agent-fleet/skills/ship/SKILL.md',
@@ -64,7 +64,7 @@ if (packArtifact.status !== 0) {
 
       install = spawnSync('npm', ['exec', '--yes', '--package', tarballPath, '--', 'autopraxis', 'install', '--target', 'opencode-skills', '--dest', join(temp, 'opencode-skills')], { cwd: root, encoding: 'utf8' });
       if (install.status !== 0) failures.push(`packed opencode-skills install failed: ${install.stderr || install.stdout}`);
-      if (!existsSync(join(temp, 'opencode-skills/dev-workflow/SKILL.md'))) failures.push('packed opencode-skills install missing dev-workflow skill');
+      if (!existsSync(join(temp, 'opencode-skills/plan-to-launch/SKILL.md'))) failures.push('packed opencode-skills install missing plan-to-launch skill');
     } finally {
       await rm(temp, { recursive: true, force: true });
       await rm(tarballPath, { force: true });
