@@ -1,0 +1,39 @@
+{
+  "policy_version": "model-tiers-2026-07-23",
+  "description": "Concrete model names for the cheap/standard/strong spawn tiers defined in spawn-model-routing.md. Operator-maintained: update model names here as new models roll out; do not change the tier abstraction. Runtime config, not enforced by Autopraxis code.",
+  "owner": "autopraxis maintainer",
+  "last_checked": "2026-07-23",
+  "stale_after": "60d",
+  "tier_roles": {
+    "cheap": "simple, high-volume, objectively verifiable spawn work (context extraction, docs/link/package validation, deterministic-check interpretation)",
+    "standard": "sub-agent work: first-pass PR review, routine implementation, routine debugging, generalist council personas",
+    "strong": "orchestration and high-stakes work: parent/orchestrator, council synthesis, ML/statistical/security/reliability blocker decisions"
+  },
+  "providers": {
+    "anthropic": {
+      "cheap": "haiku",
+      "standard": "sonnet",
+      "strong": "opus",
+      "orchestrator": "opus",
+      "notes": "Orchestration/synthesis on opus (or a higher 'fable'-class tier when available). Pin exact dated model ids in runtime config."
+    },
+    "openai": {
+      "cheap": "gpt-luna",
+      "standard": "gpt-terra",
+      "strong": "gpt-sol",
+      "orchestrator": "gpt-sol",
+      "notes": "sol = orchestration, terra = sub-agent work, luna = simple/high-volume. Pin exact dated model ids in runtime config."
+    },
+    "moonshot": {
+      "cheap": "K2.5",
+      "standard": "K2.6",
+      "strong": "K3",
+      "orchestrator": "K3",
+      "notes": "Kimi: K3 = orchestration, K2.6 = sub-agent work, K2.5 = simple/high-volume. Pin exact dated model ids in runtime config."
+    }
+  },
+  "maintenance": {
+    "how_to_update": "When a provider ships a new model, update the tier value(s) for that provider, bump policy_version and last_checked. Keep the cheap/standard/strong keys stable so skills and telemetry stay valid.",
+    "verification": "Model names are operator-supplied and must be verified against current provider docs before relying on them for cost/routing decisions."
+  }
+}

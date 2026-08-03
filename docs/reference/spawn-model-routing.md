@@ -47,7 +47,17 @@ If a runtime cannot prove model control, use this document only as non-binding r
 | `standard` | first-pass review, simple implementation, routine debugging | reversible, testable, bounded scope required |
 | `strong` | final synthesis, high-risk review, ML/statistical/security decisions | use when missed-issue cost is high |
 
-Provider-specific model names belong in runtime config, not workflow prose.
+Provider-specific model names belong in runtime config, not workflow prose. Concrete per-provider tier names are maintained in [`model-tiers.json`](./model-tiers.json) and updated as new models roll out; the `cheap`/`standard`/`strong` abstraction here stays stable.
+
+Current operator-maintained mapping (see `model-tiers.json` for the authoritative, versioned copy):
+
+| Tier | Anthropic | OpenAI | Kimi | Role |
+|---|---|---|---|---|
+| `cheap` | haiku | gpt-luna | K2.5 | simple / high-volume |
+| `standard` | sonnet | gpt-terra | K2.6 | sub-agent work |
+| `strong` | opus | gpt-sol | K3 | orchestration / synthesis / high-risk |
+
+Model names above are operator-supplied; verify against current provider docs before relying on them for routing or cost decisions.
 
 Example local mapping shape:
 
