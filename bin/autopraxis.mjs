@@ -283,6 +283,9 @@ function coerceValue(value) {
   if (value === 'false') return false;
   if (value === 'null') return null;
   if (/^-?\d+(\.\d+)?$/.test(value)) return Number(value);
+  if (value.startsWith('[') || value.startsWith('{')) {
+    try { return JSON.parse(value); } catch { /* fall through to string */ }
+  }
   return value;
 }
 
@@ -352,7 +355,35 @@ function validateTelemetryEvent(event) {
   if ((event.tokens_in !== undefined && event.tokens_in !== null) || (event.tokens_out !== undefined && event.tokens_out !== null)) {
     if (!telemetrySources.has(event.token_source)) failures.push('token_source is required when token counts are set');
   }
+  failures.push(...validateLifecycleMetrics(event));
   failures.push(...inspectSensitive(event));
+  return failures;
+}
+
+const runDispositions = new Set(['accepted', 'edited', 'rejected']);
+
+// Validate the M1 skill-lifecycle signal fields when present under metrics.
+// Fields are optional, but if set they must be well-formed and on the correct
+// event, so the lifecycle aggregator can trust them (council: disposition is a
+// late fact and must not ride the run's own `end`).
+function validateLifecycleMetrics(event) {
+  const failures = [];
+  const metrics = event.metrics;
+  if (!metrics || typeof metrics !== 'object' || Array.isArray(metrics)) return failures;
+  for (const field of ['skills_invoked', 'agents_invoked']) {
+    if (metrics[field] === undefined) continue;
+    if (!Array.isArray(metrics[field]) || metrics[field].some((item) => typeof item !== 'string' || !item.trim())) failures.push(`metrics.${field} must be an array of non-empty strings`);
+    else if (event.event !== 'end') failures.push(`metrics.${field} is only valid on the end event`);
+  }
+  if (metrics.run_disposition !== undefined) {
+    if (!runDispositions.has(metrics.run_disposition)) failures.push(`metrics.run_disposition must be one of ${[...runDispositions].join(', ')}`);
+    else if (event.event !== 'human_response') failures.push('metrics.run_disposition must ride a late human_response event keyed by run_id, not the run\'s own end');
+  }
+  if (metrics.unmet_need !== undefined) {
+    if (typeof metrics.unmet_need !== 'boolean') failures.push('metrics.unmet_need must be a boolean');
+    else if (event.event !== 'escalation') failures.push('metrics.unmet_need is only valid on the escalation event');
+  }
+  if (metrics.unmet_need_note !== undefined && typeof metrics.unmet_need_note !== 'string') failures.push('metrics.unmet_need_note must be a string');
   return failures;
 }
 
@@ -483,6 +514,84 @@ async function telemetrySummarize(values) {
   console.log(JSON.stringify(summary, null, 2));
 }
 
+// M1: read-only cross-run aggregation that produces the signal the skill-lifecycle
+// roadmap (M3 add / M4 prune) consumes. Enforces the >=5-run floor as a runtime
+// refusal: below it, emit no add/prune signal, only `insufficient_signal`.
+const LIFECYCLE_MIN_RUNS = 5;
+
+async function telemetryLifecycle(values) {
+  const options = parseOptions(values);
+  if (options.help) telemetryUsage();
+  const paths = options.path ? [resolve(expandHome(options.path))] : await discoverRunTelemetry();
+  if (!paths.length) throw new Error('telemetry lifecycle found no telemetry; pass --path <file> or run from a repo with .workflow-runs/');
+  const minRuns = options.minRuns ? Number(options.minRuns) : LIFECYCLE_MIN_RUNS;
+  const allFailures = [];
+  const events = [];
+  for (const path of paths) {
+    const result = await readTelemetryJsonl(path);
+    allFailures.push(...result.failures);
+    events.push(...result.events);
+  }
+  if (allFailures.length) {
+    for (const failure of allFailures) console.error(failure);
+    process.exit(1);
+  }
+  const runIds = new Set(events.map((event) => event.run_id));
+  const skillUse = {};
+  const agentUse = {};
+  const unmetNeeds = [];
+  const dispositionByRun = {};
+  for (const event of events) {
+    const metrics = (event.metrics && typeof event.metrics === 'object' && !Array.isArray(event.metrics)) ? event.metrics : {};
+    for (const name of metrics.skills_invoked ?? []) skillUse[name] = (skillUse[name] ?? 0) + 1;
+    for (const name of metrics.agents_invoked ?? []) agentUse[name] = (agentUse[name] ?? 0) + 1;
+    if (event.event === 'escalation' && metrics.unmet_need === true) unmetNeeds.push(metrics.unmet_need_note ?? null);
+    if (event.event === 'human_response' && runDispositions.has(metrics.run_disposition)) dispositionByRun[event.run_id] = metrics.run_disposition;
+  }
+  const runCount = runIds.size;
+  const result = {
+    run_count: runCount,
+    min_runs: minRuns,
+    telemetry_files: paths.length,
+    sufficient_signal: runCount >= minRuns,
+  };
+  if (runCount < minRuns) {
+    result.status = 'insufficient_signal';
+    result.note = `need >= ${minRuns} runs before add/prune signal is emitted; have ${runCount}`;
+    console.log(JSON.stringify(result, null, 2));
+    return;
+  }
+  // known skills/workflows from the manifest; agents from the bundled payload dirs.
+  const knownSkills = manifest.skills.map((skill) => skill.name);
+  result.status = 'ok';
+  result.skill_usage = skillUse;
+  result.agent_usage = agentUse;
+  result.never_invoked_skills = knownSkills.filter((name) => !skillUse[name]);
+  result.unmet_need_count = unmetNeeds.length;
+  result.unmet_need_notes = unmetNeeds.filter((note) => typeof note === 'string');
+  const dispositions = Object.values(dispositionByRun);
+  result.disposition = {
+    observed: dispositions.length,
+    pending: runCount - dispositions.length,
+    accepted: dispositions.filter((value) => value === 'accepted').length,
+    edited: dispositions.filter((value) => value === 'edited').length,
+    rejected: dispositions.filter((value) => value === 'rejected').length,
+  };
+  console.log(JSON.stringify(result, null, 2));
+}
+
+async function discoverRunTelemetry() {
+  const runsDir = join(process.cwd(), '.workflow-runs');
+  if (!existsSync(runsDir)) return [];
+  const files = [];
+  for (const entry of await readdir(runsDir, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    const candidate = join(runsDir, entry.name, 'telemetry.jsonl');
+    if (existsSync(candidate)) files.push(candidate);
+  }
+  return files;
+}
+
 function telemetryUsage() {
   console.log(`Autopraxis telemetry commands
 
@@ -490,6 +599,16 @@ Usage:
   autopraxis telemetry emit --workflow <name> --step <name> --event <event> --status <status> [--run-id <id>] [--path <file>]
   autopraxis telemetry validate --path <file>
   autopraxis telemetry summarize --path <file>
+  autopraxis telemetry lifecycle [--path <file>] [--min-runs <int>]
+
+lifecycle: read-only cross-run signal for the skill-lifecycle roadmap (M3 add / M4 prune).
+  Aggregates metrics.skills_invoked/agents_invoked, metrics.unmet_need, and run_disposition.
+  Refuses to emit add/prune signal below --min-runs (default 5); reads .workflow-runs/ when --path is omitted.
+
+Lifecycle signal metrics (set via --metric, validated when present):
+  skills_invoked/agents_invoked  arrays on the end event (loader-emitted)
+  run_disposition                accepted|edited|rejected on a late human_response event, keyed by run_id
+  unmet_need / unmet_need_note   boolean + short note on the escalation event
 
 Emit options:
   --run-id <id>              Defaults to generated id; when --path is absent writes .workflow-runs/<run-id>/telemetry.jsonl
@@ -508,6 +627,7 @@ async function telemetry(values) {
   else if (subcommand === 'emit') await telemetryEmit(rest);
   else if (subcommand === 'validate') await telemetryValidate(rest);
   else if (subcommand === 'summarize') await telemetrySummarize(rest);
+  else if (subcommand === 'lifecycle') await telemetryLifecycle(rest);
   else throw new Error(`Unknown telemetry subcommand: ${subcommand}`);
 }
 
