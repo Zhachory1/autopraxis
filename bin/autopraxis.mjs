@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import os from 'node:os';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const manifestPath = join(root, 'autopraxis.json');
+const manifestPath = process.env.AUTOPRAXIS_MANIFEST ? resolve(process.env.AUTOPRAXIS_MANIFEST) : join(root, 'autopraxis.json');
 const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
 
 const [, , command, ...args] = process.argv;
@@ -243,6 +243,9 @@ async function install(values) {
 
   console.log(`${options.dryRun ? 'Would install' : 'Installed'} Autopraxis ${target.layout} to ${destination}`);
   for (const result of results) console.log(`- ${result.name}: ${result.action} -> ${result.target}`);
+  for (const skill of manifest.skills) {
+    if (skill.deprecated) console.warn(`- warning: skill '${skill.name}' is deprecated since ${skill.deprecated.since}${skill.deprecated.remove_after ? `, removed after ${skill.deprecated.remove_after}` : ''}${skill.deprecated.replacement ? ` (use ${skill.deprecated.replacement})` : ''}: ${skill.deprecated.reason ?? ''}`.trimEnd());
+  }
 }
 
 const telemetryEvents = new Set(['start', 'end', 'gate', 'loop', 'escalation', 'validation', 'human_response']);
@@ -812,6 +815,16 @@ async function validatePackage() {
     if (!existsSync(skillFile)) failures.push(`${skill.name}: missing SKILL.md`);
     const files = existsSync(skillDir) ? await listFiles(skillDir) : [];
     if (!files.length) failures.push(`${skill.name}: no package files found`);
+    if (skill.deprecated !== undefined) {
+      const dep = skill.deprecated;
+      if (!dep || typeof dep !== 'object' || Array.isArray(dep)) failures.push(`${skill.name}: deprecated must be an object`);
+      else {
+        if (typeof dep.since !== 'string' || !dep.since) failures.push(`${skill.name}: deprecated.since must be a version string`);
+        if (typeof dep.reason !== 'string' || !dep.reason) failures.push(`${skill.name}: deprecated.reason must be a non-empty string`);
+        if (dep.remove_after !== undefined && typeof dep.remove_after !== 'string') failures.push(`${skill.name}: deprecated.remove_after must be a version string`);
+        if (dep.replacement !== undefined && typeof dep.replacement !== 'string') failures.push(`${skill.name}: deprecated.replacement must be a string`);
+      }
+    }
   }
   for (const exclude of ['.git/**', 'node_modules/**', '.workflow-runs/**', '.env']) {
     if (!manifest.package.exclude.includes(exclude)) failures.push(`manifest package.exclude missing ${exclude}`);

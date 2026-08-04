@@ -72,6 +72,13 @@ Use agent-fleet council levels. Small prompt/template changes can use one review
 
 **Council review proposed changes.** Use agent-fleet `/council` to pick one lens, minimal council, or full council. Gate against overfitting, prompt bloat, regressions, and cost creep when measured risk justifies council.
 
+**Prune governance (retire, deep-mode only).** Retiring a skill/workflow/agent is destructive and split by ownership seam:
+
+- repo-owned skill/workflow: soft-deprecate in-repo — add a `deprecated` object (`since`, `reason`, optional `remove_after`, `replacement`) to its `autopraxis.json` skill entry. The installer warns on install; removal happens in a later release, never in the same change. `validate-package` enforces the shape.
+- vendored/persona agent (upstream-owned): never mark locally — `bin/sync-agent-fleet.mjs` clobbers `vendor/` on every re-vendor. The proposal is an upstream issue/PR against agent-fleet only.
+
+Require full council + `human-approval-gate` for any retirement. Gate on per-skill invocation counts from `telemetry lifecycle` (not raw window absence), and never propose retiring safety/incident/security/release-critical skills on absence alone — they are legitimately infrequent.
+
 **Shadow or A/B rollout.** Run candidate workflow against baseline on comparable tasks. Prefer shadow mode first for high-risk changes; use A/B only when routing and metrics are fair.
 
 **Promote or rollback.** If candidate beats baseline without guardrail regressions, promote with changelog and version bump. Else rollback and record why.

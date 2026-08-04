@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { join } from 'node:path';
@@ -101,6 +101,37 @@ for (const [name, text] of [['README.md', readme], ['INSTALL.md', install]]) {
 }
 if (!readme.includes('claude plugin marketplace add Zhachory1/autopraxis')) failures.push('README.md: missing Claude GitHub marketplace command');
 if (!install.includes('claude plugin marketplace add Zhachory1/autopraxis')) failures.push('INSTALL.md: missing Claude GitHub marketplace command');
+
+// M4: soft-deprecate mechanism via AUTOPRAXIS_MANIFEST override — valid entry warns on install
+// and passes validate-package; malformed entry fails validation.
+{
+  const base = JSON.parse(await readFile(join(root, 'autopraxis.json'), 'utf8'));
+  const withDep = JSON.parse(JSON.stringify(base));
+  withDep.skills.find((skill) => skill.name === 'roadmapping').deprecated = { since: '0.3.0', reason: 'test-only', remove_after: '0.4.0', replacement: 'plan-to-launch' };
+  const badDep = JSON.parse(JSON.stringify(base));
+  badDep.skills.find((skill) => skill.name === 'roadmapping').deprecated = { since: '0.3.0' };
+  const depTemp = await mkdtemp(join(tmpdir(), 'autopraxis-deprecate-'));
+  try {
+    const okManifest = join(depTemp, 'ok.json');
+    const badManifest = join(depTemp, 'bad.json');
+    await writeFile(okManifest, JSON.stringify(withDep, null, 2));
+    await writeFile(badManifest, JSON.stringify(badDep, null, 2));
+
+    const okValidate = spawnSync(process.execPath, ['bin/autopraxis.mjs', 'validate-package'], { cwd: root, encoding: 'utf8', env: { ...process.env, AUTOPRAXIS_MANIFEST: okManifest } });
+    if (okValidate.status !== 0) failures.push(`valid deprecated entry failed validate-package: ${okValidate.stderr || okValidate.stdout}`);
+
+    const badValidate = spawnSync(process.execPath, ['bin/autopraxis.mjs', 'validate-package'], { cwd: root, encoding: 'utf8', env: { ...process.env, AUTOPRAXIS_MANIFEST: badManifest } });
+    if (badValidate.status === 0) failures.push('malformed deprecated entry unexpectedly passed validate-package');
+    else if (!badValidate.stderr.includes('deprecated.reason')) failures.push('malformed deprecated entry missing expected reason error');
+
+    const installDest = join(depTemp, 'skills');
+    const installRes = spawnSync(process.execPath, ['bin/autopraxis.mjs', 'install', '--target', 'mewrite-skills', '--dest', installDest], { cwd: root, encoding: 'utf8', env: { ...process.env, AUTOPRAXIS_MANIFEST: okManifest } });
+    if (installRes.status !== 0) failures.push(`install with deprecated manifest failed: ${installRes.stderr || installRes.stdout}`);
+    if (!installRes.stderr.includes("skill 'roadmapping' is deprecated")) failures.push('install did not warn on deprecated skill');
+  } finally {
+    await rm(depTemp, { recursive: true, force: true });
+  }
+}
 
 if (failures.length) {
   console.error('Package/tool install validation failed:');

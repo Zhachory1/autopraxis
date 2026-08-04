@@ -249,6 +249,10 @@ npx @zhachory1/autopraxis@latest install --target opencode-skills
 
 Symlink development installs follow the working tree automatically after `git pull`.
 
+## Deprecated skills
+
+A skill scheduled for retirement carries a `deprecated` object in its `autopraxis.json` entry (`since`, `reason`, optional `remove_after`, `replacement`). Installs still include the skill but print a warning naming the replacement and removal release. This is the soft-deprecate step of the skill-lifecycle prune governance (`docs/roadmap/self-improving-skills-roadmap.md`): mark → warn-on-use → remove in a later release, never in the same change. Retirement of a skill requires full council + human approval; vendored/persona agents are never marked locally (they are re-vendored) and are deprecated upstream in agent-fleet instead.
+
 ## Uninstall
 
 Runtime-native Claude uninstall:
