@@ -34,6 +34,7 @@ Optimize workflow skills by reviewing prior executions, telemetry, human edits, 
 Use available sources in this priority order:
 
 - `run-telemetry` JSONL from current workflow runs.
+- `autopraxis telemetry lifecycle` cross-run signal (skill/agent usage, never-invoked skills, unmet-need notes, disposition tallies) for skill-inventory hypotheses.
 - agent-fleet council journal and room transcripts.
 - long-term memory MCP / `gbrain` for session notes, decisions, incidents, project docs, human feedback, prior retros.
 - code RAG / repo-index / `coderag` for skill definitions, code changes, recurring affected paths, ownership, semantic similarity.
@@ -66,6 +67,8 @@ Use agent-fleet council levels. Small prompt/template changes can use one review
 **Attribute root cause.** Use `hypothesis-testing` to distinguish bad prompt/skill, missing context, wrong ordering, weak rubric, bad persona roster, absent telemetry, code RAG gap, memory drift, model limitation, or human process mismatch.
 
 **Generate improvement hypotheses.** For each measured problem, propose a minimal skill or workflow change with expected metric movement, regression risk, owner, and validation plan.
+
+**Skill-inventory hypotheses (add).** When `autopraxis telemetry lifecycle` reports `sufficient_signal` (>= 5 runs; below that it returns `insufficient_signal` and no inventory hypothesis may be raised), treat recurring `unmet_need` notes as an ADD hypothesis: a workflow gap the router could not serve. Frame it like any other measured problem — evidence is the unmet-need count and notes, expected improvement is served routes, regression risk is surface/bloat. If approved, author the new skill with the global `skill-forge` (it must carry the repo contract: frontmatter, README router row, eval fixture, `run-telemetry`, `## Self-Improvement`, Loop Controls, and pass `npm test`). This replaces hand-authored `docs/reference/workflow-expansion.md` entries with signal-backed ones. `never_invoked_skills` is recorded as a dead-weight candidate here but retirement is governed separately (see prune governance); do not delete on absence alone.
 
 **Council review proposed changes.** Use agent-fleet `/council` to pick one lens, minimal council, or full council. Gate against overfitting, prompt bloat, regressions, and cost creep when measured risk justifies council.
 
@@ -162,6 +165,10 @@ Use agent-fleet council levels. Small prompt/template changes can use one review
 **Telemetry blind spot.** Fix by proposing `run-telemetry` instrumentation before workflow edits.
 
 **Bloat as improvement.** Fix by single-lens or council review with docs-dx, cost-finops, red-team, and occams-style simplicity lens when risk justifies it.
+
+**Inventing gaps from thin signal.** Fix by honoring the `telemetry lifecycle` >= 5-run floor: no add hypothesis from `insufficient_signal`, and prefer repeated unmet-need notes over a single one.
+
+**Prune-on-absence false positives.** Fix by treating `never_invoked_skills` as a candidate only; rare-but-critical skills (incident/security/release) are legitimately infrequent. Retirement needs the separate prune governance and per-skill counts, not raw window absence.
 
 **Unfair A/B.** Fix by comparable task assignment and guardrail metrics.
 
