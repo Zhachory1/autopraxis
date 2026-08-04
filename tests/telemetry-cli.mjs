@@ -82,6 +82,35 @@ try {
   }
   result = run(['telemetry', 'validate', '--path', path]);
   if (result.status !== 0) failures.push(`emitted file failed validation: ${result.stderr || result.stdout}`);
+
+  // M1 skill-lifecycle signal: field validation + cross-run aggregation.
+  const badDisp = run(['telemetry', 'emit', '--path', join(temp, 'bad.jsonl'), '--run-id', 'x', '--workflow', 'pr-review', '--step', 'end', '--event', 'end', '--status', 'ok', '--metric', 'run_disposition=accepted']);
+  if (badDisp.status === 0) failures.push('run_disposition on end event unexpectedly passed');
+  if (!badDisp.stderr.includes('late human_response')) failures.push('run_disposition wrong-event error missing message');
+
+  const badSkills = run(['telemetry', 'emit', '--path', join(temp, 'bad2.jsonl'), '--run-id', 'x', '--workflow', 'pr-review', '--step', 'route', '--event', 'escalation', '--status', 'ok', '--metric', 'skills_invoked=["a"]']);
+  if (badSkills.status === 0) failures.push('skills_invoked on escalation event unexpectedly passed');
+
+  const lifePath = join(temp, 'life.jsonl');
+  for (const id of ['r1', 'r2', 'r3']) {
+    run(['telemetry', 'emit', '--path', lifePath, '--run-id', id, '--workflow', 'plan-to-launch', '--step', 'end', '--event', 'end', '--status', 'ok', '--metric', 'skills_invoked=["plan-to-launch"]']);
+  }
+  let life = run(['telemetry', 'lifecycle', '--path', lifePath]);
+  if (life.status !== 0) failures.push(`lifecycle (3 runs) failed: ${life.stderr || life.stdout}`);
+  else if (JSON.parse(life.stdout).status !== 'insufficient_signal') failures.push('lifecycle below floor should report insufficient_signal');
+
+  run(['telemetry', 'emit', '--path', lifePath, '--run-id', 'r4', '--workflow', 'pr-review', '--step', 'end', '--event', 'end', '--status', 'ok', '--metric', 'skills_invoked=["pr-review"]']);
+  run(['telemetry', 'emit', '--path', lifePath, '--run-id', 'r5', '--workflow', 'pr-review', '--step', 'route', '--event', 'escalation', '--status', 'ok', '--metric', 'unmet_need=true', '--metric', 'unmet_need_note=no release workflow']);
+  life = run(['telemetry', 'lifecycle', '--path', lifePath]);
+  if (life.status !== 0) failures.push(`lifecycle (5 runs) failed: ${life.stderr || life.stdout}`);
+  else {
+    const out = JSON.parse(life.stdout);
+    if (out.status !== 'ok') failures.push('lifecycle at floor should report ok');
+    if (out.run_count !== 5) failures.push(`lifecycle run_count expected 5, got ${out.run_count}`);
+    if (out.unmet_need_count !== 1) failures.push('lifecycle should count 1 unmet_need');
+    if (!out.never_invoked_skills.includes('backprop')) failures.push('lifecycle should flag never-invoked backprop');
+    if (out.skill_usage['pr-review'] !== 1) failures.push('lifecycle skill_usage wrong for pr-review');
+  }
 } finally {
   await rm(temp, { recursive: true, force: true });
 }

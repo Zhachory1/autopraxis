@@ -157,6 +157,22 @@ When agent-fleet `/council` runs or a council gate is skipped, put council field
 
 Do not store raw artifacts, logs, secrets, or customer data in council reason fields.
 
+## Skill-Lifecycle Signal
+
+The skill-lifecycle roadmap (`docs/roadmap/self-improving-skills-roadmap.md`) consumes three optional `metrics` fields. They are validated when present and must ride the correct event:
+
+- `skills_invoked` / `agents_invoked`: arrays on the `end` event; emitted by the loader/harness (not agent memory) so absence means "not loaded," not "forgot to log."
+- `run_disposition`: `accepted|edited|rejected` on a **late `human_response` event keyed by `run_id`** — a downstream fact, never the run's own `end`.
+- `unmet_need` (bool) + `unmet_need_note` (short, non-sensitive): on the `escalation` event, set when the router returns a default/unmatched route.
+
+Aggregate across runs read-only:
+
+```bash
+autopraxis telemetry lifecycle [--path <file>] [--min-runs <int>]
+```
+
+It refuses to emit add/prune signal below `--min-runs` (default 5), reporting `insufficient_signal`. At or above the floor it reports skill/agent usage, never-invoked skills, unmet-need notes, and disposition tallies. This is signal only; adding or retiring a skill remains gated by `backprop` + `/council` + `human-approval-gate`.
+
 ## Backprop Metrics
 
 `backprop` should compute:
