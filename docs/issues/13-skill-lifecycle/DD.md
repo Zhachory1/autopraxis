@@ -1,9 +1,19 @@
 # DD: Issue #13 Skill Lifecycle (self-authoring / self-pruning workflows)
 
-- status: draft
+- status: revised-per-council
 - owner: Autopraxis maintainer
 - next gate: agent-fleet /council (deep) → human-approval-gate
-- related: `backprop`, `run-telemetry`, `docs/reference/workflow-expansion.md`, `docs/reference/evaluation-framework.md`, global `skill-forge`/`agent-forge`
+- related: `backprop`, `run-telemetry`, `docs/roadmap/self-improving-skills-roadmap.md`, `docs/reference/workflow-expansion.md`, `docs/reference/evaluation-framework.md`, global `skill-forge`/`agent-forge`
+
+## Council Outcome (2 BLOCK / 3 SHIP-WITH-CHANGES → REVISE)
+
+A deep council (red-team, mvp, occams-razor, software-architect, data-engineer) reviewed the original shape and unanimously said: do not build a peer meta-workflow now. Binding revisions, sequenced in `docs/roadmap/self-improving-skills-roadmap.md`:
+
+- **Signal semantics fixed (M1):** `run_disposition` is a downstream fact — it moves to a **late event keyed by `run_id`**, never the run's own `end`. `skills_invoked`/`agents_invoked` are **loader-emitted**, not agent-reported (absence must mean "not loaded," not "agent forgot"). `unmet_need` is a **concrete router state** (default/unmatched), not "user improvised." A defined **aggregate store** replaces reliance on siloed per-checkout `.workflow-runs/`.
+- **ADD folds into `backprop` (M3):** the diagnose→propose→council→human→author flow already exists in `backprop` + `skill-forge`; add a "missing/dead-skill" hypothesis type instead of a duplicate meta-workflow.
+- **PRUNE is last and add-only until then (M4):** soft-deprecate only, split by ownership seam — repo-owned in-repo; vendored/persona agents via upstream PR only (local marks get clobbered by `bin/sync-agent-fleet.mjs`). Absence-based prune excludes safety/incident/security/rare skills and gates on per-skill invocation counts, not a global run window.
+- **≥5-run floor becomes a runtime refusal**, not a dev-time wait: the code ships now and refuses to author/prune until 5 real runs exist in the aggregate store.
+- **Standalone `skill-lifecycle` skill is optional (M5):** build only if backprop modes prove insufficient.
 
 ## Decision Need
 
@@ -37,13 +47,13 @@ The signal threshold is a hard floor: `skill-lifecycle` reads the trailing telem
 
 All three ride under the existing `metrics` object — no new top-level fields, so `schema_version` stays 1 (the skill's own stable-schema rule):
 
-| Field | Event | Purpose | Drives |
-|---|---|---|---|
-| `skills_invoked` / `agents_invoked` (arrays) | `end` | which skills/agents actually loaded in the run | prune: dead = absent across the trailing window |
-| `run_disposition` (`accepted\|edited\|rejected\|reworked\|abandoned`) | `end` | did the run's output survive | prune quality: used-but-always-rejected is also dead weight |
-| `unmet_need` (bool) + `unmet_need_note` (short, non-sensitive) | `escalation` | router returned default/unmatched or user improvised | add: positive signal for a missing workflow |
+| Field | Event | Source | Purpose | Drives |
+|---|---|---|---|---|
+| `skills_invoked` / `agents_invoked` (arrays) | `end` | loader (automatic) | which skills/agents actually loaded | prune: dead = absent across the window |
+| `run_disposition` (`accepted\|edited\|rejected`) | **late `human_response`, keyed by `run_id`** | human/audit, backfilled | did the run's output survive | prune quality: used-but-always-rejected is also dead weight |
+| `unmet_need` (bool) + `unmet_need_note` (short, non-sensitive) | `escalation` | router state (default/unmatched route id) | a workflow was missing | add: positive signal for a missing workflow |
 
-`unmet_need` is the only genuinely new capability; `skills_invoked`/`run_disposition` are counting/outcome fields that today's per-step telemetry cannot answer. No sentiment scores, no free-form logging; the privacy validator still rejects raw content.
+Notes from council: disposition is a downstream fact and MUST NOT ride the run's own `end` (a run can't grade its own survival); it backfills via a late event with a "pending" watermark. `skills_invoked` is emitted by the loader, not agent memory. `unmet_need` is the only genuinely new capability. No sentiment scores, no free-form logging; the privacy validator still rejects raw content, and `unmet_need_note` stays in the non-content allowlist.
 
 ## Proposed Design
 
