@@ -35,10 +35,11 @@ Run before tagging:
 ```bash
 npm test
 node bin/autopraxis.mjs list-targets
-npm exec -- agent-fleet --version
-npm exec -- agent-fleet home
+node bin/autopraxis.mjs validate-package   # includes vendored agent-fleet version-drift check
 npm pack --dry-run
 ```
+
+The agent-fleet payload is vendored under `vendor/agent-fleet/`; `validate-package` fails if its `.pinned-version` drifts from `autopraxis.json` `bundledAgentFleet.version`. Do not use `npm exec -- agent-fleet ...` as a gate: the dependency is vendored, not installed, so `npm exec` resolves an unrelated public package.
 
 For install changes, verify current local-checkout paths first:
 

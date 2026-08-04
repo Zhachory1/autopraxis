@@ -10,6 +10,17 @@ Autopraxis uses SemVer-style versions before `1.0.0`:
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-08-04
+
+### Added
+
+- Self-improving skill lifecycle (roadmap `docs/reference/`/`docs/roadmap/self-improving-skills-roadmap.md`, DD `docs/issues/13-skill-lifecycle/DD.md`), built signal-first per council review:
+  - **Signal (M1):** three optional `run-telemetry` `metrics` fields — `skills_invoked`/`agents_invoked` (on `end`), `run_disposition` (`accepted|edited|rejected` on a late `human_response` event keyed by `run_id`), and `unmet_need`(+note) (on `escalation`) — validated on the correct event. New read-only `autopraxis telemetry lifecycle` aggregates across runs and refuses to emit add/prune signal below a 5-run floor (`insufficient_signal`).
+  - **Add (M3):** `backprop` gains signal-backed skill-inventory hypotheses — recurring `unmet_need` becomes an ADD proposal (authored via `skill-forge`), replacing hand-curated `workflow-expansion.md` entries.
+  - **Prune (M4):** governed soft-deprecate — an optional `deprecated` object on `autopraxis.json` skill entries; installer warns on use; `validate-package` enforces the shape; retirement split by ownership seam (repo-owned in-repo mark; vendored/persona agents upstream-only) and gated by full council + human approval.
+- `AUTOPRAXIS_MANIFEST` env override for the CLI (used to test the deprecation mechanism).
+- Versioned model-tier catalog `docs/reference/model-tiers.json` (anthropic, openai, moonshot/Kimi) linked from `spawn-model-routing.md`.
+
 ## [0.2.0] - 2026-07-23
 
 ### Added
