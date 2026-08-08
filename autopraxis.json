@@ -12,6 +12,7 @@
     "mewrite": ".cave-plugin/plugin.json"
   },
   "skills": [
+    { "name": "adversarial-probe", "path": "skills/adversarial-probe", "kind": "workflow" },
     { "name": "backprop", "path": "skills/backprop", "kind": "workflow" },
     { "name": "debug-investigation", "path": "skills/debug-investigation", "kind": "workflow" },
     { "name": "grounding-brief", "path": "skills/grounding-brief", "kind": "shared" },

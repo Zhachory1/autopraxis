@@ -18,8 +18,8 @@ result = run(['eval', 'summarize', '--fixtures', 'evals/workflows']);
 if (result.status !== 0) failures.push(`eval summarize failed: ${result.stderr || result.stdout}`);
 else {
   const summary = JSON.parse(result.stdout);
-  if (summary.fixture_count !== 7) failures.push(`expected 7 fixtures, got ${summary.fixture_count}`);
-  if (summary.workflow_coverage.covered !== 7) failures.push(`expected 7 workflows covered, got ${summary.workflow_coverage.covered}`);
+  if (summary.fixture_count !== 8) failures.push(`expected 8 fixtures, got ${summary.fixture_count}`);
+  if (summary.workflow_coverage.covered !== 8) failures.push(`expected 8 workflows covered, got ${summary.workflow_coverage.covered}`);
   if (summary.workflow_coverage.missing.length !== 0) failures.push(`expected no missing workflows, got ${summary.workflow_coverage.missing.join(',')}`);
   if (!summary.required_telemetry_fields.includes('workflow_mode')) failures.push('summary missing required telemetry field workflow_mode');
 }
