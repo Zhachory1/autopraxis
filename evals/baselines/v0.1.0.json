@@ -1,24 +1,24 @@
 {
   "schema_version": 1,
   "baseline": "v0.1.0",
-  "fixture_count": 7,
+  "fixture_count": 8,
   "workflow_coverage": {
-    "expected": 7,
-    "covered": 7,
+    "expected": 8,
+    "covered": 8,
     "missing": []
   },
   "by_mode": {
     "lite": 2,
     "default": 4,
-    "deep": 1
+    "deep": 2
   },
   "by_council_level": {
     "none": 3,
     "single-lens": 2,
-    "minimal-council": 2,
+    "minimal-council": 3,
     "full-council": 0
   },
   "metric_status": {
-    "contract_only": 7
+    "contract_only": 8
   }
 }

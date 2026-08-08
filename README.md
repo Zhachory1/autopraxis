@@ -34,6 +34,8 @@ Role quick paths:
 | PR or diff needing review | developer | `pr-review` | lite | reviews intent, architecture, correctness, tests, and feedback |
 | failing test, non-prod bug, or unknown narrow symptom | developer | `debug-investigation` | default | defines symptom, gathers evidence, traces code, confirms root cause |
 | production incident or high-risk fix | developer/lead | `debug-investigation` | deep | needs blast-radius evidence, RCA, prevention, and possible escalation |
+| working system to attack for unknown weaknesses | developer/lead | `adversarial-probe` | default | maps surface, locks thresholds, probes for breakages, hands off to debug |
+| prod chaos, load, security, or agent safety probing | developer/lead | `adversarial-probe` | deep | needs threat model, approval, blast-radius signoff, and council |
 | high-risk architecture or launch change | developer/lead | `plan-to-launch` | deep | needs docs, gates, review, and likely council escalation |
 | ML metric/model framing or experiment idea | ML/product | `ml-experiments` | default | locks metrics, data path, hypotheses, validation, and handoff |
 | production/costly/disputed ML decision | ML/product | `ml-experiments` | deep | needs statistical rigor, guardrails, council escalation, and deploy handoff |
@@ -61,6 +63,9 @@ High-level workflows:
 - `debug-investigation` — symptom → evidence → repro → trace → hypothesis loop → RCA/handoff.
   - Use when: behavior is wrong and root cause is unknown.
   - Do not use when: the fix is already specified and only implementation remains.
+- `adversarial-probe` — surface map → locked thresholds → attack plan → approval gate → attack loop → confirmed-breakage handoff.
+  - Use when: a working system (service, tool, or AI-agent workflow) must be attacked to surface unknown failures before a symptom exists.
+  - Do not use when: a symptom already exists (use `debug-investigation`) or you only need routine tests inside a build (use `plan-to-launch`).
 - `project-ideation` — OKR deconstruction → gap analysis → cross-functional jam → framing → feasibility.
   - Use when: the opportunity/problem is fuzzy and needs framing before roadmap or build work.
   - Do not use when: candidates are already framed and need sequencing; use `roadmapping`.

@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "id": "agent-workflow-red-team",
+  "workflow": "adversarial-probe",
+  "scenario": "Probe a staging AI-agent workflow for prompt-injection, tool-abuse, and cost-blowup failures with no known symptom.",
+  "expected_mode": "deep",
+  "expected_council_level": "minimal-council",
+  "expected_artifacts": [
+    "attack-surface-map",
+    "breakage-thresholds",
+    "attack-ledger",
+    "breakage-handoff"
+  ],
+  "required_telemetry": [
+    "workflow_mode",
+    "latency_ms",
+    "tokens_in",
+    "tokens_out",
+    "token_source",
+    "cost_usd",
+    "cost_source",
+    "metrics.council_level",
+    "metrics.council_reason"
+  ],
+  "outcome_contract": {
+    "primary": "Human can act on confirmed breakages without re-deriving workflow intent, and hand them to debug-investigation.",
+    "guardrails": [
+      "no raw sensitive content stored",
+      "synthetic payloads unless real data explicitly authorized",
+      "live or destructive probe requires recorded approval and blast-radius signoff",
+      "escalation reason recorded when mode or council level increases"
+    ]
+  },
+  "privacy": {
+    "synthetic": true,
+    "source": "invented"
+  },
+  "metric_status": "contract_only"
+}
