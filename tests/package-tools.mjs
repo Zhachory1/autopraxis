@@ -75,8 +75,8 @@ if (packArtifact.status !== 0) {
 const packageJson = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));
 if (packageJson.private !== false) failures.push('package.json private must be false for package-runner install');
 if (packageJson.publishConfig?.access !== 'public') failures.push('package.json publishConfig.access must be public');
-const agentFleetVersion = packageJson.dependencies?.['@zhachory1/agent-fleet'];
-if (!agentFleetVersion) failures.push('package.json: missing @zhachory1/agent-fleet dependency');
+const agentFleetVersion = packageJson.devDependencies?.['@zhachory1/agent-fleet'];
+if (!agentFleetVersion) failures.push('package.json: missing @zhachory1/agent-fleet devDependency');
 else if (!/(^|\D)0\.4\.0/.test(agentFleetVersion)) failures.push(`package.json: @zhachory1/agent-fleet must require minimum 0.4.0, got ${agentFleetVersion}`);
 
 const readme = await readFile(join(root, 'README.md'), 'utf8');
