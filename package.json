@@ -10,7 +10,7 @@
   "bin": {
     "autopraxis": "bin/autopraxis.mjs"
   },
-  "dependencies": {
+  "devDependencies": {
     "@zhachory1/agent-fleet": "^0.4.0"
   },
   "files": [

@@ -3,7 +3,7 @@
 // prompts, lib helpers) into vendor/agent-fleet/ so native git-clone plugin
 // installs ship council/ship without an npm install step.
 //
-// Pins to the version declared in package.json dependencies. Run after bumping
+// Pins to the version declared in package.json devDependencies. Run after bumping
 // the @zhachory1/agent-fleet dependency, then commit vendor/agent-fleet/.
 import { cp, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -14,8 +14,8 @@ import { tmpdir } from 'node:os';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const pkg = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));
-const range = pkg.dependencies?.['@zhachory1/agent-fleet'];
-if (!range) throw new Error('package.json missing @zhachory1/agent-fleet dependency');
+const range = pkg.devDependencies?.['@zhachory1/agent-fleet'];
+if (!range) throw new Error('package.json missing @zhachory1/agent-fleet devDependency');
 const version = range.replace(/^[^0-9]*/, '');
 const spec = `@zhachory1/agent-fleet@${version}`;
 const vendorDir = join(root, 'vendor', 'agent-fleet');
