@@ -1,4 +1,4 @@
-import { mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, writeFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
@@ -22,6 +22,19 @@ else {
   if (summary.workflow_coverage.covered !== 8) failures.push(`expected 8 workflows covered, got ${summary.workflow_coverage.covered}`);
   if (summary.workflow_coverage.missing.length !== 0) failures.push(`expected no missing workflows, got ${summary.workflow_coverage.missing.join(',')}`);
   if (!summary.required_telemetry_fields.includes('workflow_mode')) failures.push('summary missing required telemetry field workflow_mode');
+}
+
+const prReviewFixture = JSON.parse(await readFile(join(root, 'evals/workflows/pr-review.json'), 'utf8'));
+if (prReviewFixture.expected_artifacts.includes('posted-review-url') && !/https:\/\/github\.com\/[^/]+\/[^/]+\/pull\/\d+/.test(prReviewFixture.scenario)) {
+  failures.push('pr-review posting fixture must include a target GitHub PR URL');
+}
+if (/\b(post|publish)\b/i.test(prReviewFixture.scenario)) {
+  failures.push('pr-review posting fixture must exercise URL-default delivery without explicit post wording');
+}
+for (const pattern of [/PR URL defaults to posting unless user opts out/i, /head SHA rechecked before posting/i, /posted review URL returned/i]) {
+  if (!prReviewFixture.outcome_contract.guardrails.some((item) => pattern.test(item))) {
+    failures.push(`pr-review fixture missing delivery guardrail ${pattern}`);
+  }
 }
 
 const temp = await mkdtemp(join(tmpdir(), 'autopraxis-evals-'));
