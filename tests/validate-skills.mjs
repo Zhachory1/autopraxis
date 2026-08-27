@@ -93,10 +93,11 @@ for (const token of ['agent-fleet', '/council', 'ship', 'code-reviewer', 'PRD', 
 
 const prReview = await readFile(join(skillsDir, 'pr-review', 'SKILL.md'), 'utf8');
 for (const token of [
-  'A target PR URL implies comment delivery',
-  'comment-only GitHub review',
-  'Only GitHub event',
-  'never submits `APPROVE` or `REQUEST_CHANGES`',
+  'A target PR URL implies review delivery',
+  'Verdict mapping',
+  '`approve` and `approve-with-nits` submit `APPROVE`',
+  '`request-changes` and `block` submit `REQUEST_CHANGES`',
+  '`needs-info` submits `COMMENT`',
   'report-only',
   'Preview before publish',
   'Head safety',

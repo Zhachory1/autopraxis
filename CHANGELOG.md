@@ -12,7 +12,7 @@ Autopraxis uses SemVer-style versions before `1.0.0`:
 
 ### Changed
 
-- `pr-review` now publishes one comment-only GitHub review when the user asks to review a target PR URL. Explicit read-only, draft-only, report-only, or no-posting requests suppress delivery. Posting now requires an idempotency marker, exact-body preview, `commit_id` pinning, head-SHA revalidation, and returning the posted review URL; agents never submit `APPROVE`, `REQUEST_CHANGES`, or merge, which remain direct human actions.
+- `pr-review` now publishes a GitHub review when the user asks to review a target PR URL, mapping `approve`/`approve-with-nits` to `APPROVE`, `request-changes`/`block` to `REQUEST_CHANGES`, and `needs-info` to `COMMENT`. Explicit read-only, draft-only, report-only, or no-posting requests suppress delivery. Posting requires an idempotency marker, exact-body preview, `commit_id` pinning, head-SHA revalidation, and returning the posted review URL; merge remains human-owned.
 
 ## [0.3.0] - 2026-08-04
 
