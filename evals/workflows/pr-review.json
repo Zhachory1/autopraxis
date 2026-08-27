@@ -2,12 +2,13 @@
   "schema_version": 1,
   "id": "review-small-pr",
   "workflow": "pr-review",
-  "scenario": "Review a focused PR that changes request validation and tests.",
+  "scenario": "Review synthetic PR https://github.com/example/widgets/pull/42, which changes request validation and tests.",
   "expected_mode": "lite",
   "expected_council_level": "none",
   "expected_artifacts": [
     "review-findings",
-    "validation-notes"
+    "validation-notes",
+    "posted-review-url"
   ],
   "required_telemetry": [
     "workflow_mode",
@@ -24,6 +25,9 @@
     "primary": "Human can act on the produced artifact without re-deriving workflow intent.",
     "guardrails": [
       "no raw sensitive content stored",
+      "PR URL defaults to posting unless user opts out",
+      "review head SHA rechecked before posting",
+      "posted review URL returned",
       "escalation reason recorded when mode or council level increases"
     ]
   },

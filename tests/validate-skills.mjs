@@ -91,6 +91,25 @@ for (const token of ['agent-fleet', '/council', 'ship', 'code-reviewer', 'PRD', 
   if (!dev.includes(token)) failures.push(`plan-to-launch: missing ${token}`);
 }
 
+const prReview = await readFile(join(skillsDir, 'pr-review', 'SKILL.md'), 'utf8');
+for (const token of [
+  'A target PR URL implies review delivery',
+  'Verdict mapping',
+  '`approve` and `approve-with-nits` submit `APPROVE`',
+  '`request-changes` and `block` submit `REQUEST_CHANGES`',
+  '`needs-info` submits `COMMENT`',
+  'report-only',
+  'Preview before publish',
+  'Head safety',
+  'commit_id',
+  'Idempotency',
+  'GitHub review/comment URL',
+  'Chat-only review for a target PR URL',
+  'never merge automatically',
+]) {
+  if (!prReview.includes(token)) failures.push(`pr-review: missing delivery contract token ${token}`);
+}
+
 const backprop = await readFile(join(skillsDir, 'backprop', 'SKILL.md'), 'utf8');
 for (const token of ['long-term memory MCP', 'code RAG', 'agent-fleet', 'A/B', 'promote-or-rollback']) {
   if (!backprop.includes(token)) failures.push(`backprop: missing ${token}`);

@@ -31,7 +31,7 @@ Role quick paths:
 |---|---|---|---|---|
 | accepted feature/bug spec to implement | developer | `plan-to-launch` | default | turns intent into plan, code, review, and PR package |
 | small safe code change with clear acceptance | developer | `plan-to-launch` | lite | avoids full ceremony unless scope/risk expands |
-| PR or diff needing review | developer | `pr-review` | lite | reviews intent, architecture, correctness, tests, and feedback |
+| PR or diff needing review | developer | `pr-review` | lite | reviews intent, architecture, correctness, tests, and feedback; reviewing a target PR URL posts an `APPROVE`, `REQUEST_CHANGES`, or `COMMENT` review from the verdict unless explicitly read-only, draft-only, report-only, or no-posting |
 | failing test, non-prod bug, or unknown narrow symptom | developer | `debug-investigation` | default | defines symptom, gathers evidence, traces code, confirms root cause |
 | production incident or high-risk fix | developer/lead | `debug-investigation` | deep | needs blast-radius evidence, RCA, prevention, and possible escalation |
 | working system to attack for unknown weaknesses | developer/lead | `adversarial-probe` | default | maps surface, locks thresholds, probes for breakages, hands off to debug |
@@ -57,8 +57,8 @@ High-level workflows:
 - `ml-experiments` — problem/metric framing → data/EDA → tracking → hypothesis/train/validate loop → handoff.
   - Use when: model, feature, data, or experiment quality must be judged against locked metrics.
   - Do not use when: the task is ordinary application code or a product idea without ML/data experimentation.
-- `pr-review` — context → architecture → line-level review → optional local test → feedback → human signoff.
-  - Use when: a PR/diff exists and needs correctness, safety, maintainability, or test review.
+- `pr-review` — context → architecture → line-level review → optional local test → published verdict → human-owned merge.
+  - Use when: a PR/diff exists and needs correctness, safety, maintainability, or test review. Reviewing a target PR URL defaults to posting the verdict as `APPROVE`, `REQUEST_CHANGES`, or `COMMENT` unless the user explicitly requests read-only, draft-only, report-only, or no posting.
   - Do not use when: no implementation exists yet; use `plan-to-launch` or `project-ideation` instead.
 - `debug-investigation` — symptom → evidence → repro → trace → hypothesis loop → RCA/handoff.
   - Use when: behavior is wrong and root cause is unknown.
