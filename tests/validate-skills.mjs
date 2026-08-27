@@ -87,7 +87,7 @@ for (const dir of workflowSkills) {
 }
 
 const dev = await readFile(join(skillsDir, 'plan-to-launch', 'SKILL.md'), 'utf8');
-for (const token of ['agent-fleet', '/council', 'ship', 'code-reviewer', 'PRD', 'DD']) {
+for (const token of ['agent-fleet', '/council', 'ship', 'code-reviewer', 'PRD', 'DD', 'scope fingerprint', 'human-approval-gate', 'at most two issue-wide implementation PRs', 'renewed approval state']) {
   if (!dev.includes(token)) failures.push(`plan-to-launch: missing ${token}`);
 }
 
@@ -110,6 +110,21 @@ for (const token of [
   if (!prReview.includes(token)) failures.push(`pr-review: missing delivery contract token ${token}`);
 }
 
+const grounding = await readFile(join(skillsDir, 'grounding-brief', 'SKILL.md'), 'utf8');
+for (const token of ['Capability Reuse Inventory', 'access contract', 'deployment boundary', 'clarify-first', 'new infrastructure proposal allowed', 'result: reuse | cannot-satisfy | clarify-first', 'inventory status: complete | clarify-first | no-candidate']) {
+  if (!grounding.includes(token)) failures.push(`grounding-brief: missing capability reuse contract ${token}`);
+}
+if (grounding.includes('result: reuse | cannot-satisfy | no-candidate | clarify-first')) failures.push('grounding-brief: no-candidate must be inventory status, not candidate result');
+for (const token of ['scope fingerprint:', 'scope renewal: not-required | pending | approved | rejected | revision-requested', 'paused action / resume condition:', '`revise` returns to design and remains paused', '`extend budget` approves recorded cap only']) {
+  if (!dev.includes(token)) failures.push(`plan-to-launch: missing scope-renewal contract ${token}`);
+}
+
+const taskDecomposition = await readFile(join(skillsDir, 'task-decomposition-planning', 'SKILL.md'), 'utf8');
+for (const token of ['at most two implementation PRs', 'issue-wide implementation PRs', 'approved delivery PR cap', 'deferred work', 'human-approval-gate']) {
+  if (!taskDecomposition.includes(token)) failures.push(`task-decomposition-planning: missing delivery-cap contract ${token}`);
+}
+
+
 const backprop = await readFile(join(skillsDir, 'backprop', 'SKILL.md'), 'utf8');
 for (const token of ['long-term memory MCP', 'code RAG', 'agent-fleet', 'A/B', 'promote-or-rollback']) {
   if (!backprop.includes(token)) failures.push(`backprop: missing ${token}`);
@@ -122,6 +137,9 @@ for (const token of ['council_level', 'council_reason', 'persona_count', 'agent_
 }
 for (const token of ['workflow_mode', 'mode_budget', 'mode_escalation_reason', 'council_level_max', 'validation_scope']) {
   if (!telemetrySkill.includes(token)) failures.push(`run-telemetry: missing mode metric ${token}`);
+}
+for (const token of ['reuse_candidate_count', 'reuse_candidate_results', 'reuse_inventory_status', 'scope_expansion', 'renewed_approval_state', 'delivery_pr_count', 'approved_delivery_pr_cap', 'renewed_approval_state": "not-required|pending|approved|rejected|revision-requested"', 'Resume only after human response approves recorded scope fingerprint']) {
+  if (!telemetrySkill.includes(token)) failures.push(`run-telemetry: missing plan-to-launch gate metric ${token}`);
 }
 for (const workflowName of workflowSkills) {
   const text = await readFile(join(skillsDir, workflowName, 'SKILL.md'), 'utf8');

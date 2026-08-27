@@ -15,6 +15,8 @@ Ensure a thought-out plan exists before implementation. Move from product intent
 
 **Ship follows accepted plan.** Implementation should satisfy planned tasks and flag plan/design mismatches instead of silently inventing fixes.
 
+**Material expansion renews approval.** Discovery does not amend accepted scope. Pause implementation and obtain human approval for recorded material scope delta before continuing.
+
 **Review checks fidelity.** Code-reviewer judges correctness and whether code still matches PRD/DD intent.
 
 **Loops are bounded and delta-only.** Re-review only raised issues and changed material.
@@ -47,7 +49,9 @@ Use agent-fleet council levels: `none`, `single-lens`, `minimal-council`, or `fu
 
 Run only the steps required by selected mode. `lite` may use scope lock instead of formal PRD/DD; `default` may use lightweight PRD/DD; `deep` uses full docs and gates.
 
-**Ground context.** Invoke `grounding-brief` over user goal, memory, code RAG, existing docs, related PRs, issues, and prior runs.
+**Ground context.** Invoke `grounding-brief` over user goal, memory, code RAG, existing docs, related PRs, issues, and prior runs. Do not propose infrastructure until its capability reuse inventory is complete.
+
+**Lock scope.** Before implementation, record a scope fingerprint: intended files, effort, systems, trust/deployment/rollback boundaries, and issue-wide implementation PR count.
 
 **Author PRD.** Use `structured-doc-authoring` to define what, why, users, scope, non-goals, success criteria, and launch readiness. Use `success-criteria-metrics` to lock the primary outcome and guardrails.
 
@@ -55,9 +59,11 @@ Run only the steps required by selected mode. `lite` may use scope lock instead 
 
 **Council on docs.** Select council level from risk: `none` for low-risk clear docs, `single-lens` for one domain concern, and agent-fleet `minimal-council`/`full-council` only for multi-domain or high-risk design decisions. Required council verdict must pass or pass-with-nits before planning only when council level is minimal/full.
 
+**Scope expansion gate.** Pause implementation and invoke `human-approval-gate` when review or discovery adds infrastructure or a trust boundary; doubles expected files, effort, or systems touched; raises issue-wide implementation PR count above two; turns configuration/integration into platform capability; or changes deployment/rollback semantics. Package original scope fingerprint, discovery, smallest options, added cost/risk, and recommendation. Emit gate/escalation telemetry with reuse candidate outcomes/count, expansion reason, and renewed approval state. `approve` resumes only when tied to fingerprint; `reject` ends paused run; `revise` returns to design and remains paused; `extend budget` approves recorded cap only. No response remains pending, and later delta repeats gate.
+
 **Write plan.** Use `task-decomposition-planning` to create ordered implementation tasks with dependencies, acceptance criteria, validation, rollout, and stop conditions.
 
-**Ship tasks.** Use agent-fleet `ship` for each accepted task or slice. If implementation exposes design error, stop and return to DD instead of patching around it.
+**Ship tasks.** Use agent-fleet `ship` for each accepted task or slice, with at most two issue-wide implementation PRs unless human approval extends cap. If implementation exposes design error, stop and return to DD instead of patching around it.
 
 **Run code-reviewer.** Review for correctness, safety, maintainability, security, performance, tests, observability, and fidelity to PRD/DD. Re-review only deltas after fixes.
 
@@ -71,7 +77,7 @@ Run only the steps required by selected mode. `lite` may use scope lock instead 
 
 **Implementation loop.** `ship` and code-reviewer iterate until review has no blockers, cap hit, or plan mismatch discovered.
 
-**Outer design kickback.** If final council or review evidence finds design intent wrong, return to DD and preserve implementation learnings as evidence.
+**Outer design kickback.** If final council or review evidence finds design intent wrong, return to DD and preserve implementation learnings as evidence. A material delta pauses the run until human approval for its scope fingerprint; telemetry is evidence, not gate authority.
 
 **Delta-only rule.** Re-council and re-review focus on required changes, not settled material.
 
@@ -94,7 +100,11 @@ Run only the steps required by selected mode. `lite` may use scope lock instead 
 
 ## Gate State
 - docs: pass | pass-with-nits | block
-- implementation: clean | needs-fix | design-kickback
+- implementation: clean | needs-fix | design-kickback | paused
+- scope fingerprint:
+- scope renewal: not-required | pending | approved | rejected | revision-requested
+- paused action / resume condition:
+- delivery PR budget: count, approved cap, deferred work
 - final: launch | revise | escalate-human
 
 ## Evidence
@@ -109,6 +119,9 @@ Run only the steps required by selected mode. `lite` may use scope lock instead 
 - PRD/DD or scope lock exists before implementation, according to selected mode.
 - council docs gate either records skipped/one-lens reason or passes when minimal/full council is triggered.
 - task plan or lite task list has acceptance criteria and dependencies.
+- material scope expansion emits a human approval gate and pauses implementation.
+- delivery uses no more than two issue-wide implementation PRs without explicit approval.
+- telemetry records reuse candidates, scope expansion, and renewed approval state.
 - shipped code maps to planned tasks.
 - code-reviewer blockers resolved or escalated.
 - final council confirms merge/no-merge call only when escalation matrix triggers it; otherwise skipped reason is recorded.
