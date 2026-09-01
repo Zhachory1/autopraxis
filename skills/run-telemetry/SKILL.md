@@ -157,6 +157,27 @@ When agent-fleet `/council` runs or a council gate is skipped, put council field
 
 Do not store raw artifacts, logs, secrets, or customer data in council reason fields.
 
+## Plan-To-Launch Gate Metrics
+
+When `plan-to-launch` checks reuse or scope growth, record these metrics: reuse fields on grounding gate; expansion fields on scope-expansion gate/escalation; renewal and PR-budget fields on human-response event. Telemetry is evidence, not approval authority.
+
+```json
+{
+  "metrics": {
+    "reuse_candidate_count": 0,
+    "reuse_candidate_results": ["reuse", "cannot-satisfy", "clarify-first"],
+    "reuse_inventory_status": "complete|clarify-first|no-candidate",
+    "scope_expansion": false,
+    "scope_expansion_reason": "short non-sensitive reason when true",
+    "renewed_approval_state": "not-required|pending|approved|rejected|revision-requested",
+    "delivery_pr_count": 0,
+    "approved_delivery_pr_cap": 2
+  }
+}
+```
+
+Resume only after human response approves recorded scope fingerprint; a telemetry write does not grant approval.
+
 ## Skill-Lifecycle Signal
 
 The skill-lifecycle roadmap (`docs/roadmap/self-improving-skills-roadmap.md`) consumes three optional `metrics` fields. They are validated when present and must ride the correct event:

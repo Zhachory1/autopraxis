@@ -17,6 +17,8 @@ Convert an approved goal or design into ordered, verifiable tasks. The output sh
 
 **Keep tasks atomic.** Prefer one concern per task or PR. Split work when reviewability suffers.
 
+**Cap delivery.** Default to at most two implementation PRs across all repositories for one issue. More requires explicit human approval; reviewability guidance never authorizes PR-stack expansion.
+
 **Escalate plan/design mismatch.** If planning reveals design flaws, return to DD or framing instead of hiding changes in implementation.
 
 ## Inputs
@@ -34,6 +36,8 @@ Convert an approved goal or design into ordered, verifiable tasks. The output sh
 **Extract deliverables.** Identify user-visible, system, data, test, docs, rollout, and observability outputs.
 
 **Map dependencies.** Order prerequisites, external blockers, owner handoffs, and risky unknowns.
+
+**Set delivery budget.** Count issue-wide implementation PRs across repositories. If plan exceeds two, defer excess work and invoke `human-approval-gate` with scope, smallest options, added cost/risk, and recommendation before creating another PR.
 
 **Create tasks.** Write each task with context, exact outcome, acceptance criteria, validation, owner, and rollback or stop condition where relevant.
 
@@ -80,6 +84,9 @@ Convert an approved goal or design into ordered, verifiable tasks. The output sh
 - loop:
   success gate:
   budget cap:
+  delivery PR count:
+  approved delivery PR cap:
+  deferred work:
   escalation:
   delta-only rule:
 ```
@@ -97,6 +104,7 @@ Convert an approved goal or design into ordered, verifiable tasks. The output sh
 - every task has acceptance criteria and validation.
 - dependencies are explicit.
 - plan exposes blockers rather than burying them.
+- delivery has no more than two issue-wide implementation PRs without explicit approval.
 - task order reduces risk early.
 - handoff target is clear.
 - `run-telemetry` event emitted.
@@ -110,6 +118,8 @@ Convert an approved goal or design into ordered, verifiable tasks. The output sh
 **Scope creep during decomposition.** Fix by returning new requirements to PRD/DD approval.
 
 **Huge task.** Fix by splitting into reviewable slices with independent evidence.
+
+**PR-stack expansion.** Fix by deferring excess work and requesting explicit human approval; line limits are guidelines, not permission for more implementation PRs.
 
 ## Self-Improvement
 
