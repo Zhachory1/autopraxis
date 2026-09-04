@@ -56,7 +56,7 @@ Use agent-fleet council levels. Most PRs should use no council. Use `single-lens
 - **Verdict mapping:** `approve` and `approve-with-nits` submit `APPROVE`; `request-changes` and `block` submit `REQUEST_CHANGES`; `needs-info` submits `COMMENT`. Repository policy or GitHub permission can force `COMMENT`, but the body must preserve the actual recommendation.
 - **No findings:** submit `APPROVE` when the reviewer is not the author and GitHub/repository policy permits it; otherwise submit `COMMENT` stating no blockers.
 - **Blocking findings:** publish actionable inline comments and a `REQUEST_CHANGES` summary review when permitted; otherwise submit `COMMENT` with the blocking recommendation.
-- **Avoid duplicates:** read all paginated review threads, reviews, and PR comments first. Do not repeat equivalent unresolved feedback. Prefer one submitted review containing all new inline findings over several separate comments.
+- **Prior-feedback ledger / avoid duplicates:** before analysis, retrieve every paginated issue comment, review, inline review comment, thread reply, and thread resolution/outdated state. Normalize them into a private ledger by concern, file/line, author response, and status. Treat every prior concern as covered—resolved, dismissed, replied to, or open—and do not repeat it. Revisit an area only when code changed or materially new evidence/risk exists; state what changed and reference the earlier feedback. Prefer one submitted review containing all new inline findings over several separate comments.
 - **Idempotency:** add `<!-- autopraxis-pr-review repo=<owner/repo> pr=<number> head=<sha> digest=<sha256> -->`, where the digest covers the normalized summary and inline findings. Search all paginated reviews/comments for that exact marker before posting and again after an ambiguous API failure; return the existing review URL instead of retrying.
 - **Preview before publish:** write the exact review body to a file or structured API payload and preview it before posting. Preserve Markdown literally; never build multi-line bodies through shell interpolation.
 - **Head safety:** capture the reviewed head SHA. Immediately before publishing, fetch the head again. If it changed, re-review the delta before posting. Submit the review with `commit_id` pinned to the verified reviewed SHA, verify the API response commit, then re-read the PR head and report if the posted review was superseded.
@@ -64,7 +64,7 @@ Use agent-fleet council levels. Most PRs should use no council. Use `single-lens
 
 ## Execution
 
-**Gather context.** Use `grounding-brief` to understand intent, scope, changed files, related docs, tests, CI, prior comments, and the requested/default delivery mode.
+**Gather context.** Use `grounding-brief` to understand intent, scope, changed files, related docs, tests, CI, and all prior comments, replies, and thread states. Build the prior-feedback ledger before forming findings and determine the requested/default delivery mode.
 
 **Architecture check.** Judge layer placement, boundaries, abstractions, coupling, data contracts, rollout, observability, and scope creep.
 
@@ -72,7 +72,7 @@ Use agent-fleet council levels. Most PRs should use no council. Use `single-lens
 
 **Local test when useful.** Run focused tests or static checks if feasible, cheap, documented, and relevant. Do not run destructive or broad expensive commands without approval.
 
-**Construct feedback.** Prioritize blockers, majors, minors, and nits. Make every comment actionable. Map findings to current diff lines where possible.
+**Construct feedback.** Compare every candidate against the prior-feedback ledger before drafting. Skip concerns already raised; when materially new code or evidence changes a previously discussed area, explain that delta and reference the earlier feedback. Prioritize blockers, majors, minors, and nits. Make every comment actionable. Map findings to current diff lines where possible.
 
 **Publish feedback.** In `post` mode, re-check the head SHA, map the verdict to the GitHub event, compute/check the idempotency marker, preview the exact body/payload, then submit one GitHub review pinned with `commit_id` and containing new inline findings plus summary verdict. Verify the response commit, re-read the PR head, and capture the resulting URL. In `report-only` mode, state that nothing was posted.
 
@@ -135,7 +135,8 @@ Use agent-fleet council levels. Most PRs should use no council. Use `single-lens
 - GitHub event: APPROVE | REQUEST_CHANGES | COMMENT | none
 - GitHub review/comment URL:
 - posted head SHA:
-- duplicate findings skipped:
+- prior-feedback ledger: reviewed | unavailable
+- duplicate findings skipped (with prior-comment references):
 
 ## Delta Re-Review State
 - unresolved:
@@ -153,6 +154,7 @@ Use agent-fleet council levels. Most PRs should use no council. Use `single-lens
 - revision loop is bounded and delta-only.
 - target PR URL review invocations publish a verdict-appropriate GitHub review by default unless the user explicitly opts out.
 - published feedback is pinned to the verified reviewed head, idempotent across retries, and its URL is reported.
+- all available prior PR feedback is checked before drafting; already raised concerns are not repeated unless a documented code or evidence delta warrants it.
 - final human approval package exists for merge.
 - `run-telemetry` event emitted.
 
@@ -169,6 +171,8 @@ Use agent-fleet council levels. Most PRs should use no council. Use `single-lens
 **Stale-head posting.** Fix by delta-reviewing head changes, pinning submission with `commit_id`, verifying the response commit, and reporting a post-submit supersession.
 
 **Duplicate review after ambiguous failure.** Fix by using a deterministic marker and searching all paginated reviews/comments before retrying.
+
+**Repeat of earlier feedback.** Fix by building and checking the prior-feedback ledger before drafting. Skip the concern unless new code or material evidence changes it, then cite that delta and the prior feedback.
 
 **Autopilot merge.** `APPROVE` or `REQUEST_CHANGES` records the review verdict; neither permits the agent to merge. Route merge readiness to `human-approval-gate`; never merge automatically.
 
