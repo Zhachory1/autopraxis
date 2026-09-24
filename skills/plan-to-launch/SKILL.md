@@ -13,6 +13,8 @@ Ensure a thought-out plan exists before implementation. Move from product intent
 
 **Cheap failures first.** Catch wrong assumptions in docs and council, not after code exists.
 
+**Smallest viable slice first.** MVP cuts what to build; Occam's razor cuts how it is built. Keep only work needed for the primary outcome, explicit constraints, and safety; defer the rest instead of making the design bigger to satisfy speculative risks.
+
 **Ship follows accepted plan.** Implementation should satisfy planned tasks and flag plan/design mismatches instead of silently inventing fixes.
 
 **Material expansion renews approval.** Discovery does not amend accepted scope. Pause implementation and obtain human approval for recorded material scope delta before continuing.
@@ -35,7 +37,7 @@ Use `grounding-brief` with long-term memory MCP, code RAG, git, tickets, PRs, an
 
 ## Council Policy
 
-Use agent-fleet council levels: `none`, `single-lens`, `minimal-council`, or `full-council`. Low-risk, reversible work may record `council_level: none` or use `single-lens`; docs and final code councils are required only when risk, ambiguity, conflicting review, unresolved blocker, design mismatch, security/privacy/reliability concern, or leadership-visible tradeoff appears. Required `minimal-council`/`full-council` must block if agent-fleet preflight fails.
+Use agent-fleet council levels: `none`, `single-lens`, `minimal-council`, or `full-council`. Low-risk, reversible work may record `council_level: none` or use `single-lens`. Suspected PRD scope bloat or DD over-engineering is a docs-council trigger: use `mvp` for unnecessary deliverables and `occams-razor` for unnecessary solution complexity. Optional features, hypothetical future requirements, or a new service/abstraction without a first-release need are signals. For any multi-persona PRD/DD council, include both personas plus an independent product, domain, or safety lens; escalate `lite` to `default` rather than exceeding its council cap. Other docs and final code councils are required only when risk, ambiguity, conflicting review, unresolved blocker, design mismatch, security/privacy/reliability concern, or leadership-visible tradeoff appears. Do not convene a council for a clear small change solely to satisfy this check. Required `minimal-council`/`full-council` must block if agent-fleet preflight fails.
 
 ## Workflow Modes
 
@@ -53,11 +55,11 @@ Run only the steps required by selected mode. `lite` may use scope lock instead 
 
 **Lock scope.** Before implementation, record a scope fingerprint: intended files, effort, systems, trust/deployment/rollback boundaries, and issue-wide implementation PR count.
 
-**Author PRD.** Use `structured-doc-authoring` to define what, why, users, scope, non-goals, success criteria, and launch readiness. Use `success-criteria-metrics` to lock the primary outcome and guardrails.
+**Author PRD.** Use `structured-doc-authoring` to define what, why, users, scope, non-goals, success criteria, and launch readiness. Use `success-criteria-metrics` to lock the primary outcome and guardrails. Name the smallest end-to-end release that can test the primary outcome; list deferred features and why each included feature is needed now.
 
-**Author DD.** Use `structured-doc-authoring` to translate PRD into architecture, boundaries, data/control flow, tradeoffs, tests, observability, rollout, risks, and alternatives.
+**Author DD.** Use `structured-doc-authoring` to translate PRD into architecture, boundaries, data/control flow, tradeoffs, tests, observability, rollout, risks, and alternatives. Prefer existing capabilities and the simplest design that ships the MVP safely; justify any new infrastructure, abstraction, or flexibility against a concrete first-release need.
 
-**Council on docs.** Select council level from risk: `none` for low-risk clear docs, `single-lens` for one domain concern, and agent-fleet `minimal-council`/`full-council` only for multi-domain or high-risk design decisions. Required council verdict must pass or pass-with-nits before planning only when council level is minimal/full.
+**Council on docs.** Compare PRD/DD against the MVP slice before task planning. Select `none` for low-risk clear docs, `single-lens` (`mvp` or `occams-razor`) for one bloat axis, and agent-fleet `minimal-council` with both and an independent third lens when both axes are suspect or another risk calls for a multi-persona docs council; reserve `full-council` for high-risk decisions. Ask each lens what to cut, what must remain for the outcome or safety, and why; record cuts and deferred work in PRD/DD, not just a verdict. Resolve concrete bloat blockers before planning; do not add work merely to satisfy speculative council suggestions. Required council verdict must pass or pass-with-nits before planning only when council level is minimal/full.
 
 **Scope expansion gate.** Pause implementation and invoke `human-approval-gate` when review or discovery adds infrastructure or a trust boundary; doubles expected files, effort, or systems touched; raises issue-wide implementation PR count above two; turns configuration/integration into platform capability; or changes deployment/rollback semantics. Package original scope fingerprint, discovery, smallest options, added cost/risk, and recommendation. Emit gate/escalation telemetry with reuse candidate outcomes/count, expansion reason, and renewed approval state. `approve` resumes only when tied to fingerprint; `reject` ends paused run; `revise` returns to design and remains paused; `extend budget` approves recorded cap only. No response remains pending, and later delta repeats gate.
 
@@ -73,7 +75,7 @@ Run only the steps required by selected mode. `lite` may use scope lock instead 
 
 ## Loop Controls
 
-**Doc loop.** PRD/DD and agent-fleet council gate iterate only when council level is minimal/full; otherwise record skipped or single-lens reason and proceed when doc acceptance criteria are met.
+**Doc loop.** PRD/DD and agent-fleet council gate iterate only when council level is minimal/full; otherwise record skipped or single-lens reason and proceed when doc acceptance criteria are met. Re-check MVP scope and design simplicity on material revisions; review only the new or unresolved bloat, not settled choices.
 
 **Implementation loop.** `ship` and code-reviewer iterate until review has no blockers, cap hit, or plan mismatch discovered.
 
@@ -92,6 +94,7 @@ Run only the steps required by selected mode. `lite` may use scope lock instead 
 - PRD:
 - DD:
 - council docs level/verdict:
+- MVP slice / design cuts / deferred work:
 - implementation plan:
 - shipped tasks:
 - code review:
@@ -117,7 +120,8 @@ Run only the steps required by selected mode. `lite` may use scope lock instead 
 ## Success Criteria
 
 - PRD/DD or scope lock exists before implementation, according to selected mode.
-- council docs gate either records skipped/one-lens reason or passes when minimal/full council is triggered.
+- council docs gate either records skipped/one-lens reason or passes when minimal/full council is triggered; every multi-persona PRD/DD council includes both `mvp` and `occams-razor` before planning.
+- PRD/DD or scope lock identifies the smallest outcome-bearing slice, justified must-haves, and deferred work.
 - task plan or lite task list has acceptance criteria and dependencies.
 - material scope expansion emits a human approval gate and pauses implementation.
 - delivery uses no more than two issue-wide implementation PRs without explicit approval.
@@ -133,6 +137,8 @@ Run only the steps required by selected mode. `lite` may use scope lock instead 
 **Skipping docs for speed.** Fix by writing lightweight PRD/DD, not by jumping to code.
 
 **Council churn.** Fix by agent-fleet caps, delta-only review, and human escalation.
+
+**Design grows to satisfy every objection.** Ask `mvp` what to defer and `occams-razor` what to remove; retain additions only for the outcome, explicit constraints, or safety.
 
 **Implementation invents new design.** Fix by DD kickback.
 

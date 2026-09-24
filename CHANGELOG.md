@@ -10,9 +10,18 @@ Autopraxis uses SemVer-style versions before `1.0.0`:
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-09-24
+
+### Added
+
+- `adversarial-probe` workflow for bounded exploratory stress, fault, and agent-safety probing with approval gates for live or destructive tests.
+
 ### Changed
 
+- `plan-to-launch` now defines the smallest outcome-bearing release before design and brings `mvp` and `occams-razor` into multi-persona PRD/DD councils to cut unnecessary scope and complexity.
+- `grounding-brief` and `plan-to-launch` now check existing capabilities before proposing infrastructure and pause for human approval when scope materially expands; issue-wide implementation delivery defaults to at most two PRs.
 - `pr-review` now publishes a GitHub review when the user asks to review a target PR URL, mapping `approve`/`approve-with-nits` to `APPROVE`, `request-changes`/`block` to `REQUEST_CHANGES`, and `needs-info` to `COMMENT`. Explicit read-only, draft-only, report-only, or no-posting requests suppress delivery. Posting requires an idempotency marker, exact-body preview, `commit_id` pinning, head-SHA revalidation, and returning the posted review URL; merge remains human-owned.
+- `pr-review` now checks previous comments to avoid repeating prior feedback.
 
 ## [0.3.0] - 2026-08-04
 
