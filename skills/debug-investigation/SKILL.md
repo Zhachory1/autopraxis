@@ -17,7 +17,7 @@ Investigate symptoms with evidence, reproduction, code/data tracing, hypothesis 
 
 **Hypotheses must be tested.** Confirm one root cause and rule out alternatives.
 
-**RCA creates durable learning.** Document cause, contributing factors, fix, and prevention.
+**RCA when requested.** Report cause and prevention inline; create durable RCA documentation only when the user requests it.
 
 ## Inputs
 
@@ -26,11 +26,11 @@ Investigate symptoms with evidence, reproduction, code/data tracing, hypothesis 
 - expected behavior and success criteria.
 - access to logs, traces, metrics, recent deploys, commits, incidents.
 - time/impact severity and escalation owner.
-- run id for `run-telemetry`.
+- optional run id if the user requested `run-telemetry` capture.
 
 ## Tool Awareness
 
-Use `grounding-brief` with long-term memory MCP for prior incidents and decisions, code RAG for implicated paths, logs/traces/metrics for evidence, git/CI/deploy history for recent changes, and `hypothesis-testing` for root-cause loop. Use agent-fleet `/council` for high-risk fixes or ambiguous RCA. Use `run-telemetry` throughout.
+Start with the symptom and relevant evidence. Use `grounding-brief`, long-term memory MCP, code RAG, logs/traces/metrics, or `hypothesis-testing` only where they resolve a concrete question. Use agent-fleet `/council` for high-risk fixes or ambiguous RCA. Use `run-telemetry` only when durable capture was requested or approved.
 
 ## Council Policy
 
@@ -50,15 +50,15 @@ Use agent-fleet council levels. Most investigations use no council until root-ca
 
 **Gather logs and evidence.** Use `grounding-brief` over logs, traces, metrics, recent changes, dashboards, alerts, tickets, incidents, and user reports.
 
-**Attempt reproduction.** Create minimal repro, failing test, query, request, or scenario when feasible. If not feasible, state why and rely on production evidence.
+**Attempt reproduction.** For read-only investigations, inspect existing repros and describe a proposed test without editing files or running validation unless the user asks. For authorized fixes, create the smallest repro when useful.
 
 **Trace codebase and data path.** Use code RAG and direct reads to follow request/data/control flow until behavior diverges from intent.
 
 **Generate and test hypotheses.** Use `hypothesis-testing` to confirm/refute candidate root causes with evidence and keep tried/rejected ledger.
 
-**Fix or hand off.** If fix is in scope and safe, route to `plan-to-launch` or `ship`. If not, package exact handoff.
+**Fix or hand off.** Implement only when the user requested a fix; otherwise report the cause and smallest recommended change inline.
 
-**Write RCA.** Use `structured-doc-authoring` and `handoff-packaging` for root cause, contributing factors, fix, prevention, tests, alerts, and open risks.
+**Write RCA.** Use `structured-doc-authoring` and `handoff-packaging` only when the user requested a durable RCA or handoff artifact.
 
 **Escalate when needed.** Use agent-fleet `/council` for high-risk fixes or ambiguous RCA; use `human-approval-gate` for evidence exhaustion, access gaps, or unresolved production impact.
 
@@ -108,7 +108,7 @@ Use agent-fleet council levels. Most investigations use no council until root-ca
 - fix:
 - prevention:
 - owner:
-- telemetry path:
+- telemetry path: only if capture was requested and completed
 ```
 
 ## Success Criteria
@@ -118,8 +118,8 @@ Use agent-fleet council levels. Most investigations use no council until root-ca
 - repro status is explicit.
 - confirmed root cause cites evidence or escalation explains why not.
 - ruled-out hypotheses are recorded.
-- RCA includes fix and prevention.
-- `run-telemetry` events emitted.
+- a requested RCA includes fix and prevention; otherwise the inline report is enough.
+- `run-telemetry` events emitted only when capture was authorized.
 
 ## Common Failure Modes
 
