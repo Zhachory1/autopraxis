@@ -29,11 +29,11 @@ Review a pull request against real intent, not guesswork. Produce prioritized, a
 - prior review comments and author responses.
 - optional local validation budget.
 - delivery override: `post` (default for PR URL) or `report-only`.
-- run id for `run-telemetry`.
+- optional run id if the user requested `run-telemetry` capture.
 
 ## Tool Awareness
 
-Use `grounding-brief` with code RAG for impacted paths, long-term memory MCP for prior decisions, git/gh for PR metadata and diff, CI status for validation, and agent-fleet `/council` when review stakes are high. Do not turn every PR into a council.
+Start with the PR/diff and use `grounding-brief`, code RAG, long-term memory MCP, CI, or agent-fleet `/council` only when a specific review question needs them. Do not turn every PR into a council.
 
 ## Council Policy
 
@@ -41,7 +41,7 @@ Use agent-fleet council levels. Most PRs should use no council. Use `single-lens
 
 ## Workflow Modes
 
-- `lite`: small, clear diff; review changed files, tests, and obvious risk. Budget: no council, no broad repo archaeology, focused validation only.
+- `lite`: small, clear diff; review changed files, relevant tests, and obvious risk. Budget: no council, no broad repo archaeology, no local validation unless requested.
 - `default`: normal PR; add architecture/context check and optional local tests. Budget: focused refs, `council_level` max `single-lens`, one delta re-review loop.
 - `deep`: high-risk architecture, security/privacy/reliability, ML/statistical, data migration, or conflicting reviewers. Budget: council allowed with reason and broader validation.
 - Escalate: unclear intent, high blast radius, unsafe rollback, failing CI tied to diff, or conflicting review judgments.
@@ -70,7 +70,7 @@ Use agent-fleet council levels. Most PRs should use no council. Use `single-lens
 
 **Deep dive.** Inspect correctness, edge cases, error handling, security, performance, concurrency, data migrations, tests, docs, and maintainability.
 
-**Local test when useful.** Run focused tests or static checks if feasible, cheap, documented, and relevant. Do not run destructive or broad expensive commands without approval.
+**Local test when authorized.** For read-only reviews, do not run tests or checks unless the user requests them or project instructions explicitly require them. Keep authorized validation focused; ask before broad suites.
 
 **Construct feedback.** Compare every candidate against the prior-feedback ledger before drafting. Skip concerns already raised; when materially new code or evidence changes a previously discussed area, explain that delta and reference the earlier feedback. Prioritize blockers, majors, minors, and nits. Make every comment actionable. Map findings to current diff lines where possible.
 
@@ -78,9 +78,9 @@ Use agent-fleet council levels. Most PRs should use no council. Use `single-lens
 
 **Author loop.** After revisions, re-review only changed files, unresolved findings, and newly introduced risk. Bound iterations. Do not post stale findings against a superseded head.
 
-**Human signoff.** Use `handoff-packaging` and `human-approval-gate` for final merge recommendation.
+**Human signoff.** If the user requests merge-readiness packaging, use `handoff-packaging` and `human-approval-gate`; otherwise report the review inline.
 
-**Emit telemetry.** Use `run-telemetry` for changed file count, findings, blocker count, local validation, iterations, human edits, and outcome.
+**Emit telemetry.** Use `run-telemetry` only when the user requested durable capture or approved a preview. Otherwise keep the result in the review response.
 
 ## Loop Controls
 
@@ -142,7 +142,7 @@ Use agent-fleet council levels. Most PRs should use no council. Use `single-lens
 - unresolved:
 - settled:
 - only re-review next:
-- telemetry path:
+- telemetry path: only if capture was requested and completed
 ```
 
 ## Success Criteria
@@ -155,8 +155,8 @@ Use agent-fleet council levels. Most PRs should use no council. Use `single-lens
 - target PR URL review invocations publish a verdict-appropriate GitHub review by default unless the user explicitly opts out.
 - published feedback is pinned to the verified reviewed head, idempotent across retries, and its URL is reported.
 - all available prior PR feedback is checked before drafting; already raised concerns are not repeated unless a documented code or evidence delta warrants it.
-- final human approval package exists for merge.
-- `run-telemetry` event emitted.
+- a human approval package exists only when merge-readiness packaging was requested.
+- `run-telemetry` emitted only when capture was authorized.
 
 ## Common Failure Modes
 
@@ -164,7 +164,7 @@ Use agent-fleet council levels. Most PRs should use no council. Use `single-lens
 
 **Nit flood.** Fix by prioritizing blockers and majors; nits only when cheap and useful.
 
-**Static-only confidence.** Fix by running focused validation when feasible.
+**Static-only confidence.** Disclose limits; run focused validation only when authorized.
 
 **Chat-only review for a target PR URL.** Fix by treating the requested PR as `post` mode, publishing the verified verdict-appropriate review, and returning its URL unless the user explicitly opted out.
 
